@@ -20,8 +20,8 @@ export default function HeroSection() {
   }
 
   const handlePlanTrip = () => {
-    // Always go to dashboard for now - will add auth check later
-    window.location.href = '/dashboard'
+    // Go to full planner for complete experience
+    window.location.href = '/planner'
   }
 
   const handleLearnMore = () => {
