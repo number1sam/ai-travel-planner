@@ -210,6 +210,21 @@ export default function PlannerPage() {
     currency?: string
   } | null>(null)
 
+  // Track conversation context
+  const [conversationContext, setConversationContext] = useState<{
+    lastQuestionAsked?: string
+    lastQuestionKey?: string
+    expectedAnswerType?: string
+    conversationHistory: Array<{
+      question: string
+      answer?: string
+      questionKey: string
+      timestamp: Date
+    }>
+  }>({
+    conversationHistory: []
+  })
+
   const [requiredTripData, setRequiredTripData] = useState<Partial<RequiredTripData>>({
     destination: '',
     duration: 0,
@@ -241,11 +256,206 @@ export default function PlannerPage() {
     }
   }
 
+  // Function to analyze conversation context and understand what the user is answering
+  const analyzeConversationContext = (userMessage: string, messages: Message[]) => {
+    const lowerMessage = userMessage.toLowerCase().trim()
+    
+    // Get the last few AI messages to understand what was asked
+    const recentAIMessages = messages
+      .filter(m => m.sender === 'ai')
+      .slice(-3) // Look at last 3 AI messages
+      .reverse() // Most recent first
+    
+    console.log('🔍 Analyzing context with recent AI messages:', recentAIMessages.map(m => m.text.substring(0, 100)))
+    
+    // Check if the user is responding to a specific question
+    const lastAIMessage = recentAIMessages[0]?.text || ''
+    const contextualInfo: any = {}
+    
+    // Departure location context
+    if (lastAIMessage.includes('Where will you be departing from') || 
+        lastAIMessage.includes('departing from') ||
+        conversationContext.lastQuestionKey === 'departureLocation') {
+      console.log('🛫 User answering departure location question')
+      
+      // Enhanced departure location extraction with context
+      if (lowerMessage.length < 30 && !lowerMessage.includes('want') && !lowerMessage.includes('like')) {
+        // Short answer likely to be a city name
+        const cityName = userMessage.trim()
+        if (cityName.length > 1) {
+          contextualInfo.departureLocation = cityName.split(' ').map(word => 
+            word.charAt(0).toUpperCase() + word.slice(1)
+          ).join(' ')
+          contextualInfo.departureLocationConfidence = 'high'
+        }
+      }
+    }
+    
+    // Duration context
+    if (lastAIMessage.includes('How many days') || 
+        lastAIMessage.includes('planning to travel') ||
+        conversationContext.lastQuestionKey === 'duration') {
+      console.log('📅 User answering duration question')
+      
+      // Look for duration patterns in context
+      const durationPatterns = [
+        /(\d+)\s*days?/i,
+        /(\d+)\s*weeks?/i,
+        /a\s+week/i,
+        /two\s+weeks?/i,
+        /three\s+weeks?/i
+      ]
+      
+      for (const pattern of durationPatterns) {
+        const match = lowerMessage.match(pattern)
+        if (match) {
+          let days = parseInt(match[1]) || 0
+          if (match[0].includes('week')) {
+            days = days || 1
+            days *= 7
+          }
+          if (match[0].includes('a week')) days = 7
+          if (match[0].includes('two weeks')) days = 14
+          if (match[0].includes('three weeks')) days = 21
+          
+          if (days > 0) {
+            contextualInfo.duration = days
+            contextualInfo.durationConfidence = 'high'
+          }
+          break
+        }
+      }
+    }
+    
+    // Budget context
+    if (lastAIMessage.includes('budget') || 
+        lastAIMessage.includes('What\\'s your total budget') ||
+        conversationContext.lastQuestionKey === 'budget') {
+      console.log('💰 User answering budget question')
+      
+      // Enhanced budget extraction
+      const budgetPatterns = [
+        /[£$€]?(\d+(?:,\d{3})*(?:\.\d{2})?)/,
+        /(\d+)\s*thousand/i,
+        /(\d+)k\b/i
+      ]
+      
+      for (const pattern of budgetPatterns) {
+        const match = lowerMessage.match(pattern)
+        if (match) {
+          let budget = parseInt(match[1].replace(/,/g, ''))
+          if (match[0].includes('thousand') || match[0].includes('k')) {
+            budget *= 1000
+          }
+          if (budget > 100) {
+            contextualInfo.budget = budget
+            contextualInfo.budgetConfidence = 'high'
+          }
+          break
+        }
+      }
+    }
+    
+    // Travelers context
+    if (lastAIMessage.includes('How many people') || 
+        lastAIMessage.includes('will be traveling') ||
+        conversationContext.lastQuestionKey === 'travelers') {
+      console.log('👥 User answering travelers question')
+      
+      if (lowerMessage.includes('just me') || lowerMessage.includes('myself') || lowerMessage.includes('solo')) {
+        contextualInfo.travelers = 1
+        contextualInfo.travelersConfidence = 'high'
+      } else {
+        const numberMatch = lowerMessage.match(/(\d+)/)
+        if (numberMatch) {
+          contextualInfo.travelers = parseInt(numberMatch[1])
+          contextualInfo.travelersConfidence = 'high'
+        }
+      }
+    }
+    
+    // Accommodation context
+    if (lastAIMessage.includes('accommodation') || 
+        lastAIMessage.includes('type of accommodation') ||
+        conversationContext.lastQuestionKey === 'accommodationType') {
+      console.log('🏨 User answering accommodation question')
+      
+      const accomTypes = ['hotel', 'resort', 'boutique', 'luxury', 'budget', 'hostel', 'apartment', 'villa', 'airbnb']
+      for (const type of accomTypes) {
+        if (lowerMessage.includes(type)) {
+          contextualInfo.accommodationType = type
+          contextualInfo.accommodationConfidence = 'high'
+          break
+        }
+      }
+    }
+    
+    // Travel dates context
+    if (lastAIMessage.includes('When are you planning') || 
+        lastAIMessage.includes('travel date') ||
+        conversationContext.lastQuestionKey === 'dates') {
+      console.log('📅 User answering travel dates question')
+      
+      const months = ['january', 'february', 'march', 'april', 'may', 'june', 
+                     'july', 'august', 'september', 'october', 'november', 'december']
+      for (const month of months) {
+        if (lowerMessage.includes(month)) {
+          contextualInfo.dates = { month: month.charAt(0).toUpperCase() + month.slice(1) }
+          contextualInfo.datesConfidence = 'high'
+          break
+        }
+      }
+    }
+    
+    return contextualInfo
+  }
+
   // Function to extract information from user message
-  const extractTripInformation = (message: string) => {
+  const extractTripInformation = (message: string, contextualInfo?: any) => {
     const lowerMessage = message.toLowerCase()
     const updates: Partial<RequiredTripData> = {}
     const questionsUpdate: Partial<QuestionsAnswered> = {}
+
+    // First, use contextual information if available (high confidence)
+    if (contextualInfo) {
+      console.log('🎯 Using contextual information:', contextualInfo)
+      
+      if (contextualInfo.departureLocation && contextualInfo.departureLocationConfidence === 'high') {
+        updates.departureLocation = contextualInfo.departureLocation
+        questionsUpdate.departureLocation = true
+        console.log('✅ Departure location from context:', contextualInfo.departureLocation)
+      }
+      
+      if (contextualInfo.duration && contextualInfo.durationConfidence === 'high') {
+        updates.duration = contextualInfo.duration
+        questionsUpdate.duration = true
+        console.log('✅ Duration from context:', contextualInfo.duration)
+      }
+      
+      if (contextualInfo.budget && contextualInfo.budgetConfidence === 'high') {
+        updates.budget = contextualInfo.budget
+        questionsUpdate.budget = true
+        console.log('✅ Budget from context:', contextualInfo.budget)
+      }
+      
+      if (contextualInfo.travelers && contextualInfo.travelersConfidence === 'high') {
+        updates.travelers = contextualInfo.travelers
+        questionsUpdate.travelers = true
+        console.log('✅ Travelers from context:', contextualInfo.travelers)
+      }
+      
+      if (contextualInfo.accommodationType && contextualInfo.accommodationConfidence === 'high') {
+        updates.accommodationType = contextualInfo.accommodationType
+        questionsUpdate.accommodationType = true
+        console.log('✅ Accommodation from context:', contextualInfo.accommodationType)
+      }
+      
+      if (contextualInfo.dates && contextualInfo.datesConfidence === 'high') {
+        updates.dates = contextualInfo.dates
+        questionsUpdate.dates = true
+        console.log('✅ Dates from context:', contextualInfo.dates)
+      }
+    }
 
     // Extract destination - enhanced to capture more specific places
     const destinations = ['italy', 'japan', 'france', 'spain', 'thailand', 'greece', 'germany', 'uk', 'usa', 'canada', 'australia', 'rome', 'tokyo', 'paris', 'london', 'new york', 'bangkok', 'punta cana', 'cancun', 'bali', 'santorini', 'mykonos', 'ibiza', 'maldives', 'seychelles', 'fiji', 'hawaii', 'miami', 'las vegas', 'dubai', 'singapore', 'hong kong', 'barcelona', 'amsterdam', 'berlin', 'vienna', 'prague', 'budapest', 'stockholm', 'copenhagen', 'oslo', 'lisbon', 'madrid', 'florence', 'venice', 'milan', 'naples', 'sicily', 'sardinia', 'corsica', 'crete', 'rhodes', 'cyprus', 'malta', 'iceland', 'ireland', 'scotland', 'wales', 'morocco', 'egypt', 'turkey', 'croatia', 'montenegro', 'albania', 'bosnia', 'serbia', 'romania', 'bulgaria', 'poland', 'lithuania', 'latvia', 'estonia']
@@ -421,7 +631,24 @@ export default function PlannerPage() {
     return Object.values(questionsAnswered).every(answered => answered)
   }
 
-  const generateAIResponse = async (userMessage: string): Promise<string> => {
+  // Helper function to determine expected answer type for a question
+  const getExpectedAnswerType = (questionKey: string): string => {
+    const answerTypes: Record<string, string> = {
+      'destination': 'place_name',
+      'duration': 'number_days',
+      'budget': 'currency_amount',
+      'travelers': 'number_people',
+      'departureLocation': 'city_name',
+      'dates': 'month_or_date',
+      'accommodationType': 'accommodation_preference',
+      'foodPreferences': 'food_type',
+      'activities': 'activity_types',
+      'pace': 'travel_pace'
+    }
+    return answerTypes[questionKey] || 'general'
+  }
+
+  const generateAIResponse = async (userMessage: string, currentMessages?: Message[]): Promise<string> => {
     try {
       console.log('🔄 Processing user message:', userMessage)
       
@@ -457,9 +684,14 @@ export default function PlannerPage() {
       
       console.log('✅ AI response generated successfully')
       
-      // Extract information from the user's message
-      const { updates, questionsUpdate } = extractTripInformation(userMessage)
-      console.log('📝 Extracted info:', { updates, questionsUpdate })
+      // Analyze conversation context first
+      const messagesToAnalyze = currentMessages || messages
+      const contextualInfo = analyzeConversationContext(userMessage, messagesToAnalyze)
+      console.log('🧠 Contextual analysis:', contextualInfo)
+      
+      // Extract information from the user's message using contextual understanding
+      const { updates, questionsUpdate } = extractTripInformation(userMessage, contextualInfo)
+      console.log('📝 Extracted info with context:', { updates, questionsUpdate })
       
       // Build acknowledgment response for any new information provided
       let acknowledgments: string[] = []
@@ -581,6 +813,25 @@ export default function PlannerPage() {
       const nextQuestion = QUESTIONS.find(q => !updatedQuestionsAnswered[q.key as keyof QuestionsAnswered])
       
       if (nextQuestion) {
+        // Track the question being asked for context
+        console.log('❓ Asking question:', nextQuestion.key, nextQuestion.question)
+        
+        // Update conversation context
+        setConversationContext(prev => ({
+          ...prev,
+          lastQuestionAsked: nextQuestion.question,
+          lastQuestionKey: nextQuestion.key,
+          expectedAnswerType: getExpectedAnswerType(nextQuestion.key),
+          conversationHistory: [
+            ...prev.conversationHistory,
+            {
+              question: nextQuestion.question,
+              questionKey: nextQuestion.key,
+              timestamp: new Date()
+            }
+          ]
+        }))
+        
         const ackText = acknowledgments.length > 0 ? acknowledgments.join(' ') + '\\n\\n' : ''
         return `${ackText}${nextQuestion.question}`
       }
@@ -643,10 +894,12 @@ export default function PlannerPage() {
       let questionsUpdate = {}
       
       if (!waitingForConfirmation || (!lowerMessage.includes('yes') && !lowerMessage.includes('create') && !lowerMessage.includes('proceed'))) {
-        const extractedInfo = extractTripInformation(messageText)
+        // Analyze context first
+        const contextualInfo = analyzeConversationContext(messageText, messages)
+        const extractedInfo = extractTripInformation(messageText, contextualInfo)
         updates = extractedInfo.updates
         questionsUpdate = extractedInfo.questionsUpdate
-        console.log('📝 Updating state with:', { updates, questionsUpdate })
+        console.log('📝 Updating state with contextual info:', { updates, questionsUpdate, contextualInfo })
       }
       
       // Update the trip data state
@@ -665,9 +918,28 @@ export default function PlannerPage() {
       // Update questions answered state
       if (Object.keys(questionsUpdate).length > 0) {
         setQuestionsAnswered(prev => ({ ...prev, ...questionsUpdate }))
+        
+        // Update conversation context with user's answer
+        setConversationContext(prev => {
+          const updatedHistory = prev.conversationHistory.map(item => {
+            // Find the most recent unanswered question that matches what was just answered
+            if (!item.answer) {
+              const answeredKeys = Object.keys(questionsUpdate)
+              if (answeredKeys.some(key => item.questionKey === key)) {
+                return { ...item, answer: messageText }
+              }
+            }
+            return item
+          })
+          
+          return {
+            ...prev,
+            conversationHistory: updatedHistory
+          }
+        })
       }
       
-      const aiResponse = await generateAIResponse(messageText)
+      const aiResponse = await generateAIResponse(messageText, messages)
       console.log('✅ AI response generated successfully:', aiResponse.substring(0, 100) + '...')
       
       // Remove typing indicator and add actual response
