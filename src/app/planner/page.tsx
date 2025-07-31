@@ -1376,7 +1376,7 @@ export default function PlannerPage() {
     }
   }
 
-  const generateAIResponse = async (userMessage: string, currentMessages?: Message[]): Promise<string> => {
+  const generateAIResponse = async (userMessage: string, currentMessages?: Message[], preExtractedData?: { updates: any, questionsUpdate: any }): Promise<string> => {
     try {
       console.log('🔄 Processing user message:', userMessage)
       
@@ -1419,14 +1419,25 @@ export default function PlannerPage() {
       
       console.log('✅ AI response generated successfully')
       
-      // Analyze conversation context first
-      const messagesToAnalyze = currentMessages || messages
-      const contextualInfo = analyzeConversationContext(userMessage, messagesToAnalyze)
-      console.log('🧠 Contextual analysis:', contextualInfo)
+      // Use pre-extracted data if available, otherwise extract fresh
+      let updates, questionsUpdate
       
-      // Extract information from the user's message using contextual understanding
-      const { updates, questionsUpdate } = extractTripInformation(userMessage, contextualInfo)
-      console.log('📝 Extracted info with context:', { updates, questionsUpdate })
+      if (preExtractedData) {
+        updates = preExtractedData.updates
+        questionsUpdate = preExtractedData.questionsUpdate
+        console.log('🔄 Using pre-extracted data:', { updates, questionsUpdate })
+      } else {
+        // Analyze conversation context first
+        const messagesToAnalyze = currentMessages || messages
+        const contextualInfo = analyzeConversationContext(userMessage, messagesToAnalyze)
+        console.log('🧠 Contextual analysis:', contextualInfo)
+        
+        // Extract information from the user's message using contextual understanding
+        const extracted = extractTripInformation(userMessage, contextualInfo)
+        updates = extracted.updates
+        questionsUpdate = extracted.questionsUpdate
+        console.log('📝 Extracted info with context:', { updates, questionsUpdate })
+      }
       
       // Build acknowledgment response for any new information provided
       let acknowledgments: string[] = []
@@ -1552,6 +1563,12 @@ export default function PlannerPage() {
       // Get the next question to ask
       const nextQuestion = QUESTIONS.find(q => !updatedQuestionsAnswered[q.key as keyof QuestionsAnswered])
       
+      console.log('📊 Question status check:', {
+        questionsAnswered: updatedQuestionsAnswered,
+        nextQuestionKey: nextQuestion?.key,
+        allQuestionsAnswered: Object.values(updatedQuestionsAnswered).every(answered => answered)
+      })
+      
       if (nextQuestion) {
         // Track the question being asked for context
         console.log('❓ Asking question:', nextQuestion.key, nextQuestion.question)
@@ -1640,6 +1657,12 @@ export default function PlannerPage() {
         updates = extractedInfo.updates
         questionsUpdate = extractedInfo.questionsUpdate
         console.log('📝 Updating state with contextual info:', { updates, questionsUpdate, contextualInfo })
+        
+        // Research destination if found
+        if (questionsUpdate.destination && updates.destination) {
+          console.log('🔍 Triggering destination research for:', updates.destination)
+          // This will be handled in generateAIResponse, but ensure it happens
+        }
       }
       
       // Update the trip data state
@@ -1679,7 +1702,7 @@ export default function PlannerPage() {
         })
       }
       
-      const aiResponse = await generateAIResponse(messageText, messages)
+      const aiResponse = await generateAIResponse(messageText, messages, { updates, questionsUpdate })
       console.log('✅ AI response generated successfully:', aiResponse.substring(0, 100) + '...')
       
       // Remove typing indicator and add actual response
