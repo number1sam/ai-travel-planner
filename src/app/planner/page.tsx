@@ -195,6 +195,10 @@ export default function PlannerPage() {
     pace: false
   })
 
+  // Track if we've asked for plan confirmation
+  const [hasAskedForConfirmation, setHasAskedForConfirmation] = useState(false)
+  const [waitingForConfirmation, setWaitingForConfirmation] = useState(false)
+
   const [requiredTripData, setRequiredTripData] = useState<Partial<RequiredTripData>>({
     destination: '',
     duration: 0,
@@ -384,6 +388,22 @@ export default function PlannerPage() {
         return "I didn't receive any message from you. What would you like to tell me about your trip?"
       }
       
+      const lowerMessage = userMessage.toLowerCase()
+      
+      // Handle confirmation responses when waiting for plan confirmation
+      if (waitingForConfirmation) {
+        if (lowerMessage.includes('yes') || lowerMessage.includes('create') || lowerMessage.includes('proceed') || lowerMessage.includes('go ahead')) {
+          // User wants to create the plan
+          return `🎉 Excellent! I'm creating your personalized ${requiredTripData.duration}-day adventure to ${requiredTripData.destination} for ${requiredTripData.travelers} ${requiredTripData.travelers === 1 ? 'traveler' : 'travelers'} with your £${requiredTripData.budget?.toLocaleString()} budget.\\n\\nI'll include the best hotels, activities, dining experiences, and create a day-by-day itinerary that matches all your preferences. This will appear in the panel on the right once it's ready!\\n\\n✨ Creating your itinerary now...`
+        } else if (lowerMessage.includes('no') || lowerMessage.includes('wait') || lowerMessage.includes('more info') || lowerMessage.includes('additional')) {
+          // User wants to provide more information
+          return "Of course! What additional information would you like to share? You can tell me about:\\n\\n• Specific places you want to visit\\n• Types of cuisine you'd like to try\\n• Special occasions or celebrations\\n• Accessibility needs\\n• Any other preferences or requirements\\n\\nJust let me know what's on your mind!"
+        } else {
+          // User's response is unclear
+          return "I'd love to help! Would you like me to:\\n\\n✅ **Create your travel plan** based on the information we've discussed?\\n\\n📝 **Gather more details** - if you have additional preferences to share?\\n\\nJust let me know which you'd prefer!"
+        }
+      }
+      
       // Simulate AI processing
       await new Promise(resolve => setTimeout(resolve, 1000))
       
@@ -445,9 +465,13 @@ export default function PlannerPage() {
       const updatedQuestionsAnswered = { ...questionsAnswered, ...questionsUpdate }
       const willBeComplete = Object.values(updatedQuestionsAnswered).every(answered => answered)
       
-      if (willBeComplete) {
+      if (willBeComplete && !hasAskedForConfirmation) {
         const ackText = acknowledgments.length > 0 ? acknowledgments.join(' ') + '\\n\\n' : ''
-        return `${ackText}🎉 Perfect! I now have all the information I need to create your amazing trip itinerary!\\n\\nLet me put together a personalized ${updates.duration || requiredTripData.duration}-day adventure to ${updates.destination || requiredTripData.destination} for ${updates.travelers || requiredTripData.travelers} ${(updates.travelers || requiredTripData.travelers) === 1 ? 'traveler' : 'travelers'} with your £${(updates.budget || requiredTripData.budget)?.toLocaleString()} budget.\\n\\nI'll include the best hotels, activities, dining experiences, and create a day-by-day itinerary that matches your preferences. This will appear in the panel on the right once it's ready!\\n\\n✨ Creating your itinerary now...`
+        // Set flags for confirmation flow
+        setHasAskedForConfirmation(true)
+        setWaitingForConfirmation(true)
+        
+        return `${ackText}🎉 Perfect! I now have all the information I need to create your amazing trip itinerary!\\n\\n**Here's what I've gathered:**\\n• Destination: ${updates.destination || requiredTripData.destination}\\n• Duration: ${updates.duration || requiredTripData.duration} days\\n• Travelers: ${updates.travelers || requiredTripData.travelers}\\n• Budget: £${(updates.budget || requiredTripData.budget)?.toLocaleString()}\\n• Departure: ${updates.departureLocation || requiredTripData.departureLocation}\\n• Travel month: ${updates.dates?.month || requiredTripData.dates?.month}\\n\\n**Ready to proceed?**\\n\\n✅ **Yes, create my travel plan!** - I'll design your perfect itinerary\\n\\n📝 **Wait, I have more details to share** - Tell me what else you'd like to add\\n\\nWhat would you like to do?`
       }
       
       // Get the next question to ask
@@ -497,9 +521,30 @@ export default function PlannerPage() {
     try {
       console.log('🤖 Starting AI response generation for:', messageText)
       
-      // Extract information from user message and update state
-      const { updates, questionsUpdate } = extractTripInformation(messageText)
-      console.log('📝 Updating state with:', { updates, questionsUpdate })
+      const lowerMessage = messageText.toLowerCase()
+      
+      // Handle confirmation responses
+      if (waitingForConfirmation) {
+        if (lowerMessage.includes('yes') || lowerMessage.includes('create') || lowerMessage.includes('proceed') || lowerMessage.includes('go ahead')) {
+          // User confirmed - stop waiting for confirmation
+          setWaitingForConfirmation(false)
+        } else if (lowerMessage.includes('no') || lowerMessage.includes('wait') || lowerMessage.includes('more info') || lowerMessage.includes('additional')) {
+          // User wants to add more info - reset confirmation state
+          setWaitingForConfirmation(false)
+          setHasAskedForConfirmation(false)
+        }
+      }
+      
+      // Extract information from user message and update state (only if not just confirming)
+      let updates = {}
+      let questionsUpdate = {}
+      
+      if (!waitingForConfirmation || (!lowerMessage.includes('yes') && !lowerMessage.includes('create') && !lowerMessage.includes('proceed'))) {
+        const extractedInfo = extractTripInformation(messageText)
+        updates = extractedInfo.updates
+        questionsUpdate = extractedInfo.questionsUpdate
+        console.log('📝 Updating state with:', { updates, questionsUpdate })
+      }
       
       // Update the trip data state
       if (Object.keys(updates).length > 0) {
