@@ -407,6 +407,127 @@ export default function PlannerPage() {
       }
     }
     
+    // Food preferences context - ENHANCED
+    if (lastAIMessage.includes('food preferences') || 
+        lastAIMessage.includes('dietary requirements') ||
+        lastAIMessage.includes('excited to try local cuisine') ||
+        lastAIMessage.includes('prefer familiar foods') ||
+        conversationContext.lastQuestionKey === 'foodPreferences') {
+      console.log('🍽️ User answering food preferences question')
+      
+      // Enhanced food preference extraction
+      const foodIndicators = [
+        // Positive responses to local cuisine
+        /local|traditional|authentic|everything|anything|excited|love.*food|try.*new|adventurous|open.*mind/i,
+        // Dietary restrictions
+        /vegetarian|vegan|gluten.*free|dairy.*free|nut.*allerg|kosher|halal|pescatarian/i,
+        // Cuisine types
+        /italian|chinese|indian|mexican|japanese|thai|french|mediterranean|asian|european/i,
+        // General preferences
+        /familiar|picky|not.*adventurous|simple|basic|western|comfort.*food/i,
+        // Explicit answers
+        /no.*preference|anything.*fine|not.*picky|flexible|whatever|sure|yes|okay/i
+      ]
+      
+      let foundFoodPref = false
+      const foodPrefs = []
+      
+      for (const pattern of foodIndicators) {
+        if (pattern.test(lowerMessage)) {
+          foundFoodPref = true
+          
+          // Categorize the response
+          if (/local|traditional|authentic|excited|adventurous|try.*new|open.*mind/.test(lowerMessage)) {
+            foodPrefs.push('local cuisine')
+          }
+          if (/vegetarian/.test(lowerMessage)) {
+            foodPrefs.push('vegetarian')
+          }
+          if (/vegan/.test(lowerMessage)) {
+            foodPrefs.push('vegan')
+          }
+          if (/gluten.*free/.test(lowerMessage)) {
+            foodPrefs.push('gluten-free')
+          }
+          if (/familiar|western|comfort/.test(lowerMessage)) {
+            foodPrefs.push('familiar foods')
+          }
+          if (/no.*preference|anything.*fine|flexible|whatever/.test(lowerMessage)) {
+            foodPrefs.push('no restrictions')
+          }
+          
+          break
+        }
+      }
+      
+      // If any food-related response detected or it's a general positive response
+      if (foundFoodPref || 
+          /^(yes|yeah|sure|okay|ok|fine|good|sounds good|that works|no problem)$/i.test(lowerMessage.trim()) ||
+          lowerMessage.length < 20) { // Short responses likely answering the question
+        
+        contextualInfo.foodPreferences = foodPrefs.length > 0 ? foodPrefs : ['open to trying local cuisine']
+        contextualInfo.foodPreferencesConfidence = 'high'
+        console.log('✅ Food preferences extracted:', contextualInfo.foodPreferences)
+      }
+    }
+    
+    // Activities context - ENHANCED  
+    if (lastAIMessage.includes('type of activities') || 
+        lastAIMessage.includes('Cultural sites, outdoor adventures') ||
+        lastAIMessage.includes('interest you most') ||
+        conversationContext.lastQuestionKey === 'activities') {
+      console.log('🎯 User answering activities question')
+      
+      const activityTypes = [
+        'cultural', 'culture', 'museums', 'history', 'historical', 'art', 'galleries',
+        'outdoor', 'adventure', 'hiking', 'nature', 'beach', 'water sports', 'diving',
+        'relaxation', 'spa', 'wellness', 'peaceful', 'quiet', 'chill',
+        'nightlife', 'bars', 'clubs', 'party', 'dancing', 'entertainment',
+        'shopping', 'markets', 'boutiques', 'souvenirs',
+        'food', 'restaurants', 'dining', 'cuisine', 'cooking',
+        'everything', 'mix', 'variety', 'all', 'bit of everything'
+      ]
+      
+      const foundActivities = []
+      for (const activity of activityTypes) {
+        if (lowerMessage.includes(activity)) {
+          if (!foundActivities.includes(activity)) {
+            foundActivities.push(activity)
+          }
+        }
+      }
+      
+      // Also accept short positive responses
+      if (foundActivities.length > 0 || 
+          /^(yes|everything|all|mix|variety|whatever|anything|sure|sounds good)$/i.test(lowerMessage.trim())) {
+        contextualInfo.activities = foundActivities.length > 0 ? foundActivities : ['variety of activities']
+        contextualInfo.activitiesConfidence = 'high'
+        console.log('✅ Activities extracted:', contextualInfo.activities)
+      }
+    }
+    
+    // Pace context - ENHANCED
+    if (lastAIMessage.includes('What pace do you prefer') || 
+        lastAIMessage.includes('Fast-paced with lots of activities') ||
+        lastAIMessage.includes('relaxed with plenty of downtime') ||
+        conversationContext.lastQuestionKey === 'pace') {
+      console.log('⚡ User answering pace question')
+      
+      if (/fast|busy|packed|lots.*activit|action|energetic|full.*schedule/i.test(lowerMessage)) {
+        contextualInfo.pace = 'fast-paced'
+        contextualInfo.paceConfidence = 'high'
+      } else if (/relax|slow|leisure|peaceful|calm|easy|downtime|rest/i.test(lowerMessage)) {
+        contextualInfo.pace = 'relaxed'
+        contextualInfo.paceConfidence = 'high'
+      } else if (/balanc|mix|medium|moderate|bit.*both|some.*each/i.test(lowerMessage)) {
+        contextualInfo.pace = 'balanced'
+        contextualInfo.paceConfidence = 'high'
+      } else if (/^(whatever|anything|sure|okay|fine|good)$/i.test(lowerMessage.trim())) {
+        contextualInfo.pace = 'balanced'
+        contextualInfo.paceConfidence = 'high'
+      }
+    }
+    
     return contextualInfo
   }
 
@@ -454,6 +575,24 @@ export default function PlannerPage() {
         updates.dates = contextualInfo.dates
         questionsUpdate.dates = true
         console.log('✅ Dates from context:', contextualInfo.dates)
+      }
+      
+      if (contextualInfo.foodPreferences && contextualInfo.foodPreferencesConfidence === 'high') {
+        updates.foodPreferences = contextualInfo.foodPreferences
+        questionsUpdate.foodPreferences = true
+        console.log('✅ Food preferences from context:', contextualInfo.foodPreferences)
+      }
+      
+      if (contextualInfo.activities && contextualInfo.activitiesConfidence === 'high') {
+        updates.activities = contextualInfo.activities
+        questionsUpdate.activities = true
+        console.log('✅ Activities from context:', contextualInfo.activities)
+      }
+      
+      if (contextualInfo.pace && contextualInfo.paceConfidence === 'high') {
+        updates.pace = contextualInfo.pace
+        questionsUpdate.pace = true
+        console.log('✅ Pace from context:', contextualInfo.pace)
       }
     }
 
@@ -771,6 +910,11 @@ export default function PlannerPage() {
       if (questionsUpdate.accommodationType && updates.accommodationType) {
         const question = QUESTIONS.find(q => q.key === 'accommodationType')
         acknowledgments.push(question?.followUp(updates.accommodationType) || `${updates.accommodationType} - noted!`)
+      }
+      
+      if (questionsUpdate.foodPreferences && updates.foodPreferences && updates.foodPreferences.length > 0) {
+        const question = QUESTIONS.find(q => q.key === 'foodPreferences')
+        acknowledgments.push(question?.followUp(updates.foodPreferences.join(', ')) || `Great food preferences noted! I'll make sure your dining experiences align with ${updates.foodPreferences.join(', ')}.`)
       }
       
       if (questionsUpdate.activities && updates.activities && updates.activities.length > 0) {
