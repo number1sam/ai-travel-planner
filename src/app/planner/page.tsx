@@ -1,0 +1,734 @@
+'use client'
+
+import { useState, useEffect, useRef } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Send, Save, Check, MapPin, Calendar, DollarSign, Users, Plane, Hotel, Camera, Coffee } from 'lucide-react'
+import ChatInterface from '@/components/planner/ChatInterface'
+import ItineraryPreview from '@/components/planner/ItineraryPreview'
+
+interface Message {
+  id: string
+  text: string
+  sender: 'user' | 'ai'
+  timestamp: Date
+  isTyping?: boolean
+}
+
+interface TripDetails {
+  destination: string
+  startDate: string
+  endDate: string
+  budget: number
+  travelers: number
+  departureLocation: string
+  accommodationType: string
+  foodPreferences: string[]
+  activities: string[]
+  accessibility: string[]
+}
+
+interface ItineraryDay {
+  id: string
+  date: string
+  flight?: {
+    airline: string
+    flightNumber: string
+    departure: string
+    arrival: string
+    duration: string
+    price: number
+  }
+  hotel?: {
+    name: string
+    rating: number
+    location: string
+    amenities: string[]
+    pricePerNight: number
+  }
+  activities: Array<{
+    id: string
+    name: string
+    type: string
+    description: string
+    duration: string
+    price: number
+    location: string
+    rating: number
+    timeSlot: 'morning' | 'afternoon' | 'evening'
+  }>
+}
+
+const suggestedPrompts = [
+  "I want to go to Italy for a week",
+  "Plan a trip to Japan with £3000 budget",
+  "Show me European destinations under £2000",
+  "I need a relaxing beach vacation",
+  "Adventure trip for 2 people to Thailand"
+]
+
+// Required trip information that needs to be collected
+interface RequiredTripData {
+  destination: string
+  duration: number // in days
+  budget: number
+  travelers: number
+  departureLocation: string
+  dates: {
+    month: string
+    startDate?: string
+    endDate?: string
+  }
+  accommodationType: string
+  foodPreferences: string[]
+  activities: string[]
+  pace: string // fast-paced, relaxed, balanced
+}
+
+// Questions tracking - what has been answered
+interface QuestionsAnswered {
+  destination: boolean
+  duration: boolean
+  budget: boolean
+  travelers: boolean
+  departureLocation: boolean
+  dates: boolean
+  accommodationType: boolean
+  foodPreferences: boolean
+  activities: boolean
+  pace: boolean
+}
+
+// Question definitions with smart asking logic
+const QUESTIONS = [
+  {
+    key: 'destination',
+    question: "Where would you like to go? I can help you plan trips to amazing places like Italy, Japan, France, Spain, Thailand, and many more!",
+    followUp: (destination: string) => `${destination} is a fantastic choice! I'll help you create an amazing itinerary there.`
+  },
+  {
+    key: 'duration',
+    question: "How many days are you planning to travel? This helps me create the perfect pace for your trip.",
+    followUp: (duration: number) => `Perfect! ${duration} days will give us great flexibility to create an amazing itinerary.`
+  },
+  {
+    key: 'budget',
+    question: "What's your total budget for this trip? This helps me recommend the best hotels, activities, and dining options for you.",
+    followUp: (budget: number) => `Great! With £${budget.toLocaleString()}, I can create a wonderful experience that fits your budget.`
+  },
+  {
+    key: 'travelers',
+    question: "How many people will be traveling? Just yourself, or will others be joining you?",
+    followUp: (travelers: number) => `Got it! Planning for ${travelers} ${travelers === 1 ? 'traveler' : 'travelers'}.`
+  },
+  {
+    key: 'departureLocation',
+    question: "Where will you be departing from? Just tell me your city or airport (e.g., London, New York, Manchester).",
+    followUp: (location: string) => `Perfect! I'll plan your journey starting from ${location}.`
+  },
+  {
+    key: 'dates',
+    question: "When are you planning to travel? Even just the month would be helpful for planning seasonal activities and pricing.",
+    followUp: (month: string) => `Excellent! ${month} is a great time to travel. I'll factor in the seasonal highlights.`
+  },
+  {
+    key: 'accommodationType',
+    question: "What type of accommodation do you prefer? Hotels, boutique stays, luxury resorts, or budget-friendly options?",
+    followUp: (type: string) => `${type} accommodations - great choice! I'll find the perfect places for you to stay.`
+  },
+  {
+    key: 'foodPreferences',
+    question: "Do you have any food preferences or dietary requirements? Are you excited to try local cuisine, or do you prefer familiar foods?",
+    followUp: (prefs: string) => `Noted! I'll make sure your dining experiences align with your preferences.`
+  },
+  {
+    key: 'activities',
+    question: "What type of activities interest you most? Cultural sites, outdoor adventures, relaxation, nightlife, shopping, or a mix of everything?",
+    followUp: (activities: string) => `${activities} - that sounds amazing! I'll include the best experiences along those lines.`
+  },
+  {
+    key: 'pace',
+    question: "What pace do you prefer for your trip? Fast-paced with lots of activities, relaxed with plenty of downtime, or a balanced mix?",
+    followUp: (pace: string) => `A ${pace} pace it is! I'll structure your itinerary accordingly.`
+  }
+]
+
+export default function PlannerPage() {
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: '1',
+      text: "Hello! I'm your AI travel assistant. I'll help you create the perfect trip by asking you a few questions.\n\nLet's start: Where would you like to go? I can help you plan trips to amazing places like Italy, Japan, France, Spain, Thailand, and many more!",
+      sender: 'ai',
+      timestamp: new Date()
+    }
+  ])
+
+  const [currentMessage, setCurrentMessage] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [tripDetails, setTripDetails] = useState<TripDetails>({
+    destination: '',
+    startDate: '',
+    endDate: '',
+    budget: 0,
+    travelers: 1,
+    departureLocation: '',
+    accommodationType: '',
+    foodPreferences: [],
+    activities: [],
+    accessibility: []
+  })
+
+  const [itinerary, setItinerary] = useState<ItineraryDay[]>([])
+  const [isDraftSaved, setIsDraftSaved] = useState(false)
+  const [availablePrompts, setAvailablePrompts] = useState<string[]>(suggestedPrompts.slice(0, 3))
+
+  // Question tracking state
+  const [questionsAnswered, setQuestionsAnswered] = useState<QuestionsAnswered>({
+    destination: false,
+    duration: false,
+    budget: false,
+    travelers: false,
+    departureLocation: false,
+    dates: false,
+    accommodationType: false,
+    foodPreferences: false,
+    activities: false,
+    pace: false
+  })
+
+  const [requiredTripData, setRequiredTripData] = useState<Partial<RequiredTripData>>({
+    destination: '',
+    duration: 0,
+    budget: 0,
+    travelers: 1,
+    departureLocation: '',
+    dates: { month: '' },
+    accommodationType: '',
+    foodPreferences: [],
+    activities: [],
+    pace: ''
+  })
+
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages])
+
+  // Function to extract information from user message
+  const extractTripInformation = (message: string) => {
+    const lowerMessage = message.toLowerCase()
+    const updates: Partial<RequiredTripData> = {}
+    const questionsUpdate: Partial<QuestionsAnswered> = {}
+
+    // Extract destination
+    const destinations = ['italy', 'japan', 'france', 'spain', 'thailand', 'greece', 'germany', 'uk', 'usa', 'canada', 'australia', 'rome', 'tokyo', 'paris', 'london', 'new york', 'bangkok']
+    for (const dest of destinations) {
+      if (lowerMessage.includes(dest)) {
+        updates.destination = dest.charAt(0).toUpperCase() + dest.slice(1)
+        questionsUpdate.destination = true
+        break
+      }
+    }
+
+    // Extract duration
+    const durationMatch = lowerMessage.match(/(\d+)\s*(day|days|week|weeks)/i)
+    if (durationMatch) {
+      let days = parseInt(durationMatch[1])
+      if (durationMatch[2].toLowerCase().includes('week')) {
+        days *= 7
+      }
+      updates.duration = days
+      questionsUpdate.duration = true
+    }
+
+    // Extract budget
+    const budgetMatch = lowerMessage.match(/[£$€]?(\d+(?:,\d{3})*(?:\.\d{2})?)/i)
+    if (budgetMatch) {
+      const budget = parseInt(budgetMatch[1].replace(/,/g, ''))
+      if (budget > 100) { // Assume amounts over 100 are budgets
+        updates.budget = budget
+        questionsUpdate.budget = true
+      }
+    }
+
+    // Extract number of travelers
+    const travelersMatch = lowerMessage.match(/(\d+)\s*(people|person|traveler|travelers|passenger|passengers)/i)
+    if (travelersMatch) {
+      updates.travelers = parseInt(travelersMatch[1])
+      questionsUpdate.travelers = true
+    } else if (lowerMessage.includes('just me') || lowerMessage.includes('myself') || lowerMessage.includes('solo')) {
+      updates.travelers = 1
+      questionsUpdate.travelers = true
+    }
+
+    // Extract departure location - multiple strategies
+    let foundDeparture = false
+    
+    // Strategy 1: Common departure patterns
+    const departurePatterns = [
+      /(?:from|departing from|leaving from|starting from)\s+([a-z\s,]+?)(?:\s+(?:to|for|in|on)|$)/i,
+      /(?:^|\s)([a-z\s,]+?)(?:\s+to\s+)/i, // "London to Paris" pattern
+      /(?:i'm in|i live in|based in|located in)\s+([a-z\s,]+)/i
+    ]
+    
+    for (const pattern of departurePatterns) {
+      const match = lowerMessage.match(pattern)
+      if (match && match[1]) {
+        const location = match[1].trim()
+        // Filter out destination words
+        if (!['italy', 'japan', 'france', 'spain', 'thailand', 'want', 'like', 'need', 'days', 'week', 'people', 'budget'].includes(location.toLowerCase())) {
+          updates.departureLocation = location
+          questionsUpdate.departureLocation = true
+          foundDeparture = true
+          break
+        }
+      }
+    }
+    
+    // Strategy 2: If no departure found yet, check for common city names (when user gives simple answer)
+    if (!foundDeparture) {
+      const commonCities = ['london', 'manchester', 'birmingham', 'liverpool', 'leeds', 'bristol', 'cardiff', 'edinburgh', 'glasgow', 'belfast', 'dublin', 'new york', 'los angeles', 'chicago', 'boston', 'miami', 'toronto', 'vancouver', 'sydney', 'melbourne', 'paris', 'madrid', 'berlin', 'amsterdam', 'brussels']
+      const trimmedMessage = lowerMessage.trim()
+      
+      for (const city of commonCities) {
+        if (trimmedMessage === city || trimmedMessage === city + ' airport') {
+          updates.departureLocation = city.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
+          questionsUpdate.departureLocation = true
+          foundDeparture = true
+          break
+        }
+      }
+    }
+    
+    // Strategy 3: If still no departure and message is short and looks like a city name
+    if (!foundDeparture && lowerMessage.trim().length > 2 && lowerMessage.trim().length < 20 && !lowerMessage.includes(' ')) {
+      // Simple word that could be a city name
+      const potentialCity = lowerMessage.trim()
+      if (!['italy', 'japan', 'france', 'spain', 'thailand', 'want', 'like', 'need', 'days', 'week', 'people', 'budget', 'yes', 'no', 'maybe'].includes(potentialCity)) {
+        updates.departureLocation = potentialCity.charAt(0).toUpperCase() + potentialCity.slice(1)
+        questionsUpdate.departureLocation = true
+      }
+    }
+
+    // Extract dates/months
+    const months = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december']
+    for (const month of months) {
+      if (lowerMessage.includes(month)) {
+        updates.dates = { month: month.charAt(0).toUpperCase() + month.slice(1) }
+        questionsUpdate.dates = true
+        break
+      }
+    }
+
+    // Extract accommodation preferences
+    const accomTypes = ['hotel', 'resort', 'boutique', 'luxury', 'budget', 'hostel', 'apartment', 'villa']
+    for (const type of accomTypes) {
+      if (lowerMessage.includes(type)) {
+        updates.accommodationType = type
+        questionsUpdate.accommodationType = true
+        break
+      }
+    }
+
+    // Extract activity preferences
+    const activities = ['culture', 'adventure', 'relaxation', 'nightlife', 'shopping', 'food', 'nature', 'history', 'art', 'museums']
+    const foundActivities = activities.filter(activity => lowerMessage.includes(activity))
+    if (foundActivities.length > 0) {
+      updates.activities = foundActivities
+      questionsUpdate.activities = true
+    }
+
+    // Extract pace preferences
+    if (lowerMessage.includes('fast-paced') || lowerMessage.includes('busy') || lowerMessage.includes('packed')) {
+      updates.pace = 'fast-paced'
+      questionsUpdate.pace = true
+    } else if (lowerMessage.includes('relaxed') || lowerMessage.includes('slow') || lowerMessage.includes('leisurely')) {
+      updates.pace = 'relaxed'
+      questionsUpdate.pace = true
+    } else if (lowerMessage.includes('balanced') || lowerMessage.includes('mix')) {
+      updates.pace = 'balanced'
+      questionsUpdate.pace = true
+    }
+
+    return { updates, questionsUpdate }
+  }
+
+  // Function to get the next question to ask
+  const getNextQuestion = () => {
+    for (const question of QUESTIONS) {
+      if (!questionsAnswered[question.key as keyof QuestionsAnswered]) {
+        return question
+      }
+    }
+    return null // All questions answered
+  }
+
+  // Function to check if all required data is collected
+  const isDataComplete = () => {
+    return Object.values(questionsAnswered).every(answered => answered)
+  }
+
+  const generateAIResponse = async (userMessage: string): Promise<string> => {
+    try {
+      console.log('🔄 Processing user message:', userMessage)
+      
+      // Add type safety check
+      if (typeof userMessage !== 'string') {
+        console.error('❌ generateAIResponse received non-string userMessage:', typeof userMessage, userMessage)
+        return "I'm sorry, I didn't receive your message properly. Could you please try typing your message again?"
+      }
+      
+      if (!userMessage || userMessage.trim() === '') {
+        console.warn('⚠️ generateAIResponse received empty message')
+        return "I didn't receive any message from you. What would you like to tell me about your trip?"
+      }
+      
+      // Simulate AI processing
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      console.log('✅ AI response generated successfully')
+      
+      // Extract information from the user's message
+      const { updates, questionsUpdate } = extractTripInformation(userMessage)
+      console.log('📝 Extracted info:', { updates, questionsUpdate })
+      
+      // Build acknowledgment response for any new information provided
+      let acknowledgments: string[] = []
+      
+      if (questionsUpdate.destination && updates.destination) {
+        const question = QUESTIONS.find(q => q.key === 'destination')
+        acknowledgments.push(question?.followUp(updates.destination) || `${updates.destination} - excellent choice!`)
+      }
+      
+      if (questionsUpdate.duration && updates.duration) {
+        const question = QUESTIONS.find(q => q.key === 'duration')
+        acknowledgments.push(question?.followUp(updates.duration) || `${updates.duration} days - perfect!`)
+      }
+      
+      if (questionsUpdate.budget && updates.budget) {
+        const question = QUESTIONS.find(q => q.key === 'budget')
+        acknowledgments.push(question?.followUp(updates.budget) || `£${updates.budget.toLocaleString()} budget noted!`)
+      }
+      
+      if (questionsUpdate.travelers && updates.travelers) {
+        const question = QUESTIONS.find(q => q.key === 'travelers')
+        acknowledgments.push(question?.followUp(updates.travelers) || `${updates.travelers} travelers - got it!`)
+      }
+      
+      if (questionsUpdate.departureLocation && updates.departureLocation) {
+        const question = QUESTIONS.find(q => q.key === 'departureLocation')
+        acknowledgments.push(question?.followUp(updates.departureLocation) || `Departing from ${updates.departureLocation}!`)
+      }
+      
+      if (questionsUpdate.dates && updates.dates?.month) {
+        const question = QUESTIONS.find(q => q.key === 'dates')
+        acknowledgments.push(question?.followUp(updates.dates.month) || `${updates.dates.month} - great timing!`)
+      }
+      
+      if (questionsUpdate.accommodationType && updates.accommodationType) {
+        const question = QUESTIONS.find(q => q.key === 'accommodationType')
+        acknowledgments.push(question?.followUp(updates.accommodationType) || `${updates.accommodationType} - noted!`)
+      }
+      
+      if (questionsUpdate.activities && updates.activities && updates.activities.length > 0) {
+        const question = QUESTIONS.find(q => q.key === 'activities')
+        acknowledgments.push(question?.followUp(updates.activities.join(', ')) || `${updates.activities.join(', ')} activities - sounds amazing!`)
+      }
+      
+      if (questionsUpdate.pace && updates.pace) {
+        const question = QUESTIONS.find(q => q.key === 'pace')
+        acknowledgments.push(question?.followUp(updates.pace) || `${updates.pace} pace - perfect!`)
+      }
+      
+      // Check if we can create the itinerary now
+      const updatedQuestionsAnswered = { ...questionsAnswered, ...questionsUpdate }
+      const willBeComplete = Object.values(updatedQuestionsAnswered).every(answered => answered)
+      
+      if (willBeComplete) {
+        const ackText = acknowledgments.length > 0 ? acknowledgments.join(' ') + '\\n\\n' : ''
+        return `${ackText}🎉 Perfect! I now have all the information I need to create your amazing trip itinerary!\\n\\nLet me put together a personalized ${updates.duration || requiredTripData.duration}-day adventure to ${updates.destination || requiredTripData.destination} for ${updates.travelers || requiredTripData.travelers} ${(updates.travelers || requiredTripData.travelers) === 1 ? 'traveler' : 'travelers'} with your £${(updates.budget || requiredTripData.budget)?.toLocaleString()} budget.\\n\\nI'll include the best hotels, activities, dining experiences, and create a day-by-day itinerary that matches your preferences. This will appear in the panel on the right once it's ready!\\n\\n✨ Creating your itinerary now...`
+      }
+      
+      // Get the next question to ask
+      const nextQuestion = QUESTIONS.find(q => !updatedQuestionsAnswered[q.key as keyof QuestionsAnswered])
+      
+      if (nextQuestion) {
+        const ackText = acknowledgments.length > 0 ? acknowledgments.join(' ') + '\\n\\n' : ''
+        return `${ackText}${nextQuestion.question}`
+      }
+      
+      // Fallback - shouldn't reach here
+      return "I'm here to help you plan your perfect trip! Tell me where you'd like to go and I'll ask you a few questions to create an amazing itinerary."
+      
+    } catch (error) {
+      console.error('🚨 Error in generateAIResponse:', error)
+      return "I'm sorry, I encountered an error processing your message. Please try again, or let me know what you'd like to plan for your trip!"
+    }
+  }
+
+  const handleSendMessage = async () => {
+    if (!currentMessage.trim() || isLoading) return
+
+    // Store the message before clearing it
+    const messageText = currentMessage.trim()
+
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      text: messageText,
+      sender: 'user',
+      timestamp: new Date()
+    }
+
+    setMessages(prev => [...prev, userMessage])
+    setCurrentMessage('')
+    setIsLoading(true)
+
+    // Add typing indicator
+    const typingMessage: Message = {
+      id: 'typing',
+      text: '',
+      sender: 'ai',
+      timestamp: new Date(),
+      isTyping: true
+    }
+    setMessages(prev => [...prev, typingMessage])
+
+    try {
+      console.log('🤖 Starting AI response generation for:', messageText)
+      
+      // Extract information from user message and update state
+      const { updates, questionsUpdate } = extractTripInformation(messageText)
+      console.log('📝 Updating state with:', { updates, questionsUpdate })
+      
+      // Update the trip data state
+      if (Object.keys(updates).length > 0) {
+        setRequiredTripData(prev => ({ ...prev, ...updates }))
+        setTripDetails(prev => ({ 
+          ...prev, 
+          destination: updates.destination || prev.destination,
+          budget: updates.budget || prev.budget,
+          travelers: updates.travelers || prev.travelers,
+          startDate: updates.dates?.startDate || prev.startDate,
+          endDate: updates.dates?.endDate || prev.endDate
+        }))
+      }
+      
+      // Update questions answered state
+      if (Object.keys(questionsUpdate).length > 0) {
+        setQuestionsAnswered(prev => ({ ...prev, ...questionsUpdate }))
+      }
+      
+      const aiResponse = await generateAIResponse(messageText)
+      console.log('✅ AI response generated successfully:', aiResponse.substring(0, 100) + '...')
+      
+      // Remove typing indicator and add actual response
+      setMessages(prev => {
+        const filtered = prev.filter(m => m.id !== 'typing')
+        return [...filtered, {
+          id: Date.now().toString(),
+          text: aiResponse,
+          sender: 'ai',
+          timestamp: new Date()
+        }]
+      })
+
+      // Update suggested prompts based on context
+      updateSuggestedPrompts(messageText)
+      
+    } catch (error) {
+      console.error('❌ Chat error:', error)
+      console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace')
+      
+      setMessages(prev => {
+        const filtered = prev.filter(m => m.id !== 'typing')
+        return [...filtered, {
+          id: Date.now().toString(),
+          text: `I apologize, but I encountered an error processing your request. Error: ${error instanceof Error ? error.message : 'Unknown error'}. Please try again.`,
+          sender: 'ai',
+          timestamp: new Date()
+        }]
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const updateSuggestedPrompts = (userMessage: string) => {
+    const lowerMessage = userMessage.toLowerCase()
+    let newPrompts = [...suggestedPrompts]
+    
+    if (lowerMessage.includes('italy') || lowerMessage.includes('japan')) {
+      newPrompts = ["Add more local restaurants", "Include wellness activities", "Find walking tours"]
+    } else if (lowerMessage.includes('budget') || lowerMessage.includes('cheap')) {
+      newPrompts = ["Show luxury options", "Add premium experiences", "Include fine dining"]
+    } else if (lowerMessage.includes('wellness') || lowerMessage.includes('health')) {
+      newPrompts = ["Add adventure activities", "Include nightlife", "Show cultural sites"]
+    }
+    
+    setAvailablePrompts(newPrompts.slice(0, 3))
+  }
+
+  const handlePromptClick = (prompt: string) => {
+    setCurrentMessage(prompt)
+    inputRef.current?.focus()
+  }
+
+  const handleSaveDraft = async () => {
+    try {
+      const draftData = {
+        tripDetails,
+        itinerary,
+        messages: messages.slice(-10) // Save last 10 messages
+      }
+      
+      // Simulate API call
+      await fetch('/api/trips/draft', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(draftData)
+      })
+      
+      setIsDraftSaved(true)
+      setTimeout(() => setIsDraftSaved(false), 3000)
+      
+    } catch (error) {
+      console.error('Failed to save draft:', error)
+    }
+  }
+
+  const handleFinalizePlan = async () => {
+    if (itinerary.length === 0) {
+      alert('Please create an itinerary first!')
+      return
+    }
+    
+    try {
+      const finalPlan = {
+        tripDetails,
+        itinerary,
+        status: 'finalized'
+      }
+      
+      await fetch('/api/trips/finalize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(finalPlan)
+      })
+      
+      alert('Trip plan finalized successfully!')
+      
+    } catch (error) {
+      console.error('Failed to finalize plan:', error)
+      alert('Failed to finalize plan. Please try again.')
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
+      {/* Header */}
+      <div className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => window.location.href = '/home'}
+              className="text-brand-green hover:text-brand-seafoam transition-colors"
+            >
+              ← Back to Home
+            </button>
+            
+            {/* Trip Context Bar */}
+            <div className="flex items-center gap-6 text-sm text-gray-600">
+              {tripDetails.destination && (
+                <div className="flex items-center gap-1">
+                  <MapPin className="w-4 h-4" />
+                  <span>{tripDetails.destination}</span>
+                </div>
+              )}
+              {tripDetails.budget > 0 && (
+                <div className="flex items-center gap-1">
+                  <DollarSign className="w-4 h-4" />
+                  <span>£{tripDetails.budget.toLocaleString()}</span>
+                </div>
+              )}
+              {tripDetails.travelers > 0 && (
+                <div className="flex items-center gap-1">
+                  <Users className="w-4 h-4" />
+                  <span>{tripDetails.travelers} {tripDetails.travelers === 1 ? 'traveler' : 'travelers'}</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleSaveDraft}
+              disabled={messages.length <= 1}
+              className="flex items-center gap-2 px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isDraftSaved ? <Check className="w-4 h-4" /> : <Save className="w-4 h-4" />}
+              {isDraftSaved ? 'Saved!' : 'Save Draft'}
+            </button>
+            
+            <button
+              onClick={handleFinalizePlan}
+              disabled={itinerary.length === 0}
+              className="flex items-center gap-2 px-4 py-2 text-sm bg-brand-green hover:bg-brand-green/90 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Check className="w-4 h-4" />
+              Finalize Plan
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto p-6">
+        <div className="grid lg:grid-cols-5 gap-6 h-[calc(100vh-200px)]">
+          {/* Chat Interface - 60% width */}
+          <div className="lg:col-span-3">
+            <ChatInterface
+              messages={messages}
+              currentMessage={currentMessage}
+              isLoading={isLoading}
+              availablePrompts={availablePrompts}
+              messagesEndRef={messagesEndRef}
+              inputRef={inputRef}
+              onMessageChange={setCurrentMessage}
+              onSendMessage={handleSendMessage}
+              onPromptClick={handlePromptClick}
+            />
+          </div>
+
+          {/* Itinerary Preview - 40% width */}
+          <div className="lg:col-span-2">
+            <ItineraryPreview
+              itinerary={itinerary.length > 0 ? {
+                id: 'current-trip',
+                title: `${tripDetails.destination || 'Your'} Adventure`,
+                destination: tripDetails.destination || 'Unknown',
+                startDate: tripDetails.startDate || new Date().toISOString(),
+                endDate: tripDetails.endDate || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                totalDays: itinerary.length,
+                totalCost: itinerary.reduce((total, day) => {
+                  const dayTotal = day.activities.reduce((sum, act) => sum + act.price, 0) +
+                                  (day.flight?.price || 0) +
+                                  (day.hotel?.pricePerNight || 0)
+                  return total + dayTotal
+                }, 0),
+                days: itinerary.map(day => ({
+                  id: day.id,
+                  date: day.date,
+                  flight: day.flight,
+                  hotel: day.hotel,
+                  activities: day.activities
+                }))
+              } : undefined}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}

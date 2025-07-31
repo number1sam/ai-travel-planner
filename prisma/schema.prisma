@@ -1,0 +1,736 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String    @id @default(cuid())
+  email             String    @unique
+  name              String
+  password          String
+  phone             String?
+  country           String?
+  preferredCurrency String    @default("GBP")
+  subscriptionTier  String    @default("Free") // Free, Premium, Pro
+  subscriptionStatus String   @default("active") // active, cancelled, suspended
+  accountCreated    DateTime  @default(now())
+  lastLogin         DateTime?
+  status            String    @default("Active") // Active, Suspended, Pending Verification
+  
+  // GDPR and Privacy fields
+  consentMarketing      Boolean?  @default(false)
+  consentAnalytics      Boolean?  @default(false)
+  consentEssential      Boolean?  @default(true)
+  consentPersonalization Boolean? @default(false)
+  consentLastUpdated    DateTime?
+  deletedAt             DateTime?
+  
+  // Encrypted personal information fields
+  dateOfBirth       DateTime?
+  nationality       String?
+  phoneNumber       String? // Encrypted
+  address           String? // Encrypted
+  emergencyContact  String? // Encrypted
+  medicalConditions String? // Encrypted
+  allergies         String? // Encrypted
+  travelPreferences Json?
+  
+  // Relations
+  trips             Trip[]
+  healthMetrics     HealthMetric[]
+  preferences       UserPreference[]
+  notifications     Notification[]
+  transactions      Transaction[]
+  feedback          UserFeedback[]
+  testimonials      Testimonial[]
+  userSessions      UserSession[] @relation("UserSessions")
+  auditLogs         AuditLog[]
+  consentLogs       ConsentLog[]
+  securityAlerts    SecurityAlert[]
+  dataExportRequests DataExportRequest[]
+  dataDeletionRequests DataDeletionRequest[]
+  
+  // New advanced service relationships
+  wearableDevices   WearableDevice[]
+  assessments       UserAssessment[]
+  personalityProfile UserPersonalityProfile?
+  behavioralEvents  BehavioralEvent[]
+  healthInsights    HealthInsight[]
+  travelHealthRecommendations TravelHealthRecommendation[]
+  syncEvents        SyncEvent[]
+  aiRankingCache    AIRankingCache[]
+  
+  // NextAuth.js relationships
+  accounts          Account[]
+  sessions          Session[]
+  socialLogins      SocialLogin[]
+  twoFactorAuth     TwoFactorAuth?
+  emailVerifications EmailVerification[]
+  
+  @@map("users")
+}
+
+model UserSession {
+  id           String   @id @default(cuid())
+  userId       String
+  token        String   @unique
+  refreshToken String   @unique
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+  
+  user User @relation("UserSessions", fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("user_sessions")
+}
+
+model UserPreference {
+  id             String @id @default(cuid())
+  userId         String
+  travelPace     String? // Relaxed, Balanced, Fast-Paced
+  dietaryPrefs   Json?   // Array of dietary preferences
+  healthGoals    Json?   // Array of health goals
+  interests      Json?   // Array of interests
+  budgetRange    String?
+  accommodationType String?
+  
+  // Accessibility preferences
+  wheelchairAccessible Boolean? @default(false)
+  hearingImpaired Boolean? @default(false)
+  visuallyImpaired Boolean? @default(false)
+  mobilityAssistance Boolean? @default(false)
+  dietaryRestrictions String? // JSON string of dietary restrictions
+  medicationRequirements String? // JSON string of medication needs
+  serviceAnimalAccommodation Boolean? @default(false)
+  signLanguageSupport Boolean? @default(false)
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("user_preferences")
+}
+
+model Trip {
+  id          String   @id @default(cuid())
+  userId      String
+  destination String
+  startDate   DateTime
+  endDate     DateTime
+  totalCost   Float
+  status      String   @default("planned") // planned, completed, cancelled
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Trip details
+  flightDetails Json?
+  hotelDetails  Json?
+  metadata      Json? // Additional trip information
+  
+  // Relations
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activities Activity[]
+  documents  TripDocument[]
+  sharedLinks SharedLink[]
+  testimonials Testimonial[]
+  travelHealthRecommendations TravelHealthRecommendation[]
+  
+  @@map("trips")
+}
+
+model Activity {
+  id          String   @id @default(cuid())
+  tripId      String
+  name        String
+  type        String   // sightseeing, restaurant, activity, transport, wellness
+  date        DateTime
+  time        String
+  duration    Int      // minutes
+  location    String
+  description String?
+  price       Float
+  coordinates Json?    // lat, lng
+  healthTip   String?
+  accessibility Json?  // accessibility features
+  
+  trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  
+  @@map("activities")
+}
+
+model HealthMetric {
+  id           String   @id @default(cuid())
+  userId       String
+  date         DateTime
+  steps        Int?
+  heartRate    Int?
+  sleepHours   Float?
+  hydration    Int?     // glasses of water
+  weight       Float?
+  syncedDevices Json?   // Array of synced device names
+  lastSync     DateTime?
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("health_metrics")
+}
+
+model Transaction {
+  id              String   @id @default(cuid())
+  userId          String
+  subscriptionPlan String
+  amount          Float
+  currency        String   @default("GBP")
+  status          String   // Success, Failed, Refunded
+  paymentMethod   String   // stripe, paypal
+  transactionId   String   @unique
+  stripeSessionId String?
+  createdAt       DateTime @default(now())
+  refundedAt      DateTime?
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("transactions")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String   // trip_update, payment_success, system_alert
+  title     String
+  message   String
+  read      Boolean  @default(false)
+  channels  Json     // Array: [in_app, email, sms]
+  sentAt    DateTime @default(now())
+  readAt    DateTime?
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("notifications")
+}
+
+model TripDocument {
+  id       String @id @default(cuid())
+  tripId   String
+  filename String
+  fileUrl  String
+  fileType String // pdf, image
+  size     Int
+  createdAt DateTime @default(now())
+  
+  trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  
+  @@map("trip_documents")
+}
+
+model SharedLink {
+  id        String   @id @default(cuid())
+  tripId    String
+  token     String   @unique
+  expiresAt DateTime?
+  createdAt DateTime @default(now())
+  views     Int      @default(0)
+  
+  trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  
+  @@map("shared_links")
+}
+
+model UserFeedback {
+  id         String   @id @default(cuid())
+  userId     String
+  tripId     String?
+  itemType   String   // flight, hotel, activity
+  itemId     String
+  rating     Int      // 1-5
+  accepted   Boolean
+  feedback   String?
+  createdAt  DateTime @default(now())
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("user_feedback")
+}
+
+model ApiKey {
+  id          String   @id @default(cuid())
+  name        String
+  key         String
+  service     String   // amadeus, booking, google_maps, stripe
+  status      String   @default("active") // active, inactive
+  lastUsed    DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("api_keys")
+}
+
+model SystemSetting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value Json
+  updatedAt DateTime @updatedAt
+  
+  @@map("system_settings")
+}
+
+model AdminAction {
+  id        String   @id @default(cuid())
+  adminId   String
+  action    String   // user_update, trip_modify, refund_issued
+  targetId  String   // ID of affected resource
+  details   Json
+  timestamp DateTime @default(now())
+  
+  @@map("admin_actions")
+}
+
+// GDPR and Security Models
+model AuditLog {
+  id          String   @id @default(cuid())
+  userId      String?
+  action      String   // LOGIN_SUCCESS, DATA_UPDATE, etc.
+  resource    String   // user_profile, trip_data, etc.
+  resourceId  String?
+  oldValue    String?  // JSON string
+  newValue    String?  // JSON string
+  ipAddress   String
+  userAgent   String
+  timestamp   DateTime @default(now())
+  sessionId   String?
+  result      String   // success, failure, error
+  errorMessage String?
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("audit_logs")
+}
+
+model ConsentLog {
+  id          String   @id @default(cuid())
+  userId      String
+  consentType String   // marketing, analytics, essential, personalization
+  granted     Boolean
+  timestamp   DateTime @default(now())
+  ipAddress   String
+  userAgent   String
+  version     String   @default("1.0")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("consent_logs")
+}
+
+model SecurityAlert {
+  id          String   @id @default(cuid())
+  userId      String?
+  alertType   String   // SUSPICIOUS_LOGIN, MULTIPLE_FAILED_ATTEMPTS, etc.
+  severity    String   // low, medium, high, critical
+  description String
+  metadata    String   // JSON string
+  ipAddress   String
+  timestamp   DateTime @default(now())
+  resolved    Boolean  @default(false)
+  resolvedAt  DateTime?
+  resolvedBy  String?
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("security_alerts")
+}
+
+model DataExportRequest {
+  id          String   @id @default(cuid())
+  userId      String
+  email       String
+  requestDate DateTime @default(now())
+  status      String   // pending, processing, completed, failed
+  downloadUrl String?
+  expiresAt   DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("data_export_requests")
+}
+
+model DataDeletionRequest {
+  id                String   @id @default(cuid())
+  userId            String
+  email             String
+  requestDate       DateTime @default(now())
+  scheduledDeletion DateTime
+  status            String   // pending, approved, deleted, cancelled
+  reason            String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("data_deletion_requests")
+}
+
+model Promotion {
+  id           String   @id @default(cuid())
+  code         String   @unique
+  discount     Float
+  discountType String   // percentage, fixed
+  validFrom    DateTime
+  validTo      DateTime
+  maxUses      Int
+  currentUses  Int      @default(0)
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  @@map("promotions")
+}
+
+
+model BackupLog {
+  id          String   @id
+  type        String   // database, files, cache, full
+  status      String   // pending, running, completed, failed
+  timestamp   DateTime @default(now())
+  size        BigInt   @default(0)
+  location    String
+  checksum    String
+  compressed  Boolean  @default(false)
+  encrypted   Boolean  @default(false)
+  verified    Boolean  @default(false)
+  verifiedAt  DateTime?
+  expiresAt   DateTime
+  policy      String   // hourly, daily, weekly, monthly
+  metadata    Json?    // Additional backup metadata
+  error       String?  // Error message if backup failed
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("backup_logs")
+}
+
+model FailoverEvent {
+  id           String   @id @default(cuid())
+  serviceType  String   // database, cache, api, payment
+  serviceName  String
+  eventType    String   // failure_detected, failover_initiated, failover_completed, service_restored
+  severity     String   // low, medium, high, critical
+  description  String
+  metadata     Json?    // Event-specific data
+  detectedAt   DateTime @default(now())
+  resolvedAt   DateTime?
+  resolved     Boolean  @default(false)
+  actionsTaken String?  // JSON array of actions taken
+  downtime     Int?     // Downtime in seconds
+  affectedUsers Int?    // Number of users affected
+
+  @@map("failover_events")
+}
+
+model SystemHealth {
+  id              String   @id @default(cuid())
+  serviceType     String   // database, cache, api, payment, ai
+  serviceName     String
+  status          String   // healthy, degraded, unhealthy, unknown
+  responseTime    Int?     // Response time in milliseconds
+  errorRate       Float?   // Error rate percentage
+  cpuUsage        Float?   // CPU usage percentage
+  memoryUsage     Float?   // Memory usage percentage
+  diskUsage       Float?   // Disk usage percentage
+  connectionCount Int?     // Number of active connections
+  lastCheck       DateTime @default(now())
+  metadata        Json?    // Service-specific health data
+  alerts          Json?    // Array of active alerts
+
+  @@map("system_health")
+}
+
+// Additional tables for advanced services
+
+model WearableDevice {
+  id           String   @id @default(cuid())
+  userId       String
+  deviceType   String   // fitbit, apple_watch, garmin, google_fit, whoop, oura
+  deviceId     String
+  deviceName   String
+  connected    Boolean  @default(true)
+  lastSync     DateTime @default(now())
+  accessToken  String?
+  refreshToken String?
+  permissions  Json?    // Array of permissions
+  createdAt    DateTime @default(now())
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, deviceType])
+  @@map("wearable_devices")
+}
+
+model UserAssessment {
+  id                String   @id @default(cuid())
+  userId            String
+  assessmentVersion Int      @default(1)
+  status            String   @default("in_progress") // in_progress, completed, abandoned
+  startedAt         DateTime @default(now())
+  completedAt       DateTime?
+  totalQuestions    Int
+  answeredQuestions Int      @default(0)
+  estimatedTime     Int      // minutes
+  
+  responses UserAssessmentResponse[]
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("user_assessments")
+}
+
+model UserAssessmentResponse {
+  id           String   @id @default(cuid())
+  assessmentId String
+  questionId   String
+  answer       Json
+  answeredAt   DateTime @default(now())
+  confidence   Float?   // 0-1
+  metadata     Json?
+  
+  assessment UserAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  
+  @@unique([assessmentId, questionId])
+  @@map("user_assessment_responses")
+}
+
+model UserPersonalityProfile {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  assessmentVersion Int      @default(1)
+  personalityType   String   // adventurer, explorer, relaxer, culture_seeker, luxury_traveler, budget_backpacker
+  confidence        Float    @default(0.5) // 0-1
+  traits            Json     // Array of trait objects with scores
+  preferences       Json     // User preferences object
+  behavioralPatterns Json    // Behavioral patterns object
+  learningData      Json     // Learning data object
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("user_personality_profiles")
+}
+
+model BehavioralEvent {
+  id         String   @id @default(cuid())
+  userId     String
+  eventType  String   // search, view, bookmark, book, cancel, review, share, feedback
+  entityType String   // trip, activity, hotel, flight, restaurant
+  entityId   String
+  context    Json     // Device, location, session info
+  metadata   Json?
+  timestamp  DateTime @default(now())
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId, eventType])
+  @@index([entityType, entityId])
+  @@map("behavioral_events")
+}
+
+model HealthInsight {
+  id          String   @id @default(cuid())
+  userId      String
+  type        String   // achievement, warning, suggestion, trend, milestone
+  title       String
+  description String
+  importance  String   // low, medium, high, critical
+  category    String   // fitness, sleep, nutrition, stress, general
+  data        Json?
+  actionable  Boolean  @default(false)
+  actions     Json?    // Array of action objects
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime?
+  acknowledged Boolean @default(false)
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId, createdAt])
+  @@map("health_insights")
+}
+
+model TravelHealthRecommendation {
+  id              String   @id @default(cuid())
+  tripId          String
+  userId          String
+  recommendations Json     // Array of recommendation objects
+  vaccinations    Json?    // Array of vaccination objects
+  medications     Json?    // Array of medication objects
+  fitnessGoals    Json     // Fitness goals object
+  emergencyContacts Json?  // Array of emergency contact objects
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([tripId, userId])
+  @@map("travel_health_recommendations")
+}
+
+model LocationAccessibility {
+  id                  String   @id @default(cuid())
+  placeId             String   @unique
+  name                String
+  address             String
+  wheelchairAccessible Boolean @default(false)
+  hearingLoop         Boolean  @default(false)
+  brailleMenu         Boolean  @default(false)
+  wheelchairParking   Boolean  @default(false)
+  accessibleRestroom  Boolean  @default(false)
+  elevatorAccess      Boolean  @default(false)
+  rampAccess          Boolean  @default(false)
+  accessibilityRating Float? // 1-5 scale
+  accessibilityFeatures Json?  // Array of features
+  lastUpdated         DateTime @updatedAt
+  createdAt           DateTime @default(now())
+  
+  @@index([placeId])
+  @@map("location_accessibility")
+}
+
+model SyncEvent {
+  id        String   @id @default(cuid())
+  eventId   String   @unique
+  channel   String
+  type      String   // create, update, delete, batch
+  entity    String
+  data      Json
+  userId    String
+  version   Int
+  createdAt DateTime @default(now())
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([channel, createdAt])
+  @@index([userId, createdAt])
+  @@map("sync_events")
+}
+
+model AIRankingCache {
+  id         String   @id @default(cuid())
+  cacheKey   String   @unique
+  userId     String
+  itemType   String   // flight, hotel, activity, restaurant
+  rankedItems Json    // Array of ranked items
+  context    Json     // Ranking context
+  createdAt  DateTime @default(now())
+  expiresAt  DateTime
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId, itemType])
+  @@index([expiresAt])
+  @@map("ai_ranking_cache")
+}
+
+// NextAuth.js required tables
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model SocialLogin {
+  id           String   @id @default(cuid())
+  userId       String
+  provider     String   // google, facebook, apple
+  providerId   String
+  accessToken  String?
+  refreshToken String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, provider])
+  @@map("social_logins")
+}
+
+model TwoFactorAuth {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  secret       String
+  backupCodes  Json?    // Array of backup codes
+  enabled      Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("two_factor_auth")
+}
+
+model EmailVerification {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  verified  Boolean  @default(false)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("email_verifications")
+}
+
+model Testimonial {
+  id              String   @id @default(cuid())
+  userId          String
+  tripId          String?
+  name            String
+  location        String
+  rating          Int      // 1-5
+  text            String
+  tripDestination String
+  image           String?
+  featured        Boolean  @default(false)
+  verified        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trip Trip? @relation(fields: [tripId], references: [id], onDelete: SetNull)
+  
+  @@index([featured, createdAt])
+  @@map("testimonials")
+}

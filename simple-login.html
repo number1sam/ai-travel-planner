@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Login Test</title>
+</head>
+<body>
+    <h1>Simple Login Test</h1>
+    <form id="loginForm">
+        <input type="email" id="email" value="test@test.com" placeholder="Email">
+        <input type="password" id="password" value="test123" placeholder="Password">
+        <button type="submit">Login</button>
+    </form>
+    
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            console.log('Attempting login...');
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                if (response.ok) {
+                    const { user } = await response.json();
+                    console.log('Login successful:', user);
+                    
+                    localStorage.setItem('user', JSON.stringify({
+                        id: user.id,
+                        email: user.email,
+                        name: user.name,
+                        subscriptionTier: user.subscriptionTier
+                    }));
+                    
+                    window.location.href = '/home';
+                } else {
+                    console.error('Login failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+    </script>
+</body>
+</html>

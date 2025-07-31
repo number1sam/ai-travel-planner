@@ -1,0 +1,111 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: travel-agent-config
+  namespace: travel-agent
+data:
+  NODE_ENV: "production"
+  FRONTEND_URL: "https://travel-agent.com"
+  BACKEND_URL: "https://api.travel-agent.com"
+  CORS_ORIGIN: "https://travel-agent.com"
+  RATE_LIMIT_WINDOW_MS: "900000"
+  RATE_LIMIT_MAX_REQUESTS: "100"
+  TLS_MIN_VERSION: "TLSv1.3"
+  HSTS_MAX_AGE: "31536000"
+  LOG_LEVEL: "info"
+  ENABLE_AUDIT_LOGGING: "true"
+  ENABLE_SECURITY_MONITORING: "true"
+  DATA_RETENTION_DAYS: "2555"
+  GDPR_GRACE_PERIOD_DAYS: "30"
+  ENABLE_GDPR_FEATURES: "true"
+  SESSION_TIMEOUT_MINUTES: "60"
+  REFRESH_TOKEN_EXPIRY_DAYS: "30"
+  MAX_FILE_SIZE_MB: "10"
+  ALLOWED_FILE_TYPES: "image/jpeg,image/png,image/webp,application/pdf,text/plain"
+  BACKUP_ENABLED: "true"
+  BACKUP_SCHEDULE: "0 2 * * *"
+  AWS_REGION: "us-east-1"
+  ENABLE_ERROR_REPORTING: "true"
+  ENABLE_PREMIUM_FEATURES: "true"
+  ENABLE_HEALTH_TRACKING: "true"
+  ENABLE_AI_RECOMMENDATIONS: "true"
+  ENABLE_NOTIFICATIONS: "true"
+  ADMIN_PANEL_ENABLED: "true"
+  DEBUG_MODE: "false"
+  MOCK_EXTERNAL_APIS: "false"
+  SKIP_EMAIL_VERIFICATION: "false"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  namespace: travel-agent
+data:
+  nginx.conf: |
+    events {
+        worker_connections 1024;
+    }
+    
+    http {
+        upstream app {
+            server travel-agent-app:3000;
+        }
+        
+        limit_req_zone $binary_remote_addr zone=api:10m rate=10r/s;
+        limit_req_zone $binary_remote_addr zone=auth:10m rate=5r/s;
+        
+        add_header X-Frame-Options "DENY" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header X-XSS-Protection "1; mode=block" always;
+        add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+        
+        gzip on;
+        gzip_vary on;
+        gzip_min_length 1024;
+        gzip_types text/plain text/css text/xml text/javascript application/json application/javascript application/xml+rss application/atom+xml image/svg+xml;
+        
+        server {
+            listen 80;
+            server_name _;
+            
+            location /health {
+                access_log off;
+                return 200 "healthy\n";
+                add_header Content-Type text/plain;
+            }
+            
+            location /api/ {
+                limit_req zone=api burst=20 nodelay;
+                proxy_pass http://app;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+            }
+            
+            location /api/auth/ {
+                limit_req zone=auth burst=10 nodelay;
+                proxy_pass http://app;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+            }
+            
+            location /_next/static/ {
+                expires 1y;
+                add_header Cache-Control "public, immutable";
+                proxy_pass http://app;
+            }
+            
+            location / {
+                proxy_pass http://app;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+                client_max_body_size 10M;
+            }
+        }
+    }
