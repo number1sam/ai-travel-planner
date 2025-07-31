@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Send, Save, Check, MapPin, Calendar, DollarSign, Users, Plane, Hotel, Camera, Coffee } from 'lucide-react'
+import { SearchProfile, searchHotelsForDestination } from '@/utils/hotelSearch'
+import { generateHotelSearchPrompt, generateHotelSelectionExplanation, shouldSearchHotels } from '@/utils/hotelBotPrompt'
 import ChatInterface from '@/components/planner/ChatInterface'
 import ItineraryPreview from '@/components/planner/ItineraryPreview'
 import ComprehensiveTripPreview from '@/components/planner/ComprehensiveTripPreview'
@@ -116,6 +118,15 @@ interface TripPlan {
   itinerary: DailyItinerary[]
   totalCost: number
   budgetRemaining: number
+  hotelAlternatives?: {
+    [city: string]: {
+      name: string
+      rating: number
+      pricePerNight: number
+      location: string
+      link?: string
+    }[]
+  }
 }
 
 interface FlightInfo {
@@ -151,6 +162,10 @@ interface DailyItinerary {
     amenities: string[]
     checkIn?: string
     checkOut?: string
+    bookingLink?: string
+    reviews?: number
+    description?: string
+    stars?: number
   }
   activities: {
     time: string
@@ -224,7 +239,7 @@ const QUESTIONS = [
   {
     key: 'accommodationType',
     question: "What type of accommodation do you prefer? Hotels, boutique stays, luxury resorts, or budget-friendly options?",
-    followUp: (type: string) => `${type} accommodations - great choice! I'll find the perfect places for you to stay.`
+    followUp: (type: string) => `${type} accommodations - great choice! I'll use my regional hotel database to find real ${type} options with competitive pricing, high ratings, and great amenities.`
   },
   {
     key: 'foodPreferences',
@@ -1163,6 +1178,13 @@ export default function PlannerPage() {
 
   // 🚀 Comprehensive Trip Planning Orchestrator
   const generateComprehensiveTripPlan = async () => {
+    // Verify all required information is present before generating plan
+    if (!requiredTripData.destination || !requiredTripData.duration || !requiredTripData.budget || 
+        !requiredTripData.travelers || !requiredTripData.departureLocation || !requiredTripData.dates?.month ||
+        !requiredTripData.accommodationType) {
+      console.log('❌ Missing required information for trip plan generation')
+      return
+    }
     try {
       console.log('🎯 Starting comprehensive trip planning with data:', requiredTripData)
       setIsGeneratingPlan(true)
@@ -1287,33 +1309,156 @@ export default function PlannerPage() {
       }
       console.log('✅ Flight details created')
 
-      // 🏨 5. Hotel Planning - Simplified without API calls
-      console.log('🏨 Step 5: Creating hotel details')
-      const hotelResults = cities.map((city, index) => {
+      // 🏨 5. Hotel Planning - Using comprehensive hotel search system
+      console.log('🏨 Step 5: Creating accommodation details')
+      
+      // Check if user wants hotels specifically (not Airbnbs, hostels, or camping)
+      const wantsHotels = shouldSearchHotels(requiredTripData.accommodationType || '')
+      
+      const hotelResults = await Promise.all(cities.map(async (city, index) => {
         const cityStartDate = new Date(startDate)
         cityStartDate.setDate(cityStartDate.getDate() + (index * Math.floor(requiredTripData.duration! / cities.length)))
         
         const cityEndDate = new Date(cityStartDate)
         cityEndDate.setDate(cityEndDate.getDate() + Math.floor(requiredTripData.duration! / cities.length))
 
-        const pricePerNight = Math.floor(budgetBreakdown.accommodation / requiredTripData.duration!)
+        const nights = Math.floor(requiredTripData.duration! / cities.length)
+        const maxNightlyRate = Math.floor(budgetBreakdown.accommodation / requiredTripData.duration!)
         
-        return {
-          success: true,
-          hotels: [{
-            name: `${city} Central Hotel`,
-            type: requiredTripData.accommodationType || 'hotel',
-            location: `${city} City Center`,
-            rating: 4.2,
-            pricePerNight: pricePerNight,
-            amenities: ['WiFi', 'Breakfast', 'Air Conditioning', 'Gym'],
-            checkIn: cityStartDate.toISOString().split('T')[0],
-            checkOut: cityEndDate.toISOString().split('T')[0],
-            nights: Math.floor(requiredTripData.duration! / cities.length)
-          }]
+        // Create search profile for hotel search
+        const searchProfile: SearchProfile = {
+          destinationCity: city,
+          country: destinationInfo?.country || requiredTripData.destination!.split(',').pop()?.trim() || 'Unknown',
+          checkIn: cityStartDate.toISOString().split('T')[0],
+          checkOut: cityEndDate.toISOString().split('T')[0],
+          guests: requiredTripData.travelers!,
+          nights: nights,
+          totalBudget: requiredTripData.budget!,
+          accommodationBudget: budgetBreakdown.accommodation,
+          maxNightlyRate: maxNightlyRate,
+          stayType: requiredTripData.accommodationType || 'hotel',
+          preferredAmenities: ['WiFi', 'Breakfast'],
+          locationPreference: 'city centre'
+        }
+
+        // Only search real hotels if user wants hotels, not Airbnbs/hostels/camping
+        if (!wantsHotels) {
+          console.log(`📌 User wants ${searchProfile.stayType}, not using hotel database`)
+          return {
+            success: false,
+            hotels: [{
+              name: `${city} ${searchProfile.stayType === 'airbnb' ? 'Airbnb' : searchProfile.stayType === 'hostel' ? 'Hostel' : 'Accommodation'}`,
+              type: searchProfile.stayType,
+              location: `${city} City Center`,
+              rating: 4.0,
+              pricePerNight: maxNightlyRate,
+              amenities: ['WiFi'],
+              checkIn: cityStartDate.toISOString().split('T')[0],
+              checkOut: cityEndDate.toISOString().split('T')[0],
+              nights: nights
+            }]
+          }
+        }
+        
+        // Generate hotel search reasoning
+        const hotelPrompt = generateHotelSearchPrompt({
+          destination: requiredTripData.destination!,
+          city: city,
+          country: searchProfile.country,
+          checkIn: searchProfile.checkIn,
+          checkOut: searchProfile.checkOut,
+          guests: searchProfile.guests,
+          maxNightlyRate: searchProfile.maxNightlyRate,
+          accommodationType: searchProfile.stayType,
+          preferredAmenities: searchProfile.preferredAmenities
+        })
+        
+        console.log(`🔍 Hotel Search Reasoning:\n${hotelPrompt}`)
+        console.log(`🔍 Searching hotels for ${city} (${searchProfile.country}) using region-specific booking platforms`)
+        console.log(`💰 Budget: £${maxNightlyRate}/night, Stay type: ${searchProfile.stayType}`)
+        console.log(`📋 Requirements: ${searchProfile.guests} guests, ${nights} nights, ${searchProfile.preferredAmenities.join(', ')}`)
+        
+        try {
+          const { selectedHotel, alternatives, hotelSource } = await searchHotelsForDestination(searchProfile)
+          
+          if (selectedHotel) {
+            console.log(`✅ Found hotel for ${city}: ${selectedHotel.name}`)
+            return {
+              success: true,
+              hotels: [{
+                name: selectedHotel.name,
+                type: searchProfile.stayType,
+                location: selectedHotel.location,
+                rating: selectedHotel.rating,
+                pricePerNight: selectedHotel.pricePerNight,
+                amenities: selectedHotel.amenities,
+                checkIn: cityStartDate.toISOString().split('T')[0],
+                checkOut: cityEndDate.toISOString().split('T')[0],
+                nights: nights,
+                bookingLink: selectedHotel.link,
+                reviews: selectedHotel.reviews,
+                description: selectedHotel.description,
+                stars: selectedHotel.stars
+              }],
+              alternatives: alternatives.map(alt => ({
+                name: alt.name,
+                rating: alt.rating,
+                pricePerNight: alt.pricePerNight,
+                location: alt.location,
+                link: alt.link
+              })),
+              hotelSource: hotelSource?.region
+            }
+          } else {
+            console.log(`⚠️ No hotels found for ${city}, using fallback`)
+            return {
+              success: false,
+              hotels: [{
+                name: `${city} Central Hotel`,
+                type: searchProfile.stayType,
+                location: `${city} City Center`,
+                rating: 4.0,
+                pricePerNight: maxNightlyRate,
+                amenities: ['WiFi', 'Breakfast', 'Air Conditioning'],
+                checkIn: cityStartDate.toISOString().split('T')[0],
+                checkOut: cityEndDate.toISOString().split('T')[0],
+                nights: nights
+              }]
+            }
+          }
+        } catch (error) {
+          console.error(`❌ Error searching hotels for ${city}:`, error)
+          return {
+            success: false,
+            hotels: [{
+              name: `${city} Central Hotel`,
+              type: searchProfile.stayType,
+              location: `${city} City Center`,
+              rating: 4.0,
+              pricePerNight: maxNightlyRate,
+              amenities: ['WiFi', 'Breakfast', 'Air Conditioning'],
+              checkIn: cityStartDate.toISOString().split('T')[0],
+              checkOut: cityEndDate.toISOString().split('T')[0],
+              nights: nights
+            }]
+          }
+        }
+      }))
+      console.log('🏨 Hotel search completed for all cities')
+      
+      // Store hotel alternatives for user reference
+      const hotelAlternatives: Record<string, any[]> = {}
+      hotelResults.forEach((result, index) => {
+        const city = cities[index]
+        if (result.alternatives && result.alternatives.length > 0) {
+          hotelAlternatives[city] = result.alternatives
         }
       })
-      console.log('🏨 Hotel details created')
+      
+      if (Object.keys(hotelAlternatives).length > 0) {
+        planData.hotelAlternatives = hotelAlternatives
+        console.log('📋 Hotel alternatives stored for cities:', Object.keys(hotelAlternatives))
+      }
 
       // 🎯 6. Activity Planning - Simplified without API calls
       console.log('🎯 Step 6: Creating activity details')
@@ -1385,7 +1530,11 @@ export default function PlannerPage() {
             pricePerNight: hotel.pricePerNight,
             amenities: hotel.amenities,
             checkIn: day === 1 ? '15:00' : undefined,
-            checkOut: day === requiredTripData.duration ? '11:00' : undefined
+            checkOut: day === requiredTripData.duration ? '11:00' : undefined,
+            bookingLink: hotel.bookingLink,
+            reviews: hotel.reviews,
+            description: hotel.description,
+            stars: hotel.stars
           } : {
             name: `${city} Hotel`,
             type: 'hotel',
@@ -1512,7 +1661,7 @@ export default function PlannerPage() {
             generateComprehensiveTripPlan()
           }, 1000)
           
-          return `🎉 Excellent! I'm creating your personalized ${requiredTripData.duration}-day adventure to ${requiredTripData.destination} for ${requiredTripData.travelers} ${requiredTripData.travelers === 1 ? 'traveler' : 'travelers'} with your £${requiredTripData.budget?.toLocaleString()} budget.\\n\\n🔄 **Creating your comprehensive itinerary:**\\n\\n• 💸 Allocating budget across flights, hotels, food & activities\\n• 🗺️ Selecting the best cities and route for your ${requiredTripData.duration} days\\n• 🛫 Finding flights within budget from ${requiredTripData.departureLocation}\\n• 🏨 Booking accommodation for every night\\n• 🎯 Planning daily activities and attractions\\n• 📅 Building your day-by-day itinerary with cost tracking\\n\\nThis comprehensive plan will appear in the panel on the right once ready!\\n\\n✨ **Estimated completion: 10-15 seconds**`
+          return `🎉 Excellent! I'm creating your personalized ${requiredTripData.duration}-day adventure to ${requiredTripData.destination} for ${requiredTripData.travelers} ${requiredTripData.travelers === 1 ? 'traveler' : 'travelers'} with your £${requiredTripData.budget?.toLocaleString()} budget.\\n\\n🔄 **Creating your comprehensive itinerary:**\\n\\n• 💸 Allocating budget across flights, hotels, food & activities\\n• 🗺️ Selecting the best cities and route for your ${requiredTripData.duration} days\\n• 🛫 Finding flights within budget from ${requiredTripData.departureLocation}\\n• 🏨 Searching real hotels using region-specific booking platforms\\n• 🎯 Planning daily activities and attractions\\n• 📅 Building your day-by-day itinerary with cost tracking\\n\\nThis comprehensive plan will appear in the panel on the right once ready!\\n\\n✨ **Estimated completion: 15-20 seconds** (includes hotel search)`
         } else if (lowerMessage.includes('no') || lowerMessage.includes('wait') || lowerMessage.includes('more info') || lowerMessage.includes('additional')) {
           // User wants to provide more information
           return "Of course! What additional information would you like to share? You can tell me about:\\n\\n• Specific places you want to visit\\n• Types of cuisine you'd like to try\\n• Special occasions or celebrations\\n• Accessibility needs\\n• Any other preferences or requirements\\n\\nJust let me know what's on your mind!"

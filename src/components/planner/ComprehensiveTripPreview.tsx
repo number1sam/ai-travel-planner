@@ -345,14 +345,31 @@ export default function ComprehensiveTripPreview({
 
                           {/* Hotel Information */}
                           {day.accommodation && (
-                            <div className="flex items-center space-x-3 p-3 bg-purple-50 rounded-lg">
-                              <Hotel className="w-5 h-5 text-purple-600" />
-                              <div className="flex-1">
-                                <span className="font-medium text-purple-900">
-                                  🏨 Hotel: {day.accommodation.name} (£{day.accommodation.pricePerNight})
-                                </span>
-                                <div className="text-sm text-purple-700 mt-1">
-                                  {day.accommodation.location} • ⭐ {day.accommodation.rating} • {day.accommodation.amenities?.slice(0, 3).join(', ')}
+                            <div className="p-3 bg-purple-50 rounded-lg">
+                              <div className="flex items-center space-x-3">
+                                <Hotel className="w-5 h-5 text-purple-600" />
+                                <div className="flex-1">
+                                  <span className="font-medium text-purple-900">
+                                    🏨 Hotel: {day.accommodation.name} (£{day.accommodation.pricePerNight}/night)
+                                  </span>
+                                  <div className="text-sm text-purple-700 mt-1">
+                                    {day.accommodation.location} • ⭐ {day.accommodation.rating}/5 {day.accommodation.stars && `• ${day.accommodation.stars}★`}
+                                  </div>
+                                  <div className="text-sm text-purple-600 mt-1">
+                                    {day.accommodation.amenities?.slice(0, 3).join(', ')} {day.accommodation.reviews && `• ${day.accommodation.reviews} reviews`}
+                                  </div>
+                                  {day.accommodation.bookingLink && (
+                                    <a 
+                                      href={day.accommodation.bookingLink} 
+                                      target="_blank" 
+                                      rel="noopener noreferrer"
+                                      className="inline-flex items-center text-sm text-purple-700 hover:text-purple-900 mt-2 underline"
+                                    >
+                                      Book on {day.accommodation.bookingLink.includes('booking.com') ? 'Booking.com' : 
+                                                day.accommodation.bookingLink.includes('agoda') ? 'Agoda' : 
+                                                day.accommodation.bookingLink.includes('expedia') ? 'Expedia' : 'Hotel Site'}
+                                    </a>
+                                  )}
                                 </div>
                               </div>
                             </div>
