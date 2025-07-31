@@ -971,15 +971,157 @@ export default function PlannerPage() {
     }
   }
 
+  // Calculate trip start date based on user's preferred month
+  const calculateTripStartDate = (preferredMonth: string): Date => {
+    const currentDate = new Date()
+    const currentYear = currentDate.getFullYear()
+    const currentMonth = currentDate.getMonth()
+    
+    const monthNames = ['january', 'february', 'march', 'april', 'may', 'june', 
+                       'july', 'august', 'september', 'october', 'november', 'december']
+    
+    const preferredMonthIndex = monthNames.findIndex(month => 
+      month.toLowerCase() === preferredMonth.toLowerCase()
+    )
+    
+    if (preferredMonthIndex === -1) {
+      // Default to 30 days from now if month not recognized
+      const fallbackDate = new Date()
+      fallbackDate.setDate(fallbackDate.getDate() + 30)
+      return fallbackDate
+    }
+    
+    // If preferred month is in the past or current month, use next year
+    const targetYear = preferredMonthIndex <= currentMonth ? currentYear + 1 : currentYear
+    
+    // Set to mid-month for better availability
+    const startDate = new Date(targetYear, preferredMonthIndex, 15)
+    
+    // Ensure it's at least 2 weeks from now for booking purposes
+    const minDate = new Date()
+    minDate.setDate(minDate.getDate() + 14)
+    
+    return startDate < minDate ? minDate : startDate
+  }
+
+  // 🧪 Budget Revision Function - Reduce costs when over budget
+  const revisePlanForBudget = async (originalPlan: TripPlan, maxBudget: number): Promise<TripPlan | null> => {
+    try {
+      console.log('💰 Revising plan to fit budget:', { current: originalPlan.totalCost, max: maxBudget })
+      
+      const excessAmount = originalPlan.totalCost - maxBudget
+      const revisedItinerary = [...originalPlan.itinerary]
+      let savedAmount = 0
+      
+      // Strategy 1: Reduce hotel classes (40% of savings target)
+      const hotelSavingsTarget = excessAmount * 0.4
+      for (const day of revisedItinerary) {
+        if (savedAmount >= hotelSavingsTarget) break
+        
+        if (day.accommodation && day.accommodation.pricePerNight > 60) {
+          const reduction = Math.min(day.accommodation.pricePerNight * 0.25, hotelSavingsTarget - savedAmount)
+          day.accommodation.pricePerNight -= reduction
+          day.accommodation.name = day.accommodation.name.replace('Hotel', 'Budget Hotel')
+          day.dailyTotal -= reduction
+          day.runningTotal -= reduction
+          savedAmount += reduction
+        }
+      }
+      
+      // Strategy 2: Replace expensive activities with cheaper alternatives (35% of savings target)
+      const activitySavingsTarget = excessAmount * 0.35
+      for (const day of revisedItinerary) {
+        if (savedAmount >= excessAmount * 0.75) break
+        
+        for (const activity of day.activities) {
+          if (activity.cost > 20) {
+            const reduction = Math.min(activity.cost * 0.4, activitySavingsTarget / revisedItinerary.length)
+            activity.cost -= reduction
+            activity.activity = activity.activity.replace('Premium', 'Standard')
+            day.dailyTotal -= reduction
+            day.runningTotal -= reduction
+            savedAmount += reduction
+          }
+        }
+      }
+      
+      // Strategy 3: Reduce food budget (25% of savings target)
+      const foodSavingsTarget = excessAmount * 0.25
+      for (const day of revisedItinerary) {
+        if (savedAmount >= excessAmount) break
+        
+        if (day.meals) {
+          if (day.meals.breakfast) {
+            const reduction = Math.min(day.meals.breakfast.cost * 0.2, foodSavingsTarget / revisedItinerary.length / 3)
+            day.meals.breakfast.cost -= reduction
+            day.dailyTotal -= reduction
+            day.runningTotal -= reduction
+            savedAmount += reduction
+          }
+          if (day.meals.lunch) {
+            const reduction = Math.min(day.meals.lunch.cost * 0.2, foodSavingsTarget / revisedItinerary.length / 3)
+            day.meals.lunch.cost -= reduction
+            day.dailyTotal -= reduction
+            day.runningTotal -= reduction
+            savedAmount += reduction
+          }
+          if (day.meals.dinner) {
+            const reduction = Math.min(day.meals.dinner.cost * 0.2, foodSavingsTarget / revisedItinerary.length / 3)
+            day.meals.dinner.cost -= reduction
+            day.dailyTotal -= reduction
+            day.runningTotal -= reduction
+            savedAmount += reduction
+          }
+        }
+      }
+      
+      // Recalculate running totals
+      let runningTotal = originalPlan.flights?.totalCost || 0
+      for (const day of revisedItinerary) {
+        runningTotal += day.dailyTotal
+        day.runningTotal = Math.round(runningTotal)
+      }
+      
+      const revisedPlan: TripPlan = {
+        ...originalPlan,
+        itinerary: revisedItinerary,
+        totalCost: Math.round(runningTotal),
+        budgetRemaining: maxBudget - Math.round(runningTotal)
+      }
+      
+      console.log('✅ Plan revised, saved:', savedAmount, 'New total:', revisedPlan.totalCost)
+      return revisedPlan
+      
+    } catch (error) {
+      console.error('❌ Error revising plan:', error)
+      return null
+    }
+  }
+
   // 🚀 Comprehensive Trip Planning Orchestrator
   const generateComprehensiveTripPlan = async () => {
     try {
       console.log('🎯 Starting comprehensive trip planning with data:', requiredTripData)
       setIsGeneratingPlan(true)
       
-      // Validate required data
-      if (!requiredTripData.destination || !requiredTripData.duration || !requiredTripData.budget || !requiredTripData.travelers || !requiredTripData.departureLocation) {
-        console.error('❌ Missing required trip data')
+      // 🧪 Validate required data and ask for missing information
+      const missingData = []
+      if (!requiredTripData.destination) missingData.push('destination')
+      if (!requiredTripData.duration) missingData.push('trip duration')
+      if (!requiredTripData.budget) missingData.push('budget')
+      if (!requiredTripData.travelers) missingData.push('number of travelers')
+      if (!requiredTripData.departureLocation) missingData.push('departure location')
+      if (!requiredTripData.dates?.month) missingData.push('travel month')
+
+      if (missingData.length > 0) {
+        console.error('❌ Missing required trip data:', missingData)
+        const errorMessage: Message = {
+          id: Date.now().toString(),
+          text: `I need a bit more information before creating your comprehensive plan. I'm missing: **${missingData.join(', ')}**\\n\\nPlease provide these details so I can create the perfect itinerary for you!`,
+          sender: 'ai',
+          timestamp: new Date()
+        }
+        setMessages(prev => [...prev, errorMessage])
         return
       }
 
@@ -1024,9 +1166,8 @@ export default function PlannerPage() {
       planData.summary!.cities = cities
       console.log('📍 Selected cities:', cities, 'Reasoning:', reasoning)
 
-      // Calculate dates
-      const startDate = new Date()
-      startDate.setDate(startDate.getDate() + 30) // 30 days from now
+      // Calculate dates based on user's preferred month
+      const startDate = calculateTripStartDate(requiredTripData.dates!.month)
       const endDate = new Date(startDate)
       endDate.setDate(endDate.getDate() + requiredTripData.duration!)
       
@@ -1181,18 +1322,38 @@ export default function PlannerPage() {
         currentDate.setDate(currentDate.getDate() + 1)
       }
 
-      // 📤 8. Finalize Plan
+      // 📤 8. Finalize Plan with Budget Compliance
       planData.itinerary = dailyItinerary
       planData.totalCost = runningTotal
       planData.budgetRemaining = requiredTripData.budget! - runningTotal
+
+      // 🧪 Budget Compliance Check and Revision
+      if (planData.budgetRemaining < 0) {
+        console.warn('⚠️ Plan exceeds budget, attempting revision...')
+        
+        const revisedPlan = await revisePlanForBudget(planData as TripPlan, requiredTripData.budget!)
+        if (revisedPlan) {
+          planData.itinerary = revisedPlan.itinerary
+          planData.totalCost = revisedPlan.totalCost
+          planData.budgetRemaining = revisedPlan.budgetRemaining
+          
+          // Add revision notice to success message
+          planData.revisionNote = `Plan revised to fit your £${requiredTripData.budget?.toLocaleString()} budget. I reduced some hotel classes and activity costs to ensure you stay within budget.`
+        }
+      }
 
       console.log('✅ Comprehensive trip plan generated:', planData)
       setTripPlan(planData as TripPlan)
       
       // Add success message to chat
+      const revisionText = (planData as any).revisionNote ? `\\n\\n⚠️ **Budget Revision:** ${(planData as any).revisionNote}` : ''
+      const budgetStatus = planData.budgetRemaining >= 0 
+        ? `(£${planData.budgetRemaining} remaining)` 
+        : `(£${Math.abs(planData.budgetRemaining)} over budget)`
+      
       const successMessage: Message = {
         id: Date.now().toString(),
-        text: `🎉 **Your comprehensive ${requiredTripData.duration}-day trip to ${requiredTripData.destination} is ready!**\\n\\n✅ Budget: £${requiredTripData.budget?.toLocaleString()} (£${planData.budgetRemaining} remaining)\\n✅ Cities: ${cities.join(', ')}\\n✅ Flights: ${planData.flights ? 'Found within budget' : 'Estimated'}\\n✅ Hotels: Booked for all ${requiredTripData.duration} nights\\n✅ Activities: ${dailyItinerary.reduce((total, day) => total + day.activities.length, 0)} planned experiences\\n\\n📋 **Check the detailed itinerary in the right panel!**\\n\\nYou can now save, download, or make adjustments to your perfect trip plan.`,
+        text: `🎉 **Your comprehensive ${requiredTripData.duration}-day trip to ${requiredTripData.destination} is ready!**\\n\\n✅ Budget: £${requiredTripData.budget?.toLocaleString()} → £${planData.totalCost.toLocaleString()} ${budgetStatus}\\n✅ Cities: ${cities.join(' → ')}\\n✅ Flights: ${planData.flights ? 'Found within budget' : 'Estimated'}\\n✅ Hotels: Booked for all ${requiredTripData.duration} nights\\n✅ Activities: ${dailyItinerary.reduce((total, day) => total + day.activities.length, 0)} planned experiences\\n✅ Travel dates: ${planData.summary!.dates.month} ${new Date(planData.summary!.dates.startDate).getFullYear()}${revisionText}\\n\\n📋 **Check your detailed day-by-day itinerary in the right panel!**\\n\\nYou can now save, download, or make adjustments to your perfect trip plan.`,
         sender: 'ai',
         timestamp: new Date()
       }
