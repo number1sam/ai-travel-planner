@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Send, Save, Check, MapPin, Calendar, DollarSign, Users, Plane, Hotel, Camera, Coffee } from 'lucide-react'
 import ChatInterface from '@/components/planner/ChatInterface'
 import ItineraryPreview from '@/components/planner/ItineraryPreview'
+import ComprehensiveTripPreview from '@/components/planner/ComprehensiveTripPreview'
 
 interface Message {
   id: string
@@ -1701,28 +1702,9 @@ export default function PlannerPage() {
 
           {/* Itinerary Preview - 40% width */}
           <div className="lg:col-span-2">
-            <ItineraryPreview
-              itinerary={itinerary.length > 0 ? {
-                id: 'current-trip',
-                title: `${tripDetails.destination || 'Your'} Adventure`,
-                destination: tripDetails.destination || 'Unknown',
-                startDate: tripDetails.startDate || new Date().toISOString(),
-                endDate: tripDetails.endDate || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-                totalDays: itinerary.length,
-                totalCost: itinerary.reduce((total, day) => {
-                  const dayTotal = day.activities.reduce((sum, act) => sum + act.price, 0) +
-                                  (day.flight?.price || 0) +
-                                  (day.hotel?.pricePerNight || 0)
-                  return total + dayTotal
-                }, 0),
-                days: itinerary.map(day => ({
-                  id: day.id,
-                  date: day.date,
-                  flight: day.flight,
-                  hotel: day.hotel,
-                  activities: day.activities
-                }))
-              } : undefined}
+            <ComprehensiveTripPreview 
+              tripPlan={tripPlan}
+              isGenerating={isGeneratingPlan}
             />
           </div>
         </div>
