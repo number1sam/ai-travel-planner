@@ -84,6 +84,96 @@ interface RequiredTripData {
   pace: string // fast-paced, relaxed, balanced
 }
 
+// Enhanced trip planning data structure
+interface TripPlan {
+  summary: {
+    destination: string
+    cities: string[]
+    duration: number
+    travelers: number
+    totalBudget: number
+    budgetBreakdown: {
+      flights: number
+      accommodation: number
+      food: number
+      activities: number
+      transport: number
+      emergency: number
+    }
+    departureLocation: string
+    dates: {
+      startDate: string
+      endDate: string
+      month: string
+    }
+  }
+  flights: {
+    outbound: FlightInfo
+    return: FlightInfo
+    totalCost: number
+  }
+  itinerary: DailyItinerary[]
+  totalCost: number
+  budgetRemaining: number
+}
+
+interface FlightInfo {
+  airline: string
+  flightNumber: string
+  departure: {
+    airport: string
+    city: string
+    time: string
+    date: string
+  }
+  arrival: {
+    airport: string
+    city: string
+    time: string
+    date: string
+  }
+  duration: string
+  price: number
+  perPerson: number
+}
+
+interface DailyItinerary {
+  day: number
+  date: string
+  city: string
+  accommodation: {
+    name: string
+    type: string
+    location: string
+    rating: number
+    pricePerNight: number
+    amenities: string[]
+    checkIn?: string
+    checkOut?: string
+  }
+  activities: {
+    time: string
+    activity: string
+    description: string
+    location: string
+    duration: string
+    cost: number
+    type: 'attraction' | 'restaurant' | 'transport' | 'free'
+  }[]
+  meals: {
+    breakfast?: { restaurant: string, cost: number, location: string }
+    lunch?: { restaurant: string, cost: number, location: string }
+    dinner?: { restaurant: string, cost: number, location: string }
+  }
+  transport: {
+    type: string
+    cost: number
+    details: string
+  }[]
+  dailyTotal: number
+  runningTotal: number
+}
+
 // Questions tracking - what has been answered
 interface QuestionsAnswered {
   destination: boolean
@@ -237,6 +327,10 @@ export default function PlannerPage() {
     activities: [],
     pace: ''
   })
+
+  // Trip plan state
+  const [tripPlan, setTripPlan] = useState<TripPlan | null>(null)
+  const [isGeneratingPlan, setIsGeneratingPlan] = useState(false)
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -787,6 +881,339 @@ export default function PlannerPage() {
     return answerTypes[questionKey] || 'general'
   }
 
+  // 💸 2. Intelligent Budget Splitting
+  const calculateBudgetBreakdown = (totalBudget: number, travelers: number, duration: number, destination: string): TripPlan['summary']['budgetBreakdown'] => {
+    console.log('💰 Calculating budget breakdown:', { totalBudget, travelers, duration, destination })
+    
+    const perPersonBudget = totalBudget / travelers
+    
+    // Budget allocation percentages based on destination and duration
+    const isEuropeanDestination = ['italy', 'france', 'spain', 'greece', 'germany'].some(country => 
+      destination.toLowerCase().includes(country)
+    )
+    
+    let allocations = {
+      flights: 0.20,      // 20% for flights
+      accommodation: 0.40, // 40% for hotels
+      food: 0.25,         // 25% for food 
+      activities: 0.10,   // 10% for activities
+      transport: 0.03,    // 3% for local transport
+      emergency: 0.02     // 2% emergency buffer
+    }
+    
+    // Adjust for destination - more expensive cities
+    if (isEuropeanDestination) {
+      allocations.accommodation = 0.45
+      allocations.food = 0.20
+      allocations.flights = 0.25
+    }
+    
+    // Adjust for trip length - longer trips need more transport budget
+    if (duration > 7) {
+      allocations.transport = 0.05
+      allocations.accommodation = 0.38
+    }
+    
+    const breakdown = {
+      flights: Math.round(totalBudget * allocations.flights),
+      accommodation: Math.round(totalBudget * allocations.accommodation),
+      food: Math.round(totalBudget * allocations.food),
+      activities: Math.round(totalBudget * allocations.activities),
+      transport: Math.round(totalBudget * allocations.transport),
+      emergency: Math.round(totalBudget * allocations.emergency)
+    }
+    
+    console.log('💰 Budget breakdown:', breakdown)
+    return breakdown
+  }
+
+  // 🗺️ 3. Smart Route and City Selection
+  const selectCitiesForDestination = (destination: string, duration: number, month: string): { cities: string[], reasoning: string } => {
+    console.log('🗺️ Selecting cities for:', { destination, duration, month })
+    
+    const cityRecommendations: Record<string, any> = {
+      'italy': {
+        short: { cities: ['Rome'], reasoning: 'Rome offers the perfect introduction to Italy with world-class attractions within walking distance.' },
+        medium: { cities: ['Rome', 'Florence'], reasoning: 'Rome and Florence provide the perfect combination of ancient history and Renaissance art, connected by high-speed rail.' },
+        long: { cities: ['Rome', 'Florence', 'Venice'], reasoning: 'The classic Italian triangle - Rome for history, Florence for art, and Venice for romance.' }
+      },
+      'france': {
+        short: { cities: ['Paris'], reasoning: 'Paris offers endless attractions and experiences perfect for a focused city break.' },
+        medium: { cities: ['Paris', 'Lyon'], reasoning: 'Paris for iconic sights and Lyon for authentic French culture and cuisine.' },
+        long: { cities: ['Paris', 'Lyon', 'Nice'], reasoning: 'Experience diverse French regions from capital culture to Mediterranean charm.' }
+      },
+      'spain': {
+        short: { cities: ['Madrid'], reasoning: 'Madrid provides authentic Spanish culture with world-class museums and vibrant nightlife.' },
+        medium: { cities: ['Madrid', 'Barcelona'], reasoning: 'Madrid and Barcelona showcase Spain\'s diverse character - traditional capital meets modern Catalonia.' },
+        long: { cities: ['Madrid', 'Barcelona', 'Seville'], reasoning: 'Explore Spain\'s three distinct regions - royal Madrid, artistic Barcelona, and Moorish Andalusia.' }
+      },
+      'greece': {
+        short: { cities: ['Athens'], reasoning: 'Athens offers the perfect introduction to ancient Greek civilization and modern Mediterranean life.' },
+        medium: { cities: ['Athens', 'Santorini'], reasoning: 'Combine ancient Athens with the stunning sunsets and unique architecture of Santorini.' },
+        long: { cities: ['Athens', 'Santorini', 'Mykonos'], reasoning: 'Experience ancient history in Athens and the best of Greek island life in the Cyclades.' }
+      }
+    }
+    
+    const destKey = destination.toLowerCase()
+    const recommendation = cityRecommendations[destKey]
+    
+    if (recommendation) {
+      if (duration <= 4) return recommendation.short
+      if (duration <= 8) return recommendation.medium
+      return recommendation.long
+    }
+    
+    // Fallback for unknown destinations
+    return {
+      cities: [destination],
+      reasoning: `We recommend focusing on ${destination} to fully experience this destination without rushing.`
+    }
+  }
+
+  // 🚀 Comprehensive Trip Planning Orchestrator
+  const generateComprehensiveTripPlan = async () => {
+    try {
+      console.log('🎯 Starting comprehensive trip planning with data:', requiredTripData)
+      setIsGeneratingPlan(true)
+      
+      // Validate required data
+      if (!requiredTripData.destination || !requiredTripData.duration || !requiredTripData.budget || !requiredTripData.travelers || !requiredTripData.departureLocation) {
+        console.error('❌ Missing required trip data')
+        return
+      }
+
+      // 📊 1. Understanding User Intent - Create structured plan object
+      const planData: Partial<TripPlan> = {
+        summary: {
+          destination: requiredTripData.destination!,
+          cities: [],
+          duration: requiredTripData.duration!,
+          travelers: requiredTripData.travelers!,
+          totalBudget: requiredTripData.budget!,
+          budgetBreakdown: {} as any,
+          departureLocation: requiredTripData.departureLocation!,
+          dates: {
+            startDate: '',
+            endDate: '',
+            month: requiredTripData.dates?.month || ''
+          }
+        },
+        itinerary: [],
+        totalCost: 0,
+        budgetRemaining: 0
+      }
+
+      // 💸 2. Budget Allocation
+      console.log('💰 Step 2: Calculating budget breakdown')
+      const budgetBreakdown = calculateBudgetBreakdown(
+        requiredTripData.budget!,
+        requiredTripData.travelers!,
+        requiredTripData.duration!,
+        requiredTripData.destination!
+      )
+      planData.summary!.budgetBreakdown = budgetBreakdown
+
+      // 🗺️ 3. City Selection
+      console.log('🌍 Step 3: Selecting cities and route')
+      const { cities, reasoning } = selectCitiesForDestination(
+        requiredTripData.destination!,
+        requiredTripData.duration!,
+        requiredTripData.dates?.month || ''
+      )
+      planData.summary!.cities = cities
+      console.log('📍 Selected cities:', cities, 'Reasoning:', reasoning)
+
+      // Calculate dates
+      const startDate = new Date()
+      startDate.setDate(startDate.getDate() + 30) // 30 days from now
+      const endDate = new Date(startDate)
+      endDate.setDate(endDate.getDate() + requiredTripData.duration!)
+      
+      planData.summary!.dates = {
+        startDate: startDate.toISOString().split('T')[0],
+        endDate: endDate.toISOString().split('T')[0],
+        month: requiredTripData.dates?.month || ''
+      }
+
+      // 🛫 4. Flight Search
+      console.log('✈️ Step 4: Searching flights')
+      const flightResponse = await fetch('/api/flights/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          departure: requiredTripData.departureLocation,
+          destination: requiredTripData.destination,
+          departureDate: planData.summary!.dates.startDate,
+          returnDate: planData.summary!.dates.endDate,
+          travelers: requiredTripData.travelers,
+          budget: budgetBreakdown.flights
+        })
+      })
+
+      const flightData = await flightResponse.json()
+      if (flightData.success) {
+        planData.flights = flightData.flights
+        console.log('✅ Flights found:', flightData.flights)
+      }
+
+      // 🏨 5. Hotel Search for each city
+      console.log('🏨 Step 5: Searching hotels')
+      const hotelPromises = cities.map(async (city, index) => {
+        const cityStartDate = new Date(startDate)
+        cityStartDate.setDate(cityStartDate.getDate() + (index * Math.floor(requiredTripData.duration! / cities.length)))
+        
+        const cityEndDate = new Date(cityStartDate)
+        cityEndDate.setDate(cityEndDate.getDate() + Math.floor(requiredTripData.duration! / cities.length))
+
+        const hotelResponse = await fetch('/api/hotels/search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            city,
+            checkIn: cityStartDate.toISOString().split('T')[0],
+            checkOut: cityEndDate.toISOString().split('T')[0],
+            travelers: requiredTripData.travelers,
+            budget: budgetBreakdown.accommodation,
+            accommodationType: requiredTripData.accommodationType || 'hotel'
+          })
+        })
+
+        return await hotelResponse.json()
+      })
+
+      const hotelResults = await Promise.all(hotelPromises)
+      console.log('🏨 Hotel results:', hotelResults)
+
+      // 🎯 6. Activity Planning
+      console.log('🎯 Step 6: Planning activities')
+      const activityPromises = cities.map(async (city) => {
+        const activityResponse = await fetch('/api/activities/search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            city,
+            duration: Math.floor(requiredTripData.duration! / cities.length),
+            budget: budgetBreakdown.activities / cities.length,
+            preferences: requiredTripData.activities || [],
+            pace: requiredTripData.pace || 'balanced'
+          })
+        })
+
+        return await activityResponse.json()
+      })
+
+      const activityResults = await Promise.all(activityPromises)
+      console.log('🎯 Activity results:', activityResults)
+
+      // 📅 7. Build Day-by-Day Itinerary
+      console.log('📅 Step 7: Building daily itinerary')
+      const dailyItinerary: DailyItinerary[] = []
+      let runningTotal = planData.flights?.totalCost || 0
+      let currentDate = new Date(startDate)
+
+      for (let day = 1; day <= requiredTripData.duration!; day++) {
+        const cityIndex = Math.floor((day - 1) / (requiredTripData.duration! / cities.length))
+        const city = cities[cityIndex] || cities[0]
+        const hotelData = hotelResults[cityIndex]
+        const activityData = activityResults[cityIndex]
+        
+        const hotel = hotelData?.success ? hotelData.hotels[0] : null
+        const dayActivities = activityData?.success ? activityData.activities.dailyItineraries.find((d: any) => d.day === (day - cityIndex * Math.floor(requiredTripData.duration! / cities.length))) : null
+
+        const dailyTotal = (hotel?.pricePerNight || 0) + (dayActivities?.dailyCost || 0) + (budgetBreakdown.food / requiredTripData.duration!) + (budgetBreakdown.transport / requiredTripData.duration!)
+        runningTotal += dailyTotal
+
+        dailyItinerary.push({
+          day,
+          date: currentDate.toISOString().split('T')[0],
+          city,
+          accommodation: hotel ? {
+            name: hotel.name,
+            type: hotel.type,
+            location: hotel.location,
+            rating: hotel.rating,
+            pricePerNight: hotel.pricePerNight,
+            amenities: hotel.amenities,
+            checkIn: day === 1 ? '15:00' : undefined,
+            checkOut: day === requiredTripData.duration ? '11:00' : undefined
+          } : {
+            name: `${city} Hotel`,
+            type: 'hotel',
+            location: 'City Center',
+            rating: 4.0,
+            pricePerNight: budgetBreakdown.accommodation / requiredTripData.duration!,
+            amenities: ['WiFi', 'Breakfast']
+          },
+          activities: dayActivities?.activities?.map((activity: any) => ({
+            time: activity.name.includes('Breakfast') ? '09:00' : activity.name.includes('Lunch') ? '13:00' : activity.name.includes('Dinner') ? '19:00' : '10:00',
+            activity: activity.name,
+            description: activity.description,
+            location: city,
+            duration: activity.duration,
+            cost: activity.cost,
+            type: activity.type
+          })) || [
+            {
+              time: '10:00',
+              activity: `Explore ${city}`,
+              description: `Discover the highlights of ${city}`,
+              location: city,
+              duration: '4h',
+              cost: budgetBreakdown.activities / requiredTripData.duration!,
+              type: 'attraction' as const
+            }
+          ],
+          meals: {
+            breakfast: { restaurant: `${city} Café`, cost: budgetBreakdown.food / requiredTripData.duration! * 0.3, location: city },
+            lunch: { restaurant: `Local Restaurant`, cost: budgetBreakdown.food / requiredTripData.duration! * 0.4, location: city },
+            dinner: { restaurant: `Traditional ${city} Restaurant`, cost: budgetBreakdown.food / requiredTripData.duration! * 0.3, location: city }
+          },
+          transport: [{
+            type: day === 1 ? 'Flight arrival' : day === requiredTripData.duration ? 'Flight departure' : 'Local transport',
+            cost: budgetBreakdown.transport / requiredTripData.duration!,
+            details: day === 1 ? 'Airport to hotel' : day === requiredTripData.duration ? 'Hotel to airport' : 'City transport'
+          }],
+          dailyTotal: Math.round(dailyTotal),
+          runningTotal: Math.round(runningTotal)
+        })
+
+        currentDate.setDate(currentDate.getDate() + 1)
+      }
+
+      // 📤 8. Finalize Plan
+      planData.itinerary = dailyItinerary
+      planData.totalCost = runningTotal
+      planData.budgetRemaining = requiredTripData.budget! - runningTotal
+
+      console.log('✅ Comprehensive trip plan generated:', planData)
+      setTripPlan(planData as TripPlan)
+      
+      // Add success message to chat
+      const successMessage: Message = {
+        id: Date.now().toString(),
+        text: `🎉 **Your comprehensive ${requiredTripData.duration}-day trip to ${requiredTripData.destination} is ready!**\\n\\n✅ Budget: £${requiredTripData.budget?.toLocaleString()} (£${planData.budgetRemaining} remaining)\\n✅ Cities: ${cities.join(', ')}\\n✅ Flights: ${planData.flights ? 'Found within budget' : 'Estimated'}\\n✅ Hotels: Booked for all ${requiredTripData.duration} nights\\n✅ Activities: ${dailyItinerary.reduce((total, day) => total + day.activities.length, 0)} planned experiences\\n\\n📋 **Check the detailed itinerary in the right panel!**\\n\\nYou can now save, download, or make adjustments to your perfect trip plan.`,
+        sender: 'ai',
+        timestamp: new Date()
+      }
+      
+      setMessages(prev => [...prev, successMessage])
+
+    } catch (error) {
+      console.error('❌ Error generating comprehensive trip plan:', error)
+      
+      const errorMessage: Message = {
+        id: Date.now().toString(),
+        text: `I apologize, but I encountered an error while creating your comprehensive trip plan. Let me try a simplified approach or you can try again. Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        sender: 'ai',
+        timestamp: new Date()
+      }
+      
+      setMessages(prev => [...prev, errorMessage])
+    } finally {
+      setIsGeneratingPlan(false)
+    }
+  }
+
   const generateAIResponse = async (userMessage: string, currentMessages?: Message[]): Promise<string> => {
     try {
       console.log('🔄 Processing user message:', userMessage)
@@ -807,8 +1234,15 @@ export default function PlannerPage() {
       // Handle confirmation responses when waiting for plan confirmation
       if (waitingForConfirmation) {
         if (lowerMessage.includes('yes') || lowerMessage.includes('create') || lowerMessage.includes('proceed') || lowerMessage.includes('go ahead')) {
-          // User wants to create the plan
-          return `🎉 Excellent! I'm creating your personalized ${requiredTripData.duration}-day adventure to ${requiredTripData.destination} for ${requiredTripData.travelers} ${requiredTripData.travelers === 1 ? 'traveler' : 'travelers'} with your £${requiredTripData.budget?.toLocaleString()} budget.\\n\\nI'll include the best hotels, activities, dining experiences, and create a day-by-day itinerary that matches all your preferences. This will appear in the panel on the right once it's ready!\\n\\n✨ Creating your itinerary now...`
+          // User wants to create the plan - trigger comprehensive planning
+          console.log('🚀 User confirmed - starting comprehensive trip planning')
+          
+          // Start the comprehensive planning process
+          setTimeout(() => {
+            generateComprehensiveTripPlan()
+          }, 1000)
+          
+          return `🎉 Excellent! I'm creating your personalized ${requiredTripData.duration}-day adventure to ${requiredTripData.destination} for ${requiredTripData.travelers} ${requiredTripData.travelers === 1 ? 'traveler' : 'travelers'} with your £${requiredTripData.budget?.toLocaleString()} budget.\\n\\n🔄 **Creating your comprehensive itinerary:**\\n\\n• 💸 Allocating budget across flights, hotels, food & activities\\n• 🗺️ Selecting the best cities and route for your ${requiredTripData.duration} days\\n• 🛫 Finding flights within budget from ${requiredTripData.departureLocation}\\n• 🏨 Booking accommodation for every night\\n• 🎯 Planning daily activities and attractions\\n• 📅 Building your day-by-day itinerary with cost tracking\\n\\nThis comprehensive plan will appear in the panel on the right once ready!\\n\\n✨ **Estimated completion: 10-15 seconds**`
         } else if (lowerMessage.includes('no') || lowerMessage.includes('wait') || lowerMessage.includes('more info') || lowerMessage.includes('additional')) {
           // User wants to provide more information
           return "Of course! What additional information would you like to share? You can tell me about:\\n\\n• Specific places you want to visit\\n• Types of cuisine you'd like to try\\n• Special occasions or celebrations\\n• Accessibility needs\\n• Any other preferences or requirements\\n\\nJust let me know what's on your mind!"
