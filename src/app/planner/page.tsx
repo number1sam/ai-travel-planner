@@ -198,6 +198,17 @@ export default function PlannerPage() {
   // Track if we've asked for plan confirmation
   const [hasAskedForConfirmation, setHasAskedForConfirmation] = useState(false)
   const [waitingForConfirmation, setWaitingForConfirmation] = useState(false)
+  
+  // Store destination information from web search
+  const [destinationInfo, setDestinationInfo] = useState<{
+    name: string
+    country?: string
+    region?: string
+    description?: string
+    attractions?: string[]
+    bestTime?: string
+    currency?: string
+  } | null>(null)
 
   const [requiredTripData, setRequiredTripData] = useState<Partial<RequiredTripData>>({
     destination: '',
@@ -219,19 +230,56 @@ export default function PlannerPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
+  // Function to search for destination information  
+  const searchDestinationInfo = async (destination: string) => {
+    try {
+      console.log('🔍 Searching for destination info:', destination)
+      return null // Will be implemented with actual web search in generateAIResponse
+    } catch (error) {
+      console.error('❌ Error searching destination info:', error)
+      return null
+    }
+  }
+
   // Function to extract information from user message
   const extractTripInformation = (message: string) => {
     const lowerMessage = message.toLowerCase()
     const updates: Partial<RequiredTripData> = {}
     const questionsUpdate: Partial<QuestionsAnswered> = {}
 
-    // Extract destination
-    const destinations = ['italy', 'japan', 'france', 'spain', 'thailand', 'greece', 'germany', 'uk', 'usa', 'canada', 'australia', 'rome', 'tokyo', 'paris', 'london', 'new york', 'bangkok']
+    // Extract destination - enhanced to capture more specific places
+    const destinations = ['italy', 'japan', 'france', 'spain', 'thailand', 'greece', 'germany', 'uk', 'usa', 'canada', 'australia', 'rome', 'tokyo', 'paris', 'london', 'new york', 'bangkok', 'punta cana', 'cancun', 'bali', 'santorini', 'mykonos', 'ibiza', 'maldives', 'seychelles', 'fiji', 'hawaii', 'miami', 'las vegas', 'dubai', 'singapore', 'hong kong', 'barcelona', 'amsterdam', 'berlin', 'vienna', 'prague', 'budapest', 'stockholm', 'copenhagen', 'oslo', 'lisbon', 'madrid', 'florence', 'venice', 'milan', 'naples', 'sicily', 'sardinia', 'corsica', 'crete', 'rhodes', 'cyprus', 'malta', 'iceland', 'ireland', 'scotland', 'wales', 'morocco', 'egypt', 'turkey', 'croatia', 'montenegro', 'albania', 'bosnia', 'serbia', 'romania', 'bulgaria', 'poland', 'lithuania', 'latvia', 'estonia']
+    
+    let foundDestination = null
     for (const dest of destinations) {
       if (lowerMessage.includes(dest)) {
-        updates.destination = dest.charAt(0).toUpperCase() + dest.slice(1)
+        foundDestination = dest.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
+        updates.destination = foundDestination
         questionsUpdate.destination = true
         break
+      }
+    }
+    
+    // If no predefined destination found, try to extract potential place names
+    if (!foundDestination) {
+      const placePatterns = [
+        /(?:want to go to|visiting|traveling to|trip to|going to)\\s+([a-z\\s,]+?)(?:\\s+(?:for|in|on|with|\\.|,)|$)/i,
+        /(?:^|\\s)((?:[A-Z][a-z]+(?:\\s+[A-Z][a-z]+)*))(?:\\s+(?:sounds|looks|seems|is)|$)/,
+        /(?:heard about|been to|love)\\s+([a-z\\s,]+?)(?:\\s+(?:is|was|looks)|$)/i
+      ]
+      
+      for (const pattern of placePatterns) {
+        const match = lowerMessage.match(pattern)
+        if (match && match[1] && match[1].trim().length > 2) {
+          const potentialPlace = match[1].trim()
+          // Filter out common words that aren't places
+          if (!['want', 'like', 'need', 'days', 'week', 'people', 'budget', 'money', 'time', 'really', 'very', 'quite', 'somewhere', 'anywhere'].includes(potentialPlace.toLowerCase())) {
+            foundDestination = potentialPlace.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
+            updates.destination = foundDestination
+            questionsUpdate.destination = true
+            break
+          }
+        }
       }
     }
 
@@ -418,7 +466,49 @@ export default function PlannerPage() {
       
       if (questionsUpdate.destination && updates.destination) {
         const question = QUESTIONS.find(q => q.key === 'destination')
-        acknowledgments.push(question?.followUp(updates.destination) || `${updates.destination} - excellent choice!`)
+        
+        // Search for destination information when a new destination is provided
+        try {
+          console.log('🔍 Fetching destination info for:', updates.destination)
+          const response = await fetch('/api/destinations/search', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ destination: updates.destination })
+          })
+          
+          if (response.ok) {
+            const data = await response.json()
+            if (data.success && data.destinationInfo) {
+              console.log('✅ Destination info received:', data.destinationInfo)
+              setDestinationInfo(data.destinationInfo)
+              
+              // Enhanced acknowledgment with location context
+              const info = data.destinationInfo
+              let enhancedAck = `${updates.destination} - excellent choice!`
+              
+              if (info.country && info.country !== 'Unknown') {
+                enhancedAck += ` That's in ${info.country}.`
+              }
+              
+              if (info.description && info.description.length > 50) {
+                enhancedAck += ` ${info.description.substring(0, 100)}...`
+              }
+              
+              if (info.bestTime && info.bestTime !== 'Year-round') {
+                enhancedAck += ` The best time to visit is ${info.bestTime}.`
+              }
+              
+              acknowledgments.push(enhancedAck)
+            } else {
+              acknowledgments.push(question?.followUp(updates.destination) || `${updates.destination} - excellent choice!`)
+            }
+          } else {
+            acknowledgments.push(question?.followUp(updates.destination) || `${updates.destination} - excellent choice!`)
+          }
+        } catch (error) {
+          console.error('❌ Error fetching destination info:', error)
+          acknowledgments.push(question?.followUp(updates.destination) || `${updates.destination} - excellent choice!`)
+        }
       }
       
       if (questionsUpdate.duration && updates.duration) {
@@ -471,7 +561,20 @@ export default function PlannerPage() {
         setHasAskedForConfirmation(true)
         setWaitingForConfirmation(true)
         
-        return `${ackText}🎉 Perfect! I now have all the information I need to create your amazing trip itinerary!\\n\\n**Here's what I've gathered:**\\n• Destination: ${updates.destination || requiredTripData.destination}\\n• Duration: ${updates.duration || requiredTripData.duration} days\\n• Travelers: ${updates.travelers || requiredTripData.travelers}\\n• Budget: £${(updates.budget || requiredTripData.budget)?.toLocaleString()}\\n• Departure: ${updates.departureLocation || requiredTripData.departureLocation}\\n• Travel month: ${updates.dates?.month || requiredTripData.dates?.month}\\n\\n**Ready to proceed?**\\n\\n✅ **Yes, create my travel plan!** - I'll design your perfect itinerary\\n\\n📝 **Wait, I have more details to share** - Tell me what else you'd like to add\\n\\nWhat would you like to do?`
+        const destinationName = updates.destination || requiredTripData.destination
+        let destinationSummary = `• Destination: ${destinationName}`
+        
+        // Add destination context if available
+        if (destinationInfo && destinationInfo.name.toLowerCase() === destinationName?.toLowerCase()) {
+          if (destinationInfo.country && destinationInfo.country !== 'Unknown') {
+            destinationSummary += ` (${destinationInfo.country})`
+          }
+          if (destinationInfo.region && destinationInfo.region !== 'Unknown') {
+            destinationSummary += ` - ${destinationInfo.region}`
+          }
+        }
+        
+        return `${ackText}🎉 Perfect! I now have all the information I need to create your amazing trip itinerary!\\n\\n**Here's what I've gathered:**\\n${destinationSummary}\\n• Duration: ${updates.duration || requiredTripData.duration} days\\n• Travelers: ${updates.travelers || requiredTripData.travelers}\\n• Budget: £${(updates.budget || requiredTripData.budget)?.toLocaleString()}\\n• Departure: ${updates.departureLocation || requiredTripData.departureLocation}\\n• Travel month: ${updates.dates?.month || requiredTripData.dates?.month}\\n\\n**Ready to proceed?**\\n\\n✅ **Yes, create my travel plan!** - I'll design your perfect itinerary\\n\\n📝 **Wait, I have more details to share** - Tell me what else you'd like to add\\n\\nWhat would you like to do?`
       }
       
       // Get the next question to ask
