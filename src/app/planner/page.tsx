@@ -329,7 +329,7 @@ export default function PlannerPage() {
     
     // Budget context
     if (lastAIMessage.includes('budget') || 
-        lastAIMessage.includes('What\\'s your total budget') ||
+        lastAIMessage.includes('What\'s your total budget') ||
         conversationContext.lastQuestionKey === 'budget') {
       console.log('💰 User answering budget question')
       
