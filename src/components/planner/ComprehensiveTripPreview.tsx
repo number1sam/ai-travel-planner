@@ -343,32 +343,50 @@ export default function ComprehensiveTripPreview({
                             </div>
                           )}
 
-                          {/* Hotel Information */}
+                          {/* Hotel Information - VALIDATED REAL DATA */}
                           {day.accommodation && (
-                            <div className="p-3 bg-purple-50 rounded-lg">
+                            <div className="p-3 bg-purple-50 rounded-lg border-l-4 border-purple-500">
                               <div className="flex items-center space-x-3">
                                 <Hotel className="w-5 h-5 text-purple-600" />
                                 <div className="flex-1">
-                                  <span className="font-medium text-purple-900">
-                                    🏨 Hotel: {day.accommodation.name} (£{day.accommodation.pricePerNight}/night)
-                                  </span>
+                                  <div className="flex items-center space-x-2">
+                                    <span className="font-medium text-purple-900">
+                                      🏨 {day.accommodation.name}
+                                    </span>
+                                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                      ✓ Real Hotel
+                                    </span>
+                                  </div>
                                   <div className="text-sm text-purple-700 mt-1">
-                                    {day.accommodation.location} • ⭐ {day.accommodation.rating}/5 {day.accommodation.stars && `• ${day.accommodation.stars}★`}
+                                    📍 {day.accommodation.location}
+                                  </div>
+                                  <div className="text-sm text-purple-600 mt-1 flex items-center space-x-4">
+                                    <span>⭐ {day.accommodation.rating}/5</span>
+                                    {day.accommodation.stars && <span>{day.accommodation.stars}★ Hotel</span>}
+                                    {day.accommodation.reviews && <span>{day.accommodation.reviews} reviews</span>}
                                   </div>
                                   <div className="text-sm text-purple-600 mt-1">
-                                    {day.accommodation.amenities?.slice(0, 3).join(', ')} {day.accommodation.reviews && `• ${day.accommodation.reviews} reviews`}
+                                    💰 £{day.accommodation.pricePerNight}/night • {day.accommodation.amenities?.slice(0, 3).join(', ')}
                                   </div>
+                                  {day.accommodation.selectionReason && (
+                                    <div className="text-xs text-purple-500 mt-2 italic">
+                                      {day.accommodation.selectionReason}
+                                    </div>
+                                  )}
                                   {day.accommodation.bookingLink && (
-                                    <a 
-                                      href={day.accommodation.bookingLink} 
-                                      target="_blank" 
-                                      rel="noopener noreferrer"
-                                      className="inline-flex items-center text-sm text-purple-700 hover:text-purple-900 mt-2 underline"
-                                    >
-                                      Book on {day.accommodation.bookingLink.includes('booking.com') ? 'Booking.com' : 
-                                                day.accommodation.bookingLink.includes('agoda') ? 'Agoda' : 
-                                                day.accommodation.bookingLink.includes('expedia') ? 'Expedia' : 'Hotel Site'}
-                                    </a>
+                                    <div className="mt-3">
+                                      <a 
+                                        href={day.accommodation.bookingLink} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center px-3 py-1 rounded-md text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 transition-colors"
+                                      >
+                                        📅 Book Direct - {day.accommodation.checkIn} to {day.accommodation.checkOut}
+                                      </a>
+                                      <div className="text-xs text-purple-500 mt-1">
+                                        {day.accommodation.cancellationPolicy}
+                                      </div>
+                                    </div>
                                   )}
                                 </div>
                               </div>

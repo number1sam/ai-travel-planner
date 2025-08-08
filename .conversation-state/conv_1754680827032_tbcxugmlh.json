@@ -1,0 +1,35 @@
+{
+  "destination": {
+    "value": "Australia",
+    "normalized": "Australia",
+    "filled": true,
+    "locked": true
+  },
+  "origin": {
+    "value": "new york",
+    "normalized": "New York",
+    "filled": true,
+    "locked": true
+  },
+  "dates": {
+    "startDate": "2025-11-11",
+    "endDate": "2025-11-18",
+    "originalPhrase": "november 11",
+    "filled": true,
+    "locked": false
+  },
+  "travelers": {
+    "value": 1,
+    "filled": false,
+    "locked": false
+  },
+  "budget": {
+    "value": 0,
+    "currency": "USD",
+    "filled": false,
+    "locked": false
+  },
+  "expectedSlot": "dates-confirm",
+  "conversationId": "conv_1754680827032_tbcxugmlh",
+  "lastUpdated": "2025-08-08T19:22:59.906Z"
+}

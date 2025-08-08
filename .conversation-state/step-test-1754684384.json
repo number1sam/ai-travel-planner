@@ -1,0 +1,76 @@
+{
+  "destination": {
+    "value": "Dublin and Cork",
+    "normalized": "Dublin + Cork",
+    "filled": true,
+    "locked": true,
+    "type": "multi-city",
+    "tripScope": {
+      "scope": "multi",
+      "detectedCities": [
+        "Dublin",
+        "Cork"
+      ],
+      "estimatedDuration": {
+        "min": 4,
+        "max": 8
+      },
+      "routeType": "linear"
+    }
+  },
+  "origin": {
+    "value": "",
+    "filled": false,
+    "locked": false,
+    "normalized": ""
+  },
+  "dates": {
+    "startDate": "2025-08-15",
+    "endDate": "2025-08-21",
+    "originalPhrase": "June 15 for 7 days",
+    "filled": true,
+    "locked": false
+  },
+  "travelers": {
+    "value": 2,
+    "filled": true,
+    "locked": true
+  },
+  "budget": {
+    "value": 2500,
+    "currency": "USD",
+    "filled": true,
+    "locked": true
+  },
+  "expectedSlot": "origin",
+  "conversationId": "step-test-1754684384",
+  "lastUpdated": "2025-08-08T20:19:44.659Z",
+  "multiCityPlan": {
+    "cities": [
+      {
+        "name": "Dublin",
+        "country": "Unknown",
+        "nights": 4,
+        "priority": "primary",
+        "position": 1
+      },
+      {
+        "name": "Cork",
+        "country": "Unknown",
+        "nights": 4,
+        "priority": "secondary",
+        "position": 2
+      }
+    ],
+    "route": {
+      "sequence": [
+        "Dublin",
+        "Cork"
+      ],
+      "totalDays": 8,
+      "routeType": "linear"
+    },
+    "transport": [],
+    "confirmed": true
+  }
+}

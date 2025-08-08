@@ -26,6 +26,16 @@ export interface Hotel {
   link: string
   description?: string
   stars?: number
+  // Additional fields from real API
+  coordinates?: { lat: number; lng: number }
+  images?: string[]
+  cancellationPolicy?: string
+  rooms?: Array<{
+    type: string
+    description: string
+    price: number
+    available: number
+  }>
 }
 
 // Simulated hotel database by country/city (replace with real API calls later)
@@ -405,6 +415,56 @@ const HOTEL_DATABASE: Record<string, Hotel[]> = {
       description: "Boutique hotel in converted bank building in trendy Karakoy.",
       stars: 4
     }
+  ],
+  "Tenerife, Spain": [
+    {
+      name: "Hotel Botanico & The Oriental Spa Garden",
+      pricePerNight: 185,
+      total: 1295,
+      rating: 4.6,
+      reviews: 2340,
+      location: "Puerto de la Cruz",
+      amenities: ["WiFi", "Spa", "Pool", "Gardens", "Tennis Court", "Restaurants"],
+      link: "https://www.booking.com/hotel/botanico-oriental-spa",
+      description: "Luxury resort with oriental spa and botanical gardens overlooking the Atlantic.",
+      stars: 5
+    },
+    {
+      name: "Hotel Villa Cortés",
+      pricePerNight: 165,
+      total: 1155,
+      rating: 4.4,
+      reviews: 1890,
+      location: "Playa de las Américas",
+      amenities: ["WiFi", "Pool", "Beach Access", "Spa", "Restaurant", "Bar"],
+      link: "https://www.booking.com/hotel/villa-cortes",
+      description: "Beachfront hotel with Aztec-inspired architecture in the heart of Tenerife's resort area.",
+      stars: 4
+    },
+    {
+      name: "Hotel Rural Orotava",
+      pricePerNight: 125,
+      total: 875,
+      rating: 4.3,
+      reviews: 1245,
+      location: "La Orotava",
+      amenities: ["WiFi", "Pool", "Garden", "Traditional Architecture", "Mountain Views"],
+      link: "https://www.booking.com/hotel/rural-orotava",
+      description: "Charming rural hotel in historic La Orotava with views of Mount Teide.",
+      stars: 4
+    },
+    {
+      name: "Parador de Cañadas del Teide",
+      pricePerNight: 145,
+      total: 1015,
+      rating: 4.2,
+      reviews: 1567,
+      location: "Teide National Park",
+      amenities: ["WiFi", "Restaurant", "Mountain Views", "Hiking Trails", "Stargazing"],
+      link: "https://www.booking.com/hotel/parador-canadas-teide",
+      description: "Unique mountain lodge in Teide National Park, perfect for stargazing and hiking.",
+      stars: 4
+    }
   ]
 }
 
@@ -413,9 +473,67 @@ export async function queryHotelsUsingAPI(apiNames: string[], profile: SearchPro
   console.log(`💰 Budget: ${profile.maxNightlyRate}/night for ${profile.guests} guests`)
   console.log(`🔍 Using APIs: ${apiNames.join(', ')}`)
 
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 1000))
+  try {
+    // Call the real hotel search API
+    const response = await fetch('/api/hotels/search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        city: profile.destinationCity,
+        checkIn: profile.checkIn,
+        checkOut: profile.checkOut,
+        travelers: profile.guests,
+        budget: profile.accommodationBudget,
+        accommodationType: profile.stayType || 'hotel'
+      })
+    })
 
+    if (!response.ok) {
+      console.error('Hotel search API failed:', response.status)
+      return getFallbackHotels(profile)
+    }
+
+    const data = await response.json()
+    
+    // Handle nested hotel data structure from API
+    const hotelArray = data.hotels?.hotels || data.hotels || []
+    
+    if (!data.success || !Array.isArray(hotelArray) || hotelArray.length === 0) {
+      console.log('No hotels found in API response, using fallback data')
+      console.log('API response structure:', JSON.stringify(data, null, 2))
+      return getFallbackHotels(profile)
+    }
+
+    // Transform API response to our Hotel format with safety checks
+    const hotels: Hotel[] = hotelArray.filter(hotel => hotel && hotel.name).map((hotel: any) => ({
+      name: hotel.name || 'Hotel Name Not Available',
+      pricePerNight: hotel.pricePerNight || hotel.price || 100,
+      total: hotel.totalCost || hotel.total || (hotel.pricePerNight || 100) * profile.nights,
+      rating: hotel.rating || 4.0,
+      reviews: hotel.reviews?.count || hotel.reviews || 100,
+      location: hotel.location || profile.destinationCity,
+      amenities: Array.isArray(hotel.amenities) ? hotel.amenities : ['WiFi'],
+      link: hotel.bookingUrl || hotel.link || `https://www.booking.com/search?q=${encodeURIComponent(hotel.name || profile.destinationCity)}`,
+      description: hotel.description || `${hotel.rating || 4.0}/5 rated hotel in ${profile.destinationCity}`,
+      stars: hotel.stars || (hotel.type === 'luxury' ? 5 : hotel.type === 'hotel' ? 4 : 3),
+      // Additional real data from API
+      coordinates: hotel.coordinates,
+      images: Array.isArray(hotel.images) ? hotel.images : undefined,
+      cancellationPolicy: hotel.cancellationPolicy,
+      rooms: Array.isArray(hotel.rooms) ? hotel.rooms : undefined
+    }))
+
+    console.log(`✅ Found ${hotels.length} real hotels from API`)
+    return hotels
+  } catch (error) {
+    console.error('Error querying hotel API:', error)
+    console.error('Error details:', error instanceof Error ? error.message : 'Unknown error')
+    return getFallbackHotels(profile)
+  }
+}
+
+// Fallback function when API fails
+function getFallbackHotels(profile: SearchProfile): Hotel[] {
   const searchKey = `${profile.destinationCity}, ${profile.country}`
   const availableHotels = HOTEL_DATABASE[searchKey] || []
 

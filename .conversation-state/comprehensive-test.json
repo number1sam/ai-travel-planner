@@ -1,0 +1,45 @@
+{
+  "destination": {
+    "value": "",
+    "filled": false,
+    "locked": true,
+    "normalized": ""
+  },
+  "origin": {
+    "value": "",
+    "filled": false,
+    "locked": false,
+    "normalized": ""
+  },
+  "dates": {
+    "startDate": "",
+    "endDate": "",
+    "originalPhrase": "",
+    "filled": false,
+    "locked": false
+  },
+  "travelers": {
+    "value": 1,
+    "filled": false,
+    "locked": false
+  },
+  "budget": {
+    "value": 0,
+    "currency": "USD",
+    "filled": false,
+    "locked": false
+  },
+  "expectedSlot": "origin",
+  "conversationId": "comprehensive-test",
+  "lastUpdated": "2025-08-08T20:00:22.827Z",
+  "multiCityPlan": {
+    "cities": [],
+    "route": {
+      "sequence": [],
+      "totalDays": 12,
+      "routeType": "circular"
+    },
+    "transport": [],
+    "confirmed": false
+  }
+}

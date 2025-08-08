@@ -1,0 +1,35 @@
+{
+  "destination": {
+    "value": "England",
+    "normalized": "England",
+    "filled": true,
+    "locked": true
+  },
+  "origin": {
+    "value": "Japan",
+    "normalized": "Japan",
+    "filled": true,
+    "locked": true
+  },
+  "dates": {
+    "startDate": "",
+    "endDate": "",
+    "originalPhrase": "",
+    "filled": false,
+    "locked": false
+  },
+  "travelers": {
+    "value": 1,
+    "filled": false,
+    "locked": false
+  },
+  "budget": {
+    "value": 0,
+    "currency": "USD",
+    "filled": false,
+    "locked": false
+  },
+  "expectedSlot": "dates",
+  "conversationId": "conv_1754682346739_mcx9y63kz",
+  "lastUpdated": "2025-08-08T19:46:17.422Z"
+}

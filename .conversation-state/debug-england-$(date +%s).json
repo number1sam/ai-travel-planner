@@ -1,0 +1,44 @@
+{
+  "destination": {
+    "value": "I would like to go to England",
+    "normalized": "I Would Like To Go To England",
+    "filled": true,
+    "locked": true,
+    "type": "city",
+    "tripScope": {
+      "scope": "single",
+      "estimatedDuration": {
+        "min": 3,
+        "max": 7
+      },
+      "routeType": "hub-and-spoke"
+    }
+  },
+  "origin": {
+    "value": "",
+    "filled": false,
+    "locked": false,
+    "normalized": ""
+  },
+  "dates": {
+    "startDate": "",
+    "endDate": "",
+    "originalPhrase": "",
+    "filled": false,
+    "locked": false
+  },
+  "travelers": {
+    "value": 1,
+    "filled": false,
+    "locked": false
+  },
+  "budget": {
+    "value": 0,
+    "currency": "USD",
+    "filled": false,
+    "locked": false
+  },
+  "expectedSlot": "origin",
+  "conversationId": "debug-england-$(date +%s)",
+  "lastUpdated": "2025-08-08T20:39:32.680Z"
+}

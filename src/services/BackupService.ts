@@ -1,6 +1,12 @@
-import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3'
-import { RDSClient, CreateDBSnapshotCommand, DescribeDBSnapshotsCommand, DeleteDBSnapshotCommand } from '@aws-sdk/client-rds'
-import { ElastiCacheClient, CreateSnapshotCommand, DescribeSnapshotsCommand, DeleteSnapshotCommand } from '@aws-sdk/client-elasticache'
+// AWS SDK imports disabled for development
+// import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3'
+// import { RDSClient, CreateDBSnapshotCommand, DescribeDBSnapshotsCommand, DeleteDBSnapshotCommand } from '@aws-sdk/client-rds'
+// import { ElastiCacheClient, CreateSnapshotCommand, DescribeSnapshotsCommand, DeleteSnapshotCommand } from '@aws-sdk/client-elasticache'
+
+// Stub types for development
+type S3Client = any
+type RDSClient = any
+type ElastiCacheClient = any
 import { prisma } from '@/lib/prisma'
 import { createGzip, createGunzip } from 'zlib'
 import { pipeline } from 'stream/promises'

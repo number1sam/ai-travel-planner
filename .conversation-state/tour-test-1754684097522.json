@@ -1,0 +1,51 @@
+{
+  "destination": {
+    "value": "tour of Ireland",
+    "normalized": "Complete Ireland Tour",
+    "filled": true,
+    "locked": false,
+    "type": "comprehensive-tour",
+    "tripScope": {
+      "scope": "comprehensive",
+      "detectedCities": [
+        "Dublin",
+        "Cork",
+        "Galway",
+        "Limerick",
+        "Waterford"
+      ],
+      "estimatedDuration": {
+        "min": 10,
+        "max": 21
+      },
+      "routeType": "circular"
+    }
+  },
+  "origin": {
+    "value": "",
+    "filled": false,
+    "locked": false,
+    "normalized": ""
+  },
+  "dates": {
+    "startDate": "",
+    "endDate": "",
+    "originalPhrase": "",
+    "filled": false,
+    "locked": false
+  },
+  "travelers": {
+    "value": 1,
+    "filled": false,
+    "locked": false
+  },
+  "budget": {
+    "value": 0,
+    "currency": "USD",
+    "filled": false,
+    "locked": false
+  },
+  "expectedSlot": "destination-scope",
+  "conversationId": "tour-test-1754684097522",
+  "lastUpdated": "2025-08-08T20:14:57.533Z"
+}

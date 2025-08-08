@@ -1,0 +1,76 @@
+{
+  "destination": {
+    "value": "Dublin and Cork",
+    "normalized": "Dublin + Cork",
+    "filled": true,
+    "locked": false,
+    "type": "multi-city",
+    "tripScope": {
+      "scope": "multi",
+      "detectedCities": [
+        "Dublin",
+        "Cork"
+      ],
+      "estimatedDuration": {
+        "min": 4,
+        "max": 8
+      },
+      "routeType": "linear"
+    }
+  },
+  "origin": {
+    "value": "",
+    "filled": false,
+    "locked": false,
+    "normalized": ""
+  },
+  "dates": {
+    "startDate": "",
+    "endDate": "",
+    "originalPhrase": "",
+    "filled": false,
+    "locked": false
+  },
+  "travelers": {
+    "value": 1,
+    "filled": false,
+    "locked": false
+  },
+  "budget": {
+    "value": 0,
+    "currency": "USD",
+    "filled": false,
+    "locked": false
+  },
+  "expectedSlot": "route-confirmation",
+  "conversationId": "multi-city-test-1754684096725",
+  "lastUpdated": "2025-08-08T20:14:57.440Z",
+  "multiCityPlan": {
+    "cities": [
+      {
+        "name": "Dublin",
+        "country": "Unknown",
+        "nights": 4,
+        "priority": "primary",
+        "position": 1
+      },
+      {
+        "name": "Cork",
+        "country": "Unknown",
+        "nights": 4,
+        "priority": "secondary",
+        "position": 2
+      }
+    ],
+    "route": {
+      "sequence": [
+        "Dublin",
+        "Cork"
+      ],
+      "totalDays": 8,
+      "routeType": "linear"
+    },
+    "transport": [],
+    "confirmed": false
+  }
+}

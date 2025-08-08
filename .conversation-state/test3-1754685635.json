@@ -1,0 +1,44 @@
+{
+  "destination": {
+    "value": "London",
+    "normalized": "London",
+    "filled": true,
+    "locked": true,
+    "type": "city",
+    "tripScope": {
+      "scope": "single",
+      "estimatedDuration": {
+        "min": 3,
+        "max": 7
+      },
+      "routeType": "hub-and-spoke"
+    }
+  },
+  "origin": {
+    "value": "",
+    "filled": false,
+    "locked": false,
+    "normalized": ""
+  },
+  "dates": {
+    "startDate": "",
+    "endDate": "",
+    "originalPhrase": "",
+    "filled": false,
+    "locked": false
+  },
+  "travelers": {
+    "value": 1,
+    "filled": false,
+    "locked": false
+  },
+  "budget": {
+    "value": 0,
+    "currency": "USD",
+    "filled": false,
+    "locked": false
+  },
+  "expectedSlot": "origin",
+  "conversationId": "test3-1754685635",
+  "lastUpdated": "2025-08-08T20:40:35.192Z"
+}

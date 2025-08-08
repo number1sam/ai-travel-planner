@@ -1,0 +1,35 @@
+{
+  "destination": {
+    "value": "ireland",
+    "normalized": "Ireland",
+    "filled": true,
+    "locked": true
+  },
+  "origin": {
+    "value": "",
+    "filled": false,
+    "locked": false,
+    "normalized": ""
+  },
+  "dates": {
+    "startDate": "",
+    "endDate": "",
+    "originalPhrase": "",
+    "filled": false,
+    "locked": false
+  },
+  "travelers": {
+    "value": 1,
+    "filled": false,
+    "locked": false
+  },
+  "budget": {
+    "value": 0,
+    "currency": "USD",
+    "filled": false,
+    "locked": false
+  },
+  "expectedSlot": "origin",
+  "conversationId": "fresh-test-123",
+  "lastUpdated": "2025-08-08T19:44:51.040Z"
+}

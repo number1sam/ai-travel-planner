@@ -8,8 +8,6 @@ import { generateHotelSearchPrompt, generateHotelSelectionExplanation, shouldSea
 import ChatInterface from '@/components/planner/ChatInterface'
 import ItineraryPreview from '@/components/planner/ItineraryPreview'
 import ComprehensiveTripPreview from '@/components/planner/ComprehensiveTripPreview'
-import { conversationStateService, type TripState } from '@/services/ConversationStateService'
-import { descriptionGuardrails } from '@/services/DescriptionGuardrails'
 
 interface Message {
   id: string
@@ -31,9 +29,6 @@ interface TripDetails {
   activities: string[]
   accessibility: string[]
 }
-
-// Keep existing TripDetails for backward compatibility with the comprehensive planner
-// The new TripState from the service will be the authoritative source
 
 interface ItineraryDay {
   id: string
@@ -263,11 +258,6 @@ const QUESTIONS = [
   }
 ]
 
-// Generate unique conversation ID for this session
-const generateConversationId = (): string => {
-  return `conv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-}
-
 export default function PlannerPage() {
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -278,9 +268,6 @@ export default function PlannerPage() {
     }
   ])
 
-  // Use persistent state service instead of local state
-  const [conversationId] = useState(() => generateConversationId())
-  const [tripState, setTripState] = useState<TripState | null>(null)
   const [currentMessage, setCurrentMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [tripDetails, setTripDetails] = useState<TripDetails>({
@@ -363,21 +350,6 @@ export default function PlannerPage() {
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
-
-  // Load initial state on mount
-  useEffect(() => {
-    const loadInitialState = async () => {
-      try {
-        const state = await conversationStateService.getState(conversationId)
-        setTripState(state)
-        console.log('🔄 Loaded initial conversation state:', state)
-      } catch (error) {
-        console.error('Failed to load initial state:', error)
-      }
-    }
-    
-    loadInitialState()
-  }, [conversationId])
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -1508,29 +1480,29 @@ export default function PlannerPage() {
           console.log(`🔄 Falling back to existing hotel search for ${city}`)
           const { selectedHotel } = await searchHotelsForDestination(searchProfile)
             
-          if (selectedHotel) {
-            return {
-              success: true,
-              hotels: [{
-                name: selectedHotel.name,
-                type: requiredTripData.accommodationType || 'hotel',
-                location: selectedHotel.location,
-                rating: selectedHotel.rating,
-                pricePerNight: selectedHotel.pricePerNight,
-                amenities: selectedHotel.amenities,
-                checkIn: cityStartDate.toISOString().split('T')[0],
-                checkOut: cityEndDate.toISOString().split('T')[0],
-                nights: nights,
-                bookingLink: selectedHotel.link,
-                reviews: selectedHotel.reviews,
-                description: selectedHotel.description,
-                stars: selectedHotel.stars
-              }]
+            if (selectedHotel) {
+              return {
+                success: true,
+                hotels: [{
+                  name: selectedHotel.name,
+                  type: requiredTripData.accommodationType || 'hotel',
+                  location: selectedHotel.location,
+                  rating: selectedHotel.rating,
+                  pricePerNight: selectedHotel.pricePerNight,
+                  amenities: selectedHotel.amenities,
+                  checkIn: cityStartDate.toISOString().split('T')[0],
+                  checkOut: cityEndDate.toISOString().split('T')[0],
+                  nights: nights,
+                  bookingLink: selectedHotel.link,
+                  reviews: selectedHotel.reviews,
+                  description: selectedHotel.description,
+                  stars: selectedHotel.stars
+                }]
+              }
             }
+          } catch (fallbackError) {
+            console.error(`❌ Fallback hotel search also failed for ${city}:`, fallbackError)
           }
-        } catch (fallbackError) {
-          console.error(`❌ Fallback hotel search also failed for ${city}:`, fallbackError)
-        }
           
           // Final fallback - generic hotel
           return {
@@ -2098,7 +2070,7 @@ export default function PlannerPage() {
   }
 
   const handleSendMessage = async () => {
-    if (!currentMessage.trim() || isLoading || !tripState) return
+    if (!currentMessage.trim() || isLoading) return
 
     // Store the message before clearing it
     const messageText = currentMessage.trim()
@@ -2125,165 +2097,112 @@ export default function PlannerPage() {
     setMessages(prev => [...prev, typingMessage])
 
     try {
-      console.log('🤖 Processing message with persistent state service:', messageText)
+      console.log('🤖 Starting AI response generation for:', messageText)
       
-      // Use the persistent state service to process the message
-      const result = await conversationStateService.processMessage(conversationId, messageText, tripState)
+      const lowerMessage = messageText.toLowerCase()
       
-      // Update local state with the authoritative result
-      setTripState(result.state)
-      
-      let finalResponse = result.confirmation || result.message || "Let me help you with that."
-      
-      // Handle different result types
-      if (result.needsClarification) {
-        finalResponse = result.message || "Could you clarify that for me?"
-      } else if (result.success && result.confirmation) {
-        finalResponse = result.confirmation
-        
-        // If destination was just locked, we can add description (but ONLY for destination)
-        if (result.locked && result.nextSlot === 'origin' && result.state.destination.locked) {
-          console.log('🏛️ Destination locked, can provide description for:', result.state.destination.normalized)
-          
-          // Use guardrails to ensure we only describe the locked destination
-          descriptionGuardrails.searchDestinationInfoGuarded(result.state.destination.normalized, conversationId)
-            .then(info => {
-              if (info) {
-                console.log('✅ Description approved for destination:', info.name)
-              }
-            })
-            .catch(err => console.error('Description guardrail error:', err))
+      // Handle confirmation responses
+      if (waitingForConfirmation) {
+        if (lowerMessage.includes('yes') || lowerMessage.includes('create') || lowerMessage.includes('proceed') || lowerMessage.includes('go ahead')) {
+          // User confirmed - stop waiting for confirmation
+          setWaitingForConfirmation(false)
+        } else if (lowerMessage.includes('no') || lowerMessage.includes('wait') || lowerMessage.includes('more info') || lowerMessage.includes('additional')) {
+          // User wants to add more info - reset confirmation state
+          setWaitingForConfirmation(false)
+          setHasAskedForConfirmation(false)
         }
       }
       
-      // Remove typing indicator and add AI response
-      setMessages(prev => prev.filter(m => m.id !== 'typing').concat([{
-        id: Date.now().toString(),
-        text: finalResponse,
-        sender: 'ai',
-        timestamp: new Date()
-      }]))
+      // Extract information from user message and update state (only if not just confirming)
+      let updates = {}
+      let questionsUpdate = {}
       
-      // Check if we can now search for hotels/activities - enforce constraints
-      const hotelCheck = conversationStateService.canSearchHotels(result.state)
-      const activityCheck = conversationStateService.canSearchActivities(result.state)
-      
-      if (hotelCheck.canSearch && result.state.dates.locked) {
-        const timeline = result.state.dates.bookingTimeline
-        console.log('🏨 Can now search hotels with locked constraints:', {
-          destination: result.state.destination.normalized,
-          dates: `${result.state.dates.startDate} to ${result.state.dates.endDate}`,
-          travelers: result.state.travelers.value || 'not specified',
-          bookingCategory: timeline?.category || 'unknown',
-          daysUntilTravel: timeline?.daysUntilTravel || 0
-        })
+      if (!waitingForConfirmation || (!lowerMessage.includes('yes') && !lowerMessage.includes('create') && !lowerMessage.includes('proceed'))) {
+        // Analyze context first
+        const contextualInfo = analyzeConversationContext(messageText, messages)
+        const extractedInfo = extractTripInformation(messageText, contextualInfo)
+        updates = extractedInfo.updates
+        questionsUpdate = extractedInfo.questionsUpdate
+        console.log('📝 Updating state with contextual info:', { updates, questionsUpdate, contextualInfo })
         
-        // Adjust search strategy based on booking timeline
-        if (timeline) {
-          if (timeline.category === 'last-minute') {
-            console.log('🚨 Using last-minute booking strategy: flexible cancellation, available rooms')
-          } else if (timeline.category === 'advance') {
-            console.log('📅 Using advance booking strategy: early bird rates, premium locations')
-          }
+        // Research destination if found
+        if (questionsUpdate.destination && updates.destination) {
+          console.log('🔍 Triggering destination research for:', updates.destination)
+          // This will be handled in generateAIResponse, but ensure it happens
         }
-        
-        // Future: Trigger hotel search preview here with timeline-aware strategy
-      } else if (!hotelCheck.canSearch) {
-        console.log('⏸️ Cannot search hotels yet, missing:', hotelCheck.missing)
       }
       
-      // If all essential slots are complete, trigger comprehensive planning
-      if (result.state.expectedSlot === 'complete') {
-        console.log('🎯 All slots complete, generating comprehensive itinerary...')
-        
-        // Sync with legacy trip details for existing systems
-        setTripDetails(prev => ({
-          ...prev,
-          destination: result.state.destination.normalized,
-          departureLocation: result.state.origin.normalized,
-          travelers: result.state.travelers.value,
-          budget: result.state.budget.value,
-          startDate: result.state.dates.startDate,
-          endDate: result.state.dates.endDate
+      // Update the trip data state
+      if (Object.keys(updates).length > 0) {
+        setRequiredTripData(prev => ({ ...prev, ...updates }))
+        setTripDetails(prev => ({ 
+          ...prev, 
+          destination: updates.destination || prev.destination,
+          budget: updates.budget || prev.budget,
+          travelers: updates.travelers || prev.travelers,
+          startDate: updates.dates?.startDate || prev.startDate,
+          endDate: updates.dates?.endDate || prev.endDate
         }))
+      }
+      
+      // Update questions answered state
+      if (Object.keys(questionsUpdate).length > 0) {
+        setQuestionsAnswered(prev => ({ ...prev, ...questionsUpdate }))
         
-        // Mark all questions as answered for existing systems
-        setQuestionsAnswered({
-          destination: true,
-          duration: true,
-          budget: true,
-          travelers: true,
-          departureLocation: true,
-          dates: true,
-          accommodationType: true,
-          foodPreferences: true,
-          activities: true,
-          accessibility: true
-        })
-        
-        // Start the comprehensive trip planning process
-        setTimeout(() => {
-          handleGenerateComprehensivePlan()
-        }, 1000)
-      } else if (hotelCheck.canSearch && !tripPlan) {
-        // We have minimum info to start showing hotel previews
-        console.log('📍 Can search hotels with locked constraints:', {
-          destination: result.state.destination.normalized,
-          dates: `${result.state.dates.startDate} to ${result.state.dates.endDate}`
+        // Update conversation context with user's answer
+        setConversationContext(prev => {
+          const updatedHistory = prev.conversationHistory.map(item => {
+            // Find the most recent unanswered question that matches what was just answered
+            if (!item.answer) {
+              const answeredKeys = Object.keys(questionsUpdate)
+              if (answeredKeys.some(key => item.questionKey === key)) {
+                return { ...item, answer: messageText }
+              }
+            }
+            return item
+          })
+          
+          return {
+            ...prev,
+            conversationHistory: updatedHistory
+          }
         })
       }
       
-      // Update suggested prompts based on current expected slot
-      updateSuggestedPromptsForSlot(result.state.expectedSlot)
-
-    } catch (error) {
-      console.error('🚨 Error in persistent state message handling:', error)
+      const aiResponse = await generateAIResponse(messageText, messages, { updates, questionsUpdate })
+      console.log('✅ AI response generated successfully:', aiResponse.substring(0, 100) + '...')
       
-      // Remove typing indicator and show error
-      setMessages(prev => prev.filter(m => m.id !== 'typing').concat([{
-        id: Date.now().toString(),
-        text: "I'm sorry, I encountered an error. Please try again, or let me know what you'd like to plan for your trip!",
-        sender: 'ai',
-        timestamp: new Date()
-      }]))
+      // Remove typing indicator and add actual response
+      setMessages(prev => {
+        const filtered = prev.filter(m => m.id !== 'typing')
+        return [...filtered, {
+          id: Date.now().toString(),
+          text: aiResponse,
+          sender: 'ai',
+          timestamp: new Date()
+        }]
+      })
+
+      // Update suggested prompts based on context
+      updateSuggestedPrompts(messageText)
+      
+    } catch (error) {
+      console.error('❌ Chat error:', error)
+      console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace')
+      
+      setMessages(prev => {
+        const filtered = prev.filter(m => m.id !== 'typing')
+        return [...filtered, {
+          id: Date.now().toString(),
+          text: `I apologize, but I encountered an error processing your request. Error: ${error instanceof Error ? error.message : 'Unknown error'}. Please try again.`,
+          sender: 'ai',
+          timestamp: new Date()
+        }]
+      })
     } finally {
       setIsLoading(false)
     }
   }
-
-  // Helper function to update suggested prompts based on current slot
-  const updateSuggestedPromptsForSlot = (expectedSlot: string) => {
-    const slotPrompts = {
-      destination: [
-        "I want to visit Paris",
-        "Let's plan a trip to Tokyo", 
-        "I'm thinking about Italy"
-      ],
-      origin: [
-        "I'm flying from New York",
-        "Departing from London",
-        "Starting from Los Angeles"
-      ],
-      dates: [
-        "March 15th for 10 days",
-        "Next month for a week",
-        "Summer vacation, 2 weeks"
-      ],
-      travelers: [
-        "Just me (solo trip)",
-        "2 people",
-        "Family of 4"
-      ],
-      budget: [
-        "$3000 total budget",
-        "Around £2500",
-        "€4000 for everything"
-      ]
-    }
-    
-    setAvailablePrompts(slotPrompts[expectedSlot] || suggestedPrompts.slice(0, 3))
-  }
-
 
   const updateSuggestedPrompts = (userMessage: string) => {
     const lowerMessage = userMessage.toLowerCase()

@@ -519,45 +519,100 @@ export class AIOrchestrationService {
     const config = this.BOT_CONFIG.hotel
 
     try {
+      // Import HotelBot dynamically to avoid circular dependencies
+      const { HotelBot } = await import('./HotelBot')
+      
       // Calculate nights
       const nights = Math.ceil((context.endDate.getTime() - context.startDate.getTime()) / (1000 * 60 * 60 * 24))
-      const budgetPerNight = context.budget.breakdown.accommodation / nights
+      const totalAccommodationBudget = context.budget.breakdown.accommodation
 
-      // Use Claude for hotel recommendations
-      const message = await this.anthropic.messages.create({
-        model: config.model,
-        max_tokens: 1000,
-        temperature: config.temperature,
-        messages: [{
-          role: 'user',
-          content: `Find hotels in ${context.destination} for:
-          - Check-in: ${context.startDate}
-          - Check-out: ${context.endDate}
-          - Guests: ${context.groupSize}
-          - Budget per night: ${context.budget.currency} ${budgetPerNight}
-          
-          Requirements:
-          ${context.preferences.accessibility ? '- Wheelchair accessible' : ''}
-          - Travel style: ${context.preferences.travelStyle.join(', ')}
-          
-          Provide 5 hotel options with details on location, amenities, and why each matches the requirements.`
-        }]
+      // Use real HotelBot service
+      const hotels = await HotelBot.searchHotels({
+        destination: context.destination,
+        checkInDate: context.startDate.toISOString().split('T')[0],
+        checkOutDate: context.endDate.toISOString().split('T')[0],
+        guests: context.groupSize,
+        budget: totalAccommodationBudget,
+        preferences: {
+          starRating: context.preferences.travelStyle.includes('luxury') ? 4 : 3,
+          amenities: [],
+          accessibility: context.preferences.accessibility?.needsWheelchair || false,
+          location: 'city_center' as const
+        },
+        plannedActivities: structure.activities || []
       })
 
-      // Parse suggestions
-      const suggestions = this.parseHotelSuggestions(message.content[0].text)
+      // Transform hotel results to bot suggestions format
+      const suggestions = hotels.slice(0, 5).map(hotel => {
+        const lowestPrice = Math.min(...hotel.rooms.map(room => room.price.amount))
+        const totalPrice = hotel.rooms[0].price.perNight ? lowestPrice * nights : lowestPrice
+        
+        return {
+          id: hotel.id,
+          name: hotel.name,
+          description: `${hotel.starRating}-star hotel in ${hotel.location.type.replace('_', ' ')}. ${hotel.location.walkingDistanceToCenter} from center. ${hotel.amenities.slice(0, 3).join(', ')}`,
+          price: totalPrice,
+          currency: 'GBP',
+          location: {
+            lat: hotel.coordinates.lat,
+            lng: hotel.coordinates.lng,
+            address: hotel.address
+          },
+          metadata: {
+            starRating: hotel.starRating,
+            amenities: hotel.amenities,
+            roomType: hotel.rooms[0].type,
+            accessible: hotel.accessibility.wheelchairAccessible,
+            reviews: hotel.reviews,
+            cancellationPolicy: hotel.cancellationPolicy,
+            walkingDistance: hotel.location.walkingDistanceToCenter,
+            nearbyAttractions: hotel.location.nearbyAttractions
+          },
+          score: hotel.score,
+          reasoning: `Selected for: ${hotel.reviews.overall}/10 rating, ${hotel.location.walkingDistanceToCenter} from center, ${hotel.cancellationPolicy}`
+        }
+      })
+
       const rankedSuggestions = this.rankSuggestions(suggestions, context, 'hotel')
 
       return {
         botType: 'hotel',
         botId: config.id,
-        confidence: 0.90,
+        confidence: hotels.length > 0 ? 0.90 : 0.60,
         suggestions: rankedSuggestions,
         processingTime: Date.now() - startTime,
         cacheHit: false
       }
     } catch (error) {
-      throw error
+      console.error('AIOrchestrationService: Error calling HotelBot:', error)
+      // Return fallback response
+      return {
+        botType: 'hotel',
+        botId: config.id,
+        confidence: 0.30,
+        suggestions: [{
+          id: 'fallback_hotel',
+          name: `${context.destination} Central Hotel`,
+          description: 'Comfortable hotel in city center',
+          price: context.budget.breakdown.accommodation,
+          currency: 'GBP',
+          location: {
+            lat: 0,
+            lng: 0,
+            address: `City Center, ${context.destination}`
+          },
+          metadata: {
+            starRating: 3,
+            amenities: ['WiFi', 'Breakfast'],
+            accessible: true
+          },
+          score: 50,
+          reasoning: 'Default hotel option'
+        }],
+        processingTime: Date.now() - startTime,
+        cacheHit: false,
+        errors: [error.message]
+      }
     }
   }
 
@@ -1001,32 +1056,6 @@ export class AIOrchestrationService {
     ]
   }
 
-  /**
-   * Parse hotel suggestions from AI response
-   */
-  private static parseHotelSuggestions(content: string): any[] {
-    // Parse Claude's response
-    return [
-      {
-        id: 'hotel-1',
-        name: 'Grand Plaza Hotel',
-        description: 'Luxury hotel in city center with spa',
-        price: 150,
-        currency: 'GBP',
-        location: {
-          lat: 0,
-          lng: 0,
-          address: 'City Center, Main Square'
-        },
-        metadata: {
-          rating: 4.6,
-          amenities: ['Spa', 'Pool', 'Gym', 'Restaurant'],
-          roomType: 'Deluxe Room',
-          accessible: true
-        }
-      }
-    ]
-  }
 
   /**
    * Parse activity suggestions from AI response

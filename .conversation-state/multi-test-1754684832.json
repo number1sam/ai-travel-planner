@@ -1,0 +1,76 @@
+{
+  "destination": {
+    "value": "London, Paris, and Rome",
+    "normalized": "London, Paris, + Rome",
+    "filled": true,
+    "locked": true,
+    "type": "multi-city",
+    "tripScope": {
+      "scope": "multi",
+      "detectedCities": [
+        "London, Paris,",
+        "Rome"
+      ],
+      "estimatedDuration": {
+        "min": 4,
+        "max": 8
+      },
+      "routeType": "linear"
+    }
+  },
+  "origin": {
+    "value": "",
+    "filled": false,
+    "locked": false,
+    "normalized": ""
+  },
+  "dates": {
+    "startDate": "2025-08-15",
+    "endDate": "2025-08-28",
+    "originalPhrase": "June 15 for 14 days",
+    "filled": true,
+    "locked": false
+  },
+  "travelers": {
+    "value": 2,
+    "filled": true,
+    "locked": true
+  },
+  "budget": {
+    "value": 5000,
+    "currency": "USD",
+    "filled": true,
+    "locked": true
+  },
+  "expectedSlot": "origin",
+  "conversationId": "multi-test-1754684832",
+  "lastUpdated": "2025-08-08T20:27:12.524Z",
+  "multiCityPlan": {
+    "cities": [
+      {
+        "name": "London, Paris,",
+        "country": "Unknown",
+        "nights": 4,
+        "priority": "primary",
+        "position": 1
+      },
+      {
+        "name": "Rome",
+        "country": "Unknown",
+        "nights": 4,
+        "priority": "secondary",
+        "position": 2
+      }
+    ],
+    "route": {
+      "sequence": [
+        "London, Paris,",
+        "Rome"
+      ],
+      "totalDays": 8,
+      "routeType": "linear"
+    },
+    "transport": [],
+    "confirmed": true
+  }
+}

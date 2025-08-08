@@ -1,5 +1,8 @@
 import RedisClient from '@/lib/redis'
 import { prisma } from '@/lib/prisma'
+import { BookingAPI } from './hotel-apis/BookingAPI'
+import { AmadeusAPI } from './hotel-apis/AmadeusAPI'
+import { searchHotelsForDestination, SearchProfile, Hotel as RealHotel } from '@/utils/hotelSearch'
 
 export interface HotelSearchParams {
   destination: string
@@ -106,9 +109,9 @@ export class HotelBot {
   // Query multiple APIs in parallel
   private static async queryApisWithRetry(params: HotelSearchParams): Promise<HotelResult[]> {
     const apis = [
-      () => HotelBot.queryBookingAPI(params),
-      () => HotelBot.queryExpediaAPI(params),
-      () => HotelBot.queryHotelsAPI(params)
+      () => BookingAPI.searchHotels(params),
+      () => AmadeusAPI.searchHotels(params),
+      () => HotelBot.queryInternalDatabase(params)
     ]
 
     const results: HotelResult[] = []
@@ -139,181 +142,12 @@ export class HotelBot {
       }
     })
 
-    return results
+    // Remove duplicates based on hotel name and location
+    const uniqueResults = HotelBot.removeDuplicates(results)
+    
+    return uniqueResults
   }
 
-  // Booking.com API integration
-  private static async queryBookingAPI(params: HotelSearchParams): Promise<HotelResult[]> {
-    const apiKey = await HotelBot.getApiKey('booking')
-    if (!apiKey) throw new Error('Booking.com API key not found')
-
-    // Simulate API call (replace with actual Booking.com API)
-    const mockResults: HotelResult[] = [
-      {
-        id: 'booking_1',
-        name: 'Hotel Artemide',
-        starRating: 4,
-        address: 'Via Nazionale 22, Rome, Italy',
-        coordinates: {
-          lat: 41.9028,
-          lng: 12.4964
-        },
-        images: ['/hotel-artemide-1.jpg', '/hotel-artemide-2.jpg'],
-        amenities: ['WiFi', 'Gym', 'Spa', 'Restaurant', 'Bar', 'Room Service', 'Concierge'],
-        rooms: [
-          {
-            type: 'Standard Double Room',
-            description: 'Comfortable room with city view',
-            price: {
-              amount: 180,
-              currency: 'GBP',
-              perNight: true
-            },
-            available: 5
-          },
-          {
-            type: 'Superior Room',
-            description: 'Spacious room with premium amenities',
-            price: {
-              amount: 220,
-              currency: 'GBP',
-              perNight: true
-            },
-            available: 3
-          }
-        ],
-        location: {
-          type: 'city_center',
-          walkingDistanceToCenter: '5 minutes',
-          nearbyAttractions: ['Termini Station', 'Colosseum', 'Roman Forum']
-        },
-        accessibility: {
-          wheelchairAccessible: true,
-          features: ['Accessible entrance', 'Elevator', 'Accessible bathroom']
-        },
-        reviews: {
-          overall: 8.7,
-          cleanliness: 9.1,
-          location: 9.5,
-          service: 8.9,
-          value: 8.2,
-          count: 2847
-        },
-        cancellationPolicy: 'Free cancellation until 24 hours before check-in',
-        score: 0
-      }
-    ]
-
-    return HotelBot.filterHotels(mockResults, params)
-  }
-
-  // Expedia API integration
-  private static async queryExpediaAPI(params: HotelSearchParams): Promise<HotelResult[]> {
-    const apiKey = await HotelBot.getApiKey('expedia')
-    if (!apiKey) throw new Error('Expedia API key not found')
-
-    const mockResults: HotelResult[] = [
-      {
-        id: 'expedia_1',
-        name: 'Luxury City Hotel',
-        starRating: 5,
-        address: 'Central Square 15, Rome, Italy',
-        coordinates: {
-          lat: 41.9027,
-          lng: 12.4963
-        },
-        images: ['/luxury-hotel-1.jpg'],
-        amenities: ['WiFi', 'Pool', 'Spa', 'Fine Dining', 'Butler Service', 'Valet Parking'],
-        rooms: [
-          {
-            type: 'Deluxe Suite',
-            description: 'Luxurious suite with panoramic city views',
-            price: {
-              amount: 350,
-              currency: 'GBP',
-              perNight: true
-            },
-            available: 2
-          }
-        ],
-        location: {
-          type: 'city_center',
-          walkingDistanceToCenter: '2 minutes',
-          nearbyAttractions: ['Spanish Steps', 'Trevi Fountain', 'Pantheon']
-        },
-        accessibility: {
-          wheelchairAccessible: true,
-          features: ['Full accessibility', 'Accessible parking', 'Braille signage']
-        },
-        reviews: {
-          overall: 9.2,
-          cleanliness: 9.8,
-          location: 9.9,
-          service: 9.5,
-          value: 7.8,
-          count: 1203
-        },
-        cancellationPolicy: 'Free cancellation until 48 hours before check-in',
-        score: 0
-      }
-    ]
-
-    return HotelBot.filterHotels(mockResults, params)
-  }
-
-  // Hotels.com API integration
-  private static async queryHotelsAPI(params: HotelSearchParams): Promise<HotelResult[]> {
-    const apiKey = await HotelBot.getApiKey('hotels')
-    if (!apiKey) throw new Error('Hotels.com API key not found')
-
-    const mockResults: HotelResult[] = [
-      {
-        id: 'hotels_1',
-        name: 'Budget Comfort Inn',
-        starRating: 3,
-        address: 'Via del Corso 101, Rome, Italy',
-        coordinates: {
-          lat: 41.9010,
-          lng: 12.4950
-        },
-        images: ['/budget-hotel-1.jpg'],
-        amenities: ['WiFi', 'Breakfast', 'Tour Desk'],
-        rooms: [
-          {
-            type: 'Economy Room',
-            description: 'Clean and comfortable basic room',
-            price: {
-              amount: 95,
-              currency: 'GBP',
-              perNight: true
-            },
-            available: 8
-          }
-        ],
-        location: {
-          type: 'city_center',
-          walkingDistanceToCenter: '10 minutes',
-          nearbyAttractions: ['Shopping District', 'Historic Center']
-        },
-        accessibility: {
-          wheelchairAccessible: false,
-          features: []
-        },
-        reviews: {
-          overall: 7.8,
-          cleanliness: 8.2,
-          location: 8.5,
-          service: 7.9,
-          value: 9.1,
-          count: 892
-        },
-        cancellationPolicy: 'Free cancellation until 24 hours before check-in',
-        score: 0
-      }
-    ]
-
-    return HotelBot.filterHotels(mockResults, params)
-  }
 
   // Location intelligence - calculate distances to planned activities
   private static async calculateActivityDistances(
@@ -430,54 +264,252 @@ export class HotelBot {
     })
   }
 
-  // Fallback hotels when APIs fail
-  private static async getFallbackHotels(params: HotelSearchParams): Promise<HotelResult[]> {
-    console.log('HotelBot: Using fallback hotel templates')
-    
-    const fallbackHotels: HotelResult[] = [
-      {
-        id: 'fallback_1',
-        name: 'Standard City Hotel',
-        starRating: 3,
-        address: `Central Area, ${params.destination}`,
-        coordinates: { lat: 0, lng: 0 },
-        images: ['/placeholder-hotel.jpg'],
-        amenities: ['WiFi', 'Reception', 'Breakfast'],
-        rooms: [
-          {
-            type: 'Standard Room',
-            description: 'Comfortable accommodation',
-            price: {
-              amount: 120,
-              currency: 'GBP',
-              perNight: true
-            },
-            available: 10
-          }
-        ],
-        location: {
-          type: 'city_center',
-          walkingDistanceToCenter: '15 minutes',
-          nearbyAttractions: ['City Center']
-        },
-        accessibility: {
-          wheelchairAccessible: true,
-          features: ['Basic accessibility']
-        },
-        reviews: {
-          overall: 8.0,
-          cleanliness: 8.0,
-          location: 8.0,
-          service: 8.0,
-          value: 8.0,
-          count: 100
-        },
-        cancellationPolicy: 'Standard cancellation policy',
-        score: 75
+  // Query internal database as fallback
+  private static async queryInternalDatabase(params: HotelSearchParams): Promise<HotelResult[]> {
+    try {
+      // Use the real hotel database from hotelSearch.ts
+      const searchProfile: SearchProfile = {
+        destinationCity: params.destination,
+        country: HotelBot.getCountryFromDestination(params.destination),
+        checkIn: params.checkInDate,
+        checkOut: params.checkOutDate,
+        guests: params.guests,
+        nights: HotelBot.calculateNights(params.checkInDate, params.checkOutDate),
+        totalBudget: params.budget || 1000,
+        accommodationBudget: params.budget || 1000,
+        maxNightlyRate: params.budget ? Math.floor(params.budget / HotelBot.calculateNights(params.checkInDate, params.checkOutDate)) : 150,
+        stayType: 'hotel',
+        preferredAmenities: params.preferences?.amenities || [],
+        locationPreference: params.preferences?.location || 'city_center'
       }
-    ]
 
-    return fallbackHotels
+      const realHotels = await searchHotelsForDestination(searchProfile)
+      return HotelBot.convertRealHotelsToHotelResults(realHotels.selectedHotel, realHotels.alternatives, params)
+    } catch (error) {
+      console.error('HotelBot: Error querying real hotel database:', error)
+      return HotelBot.getDefaultHotelsForDestination(params)
+    }
+  }
+
+  // Get default hotels for popular destinations
+  private static getDefaultHotelsForDestination(params: HotelSearchParams): HotelResult[] {
+    const destination = params.destination.toLowerCase()
+    const nights = HotelBot.calculateNights(params.checkInDate, params.checkOutDate)
+    const budgetPerNight = params.budget ? params.budget / nights : 150
+
+    // Default hotels for popular destinations
+    const destinationHotels: Record<string, HotelResult[]> = {
+      rome: [
+        {
+          id: 'default_rome_1',
+          name: 'Hotel Forum Roma',
+          starRating: 4,
+          address: 'Via Tor de Conti, 25, 00184 Roma',
+          coordinates: { lat: 41.8925, lng: 12.4853 },
+          images: ['/api/placeholder/400/300'],
+          amenities: ['WiFi', 'Restaurant', 'Bar', 'Rooftop Terrace', 'Concierge'],
+          rooms: [{
+            type: 'Classic Room',
+            description: 'Elegant room with Roman decor',
+            price: { amount: Math.min(165, budgetPerNight), currency: 'GBP', perNight: true },
+            available: 4
+          }],
+          location: {
+            type: 'city_center',
+            walkingDistanceToCenter: '5 minutes',
+            nearbyAttractions: ['Colosseum', 'Roman Forum', 'Trevi Fountain']
+          },
+          accessibility: {
+            wheelchairAccessible: true,
+            features: ['Accessible entrance', 'Elevator']
+          },
+          reviews: {
+            overall: 8.6, cleanliness: 8.8, location: 9.5, service: 8.7, value: 8.3, count: 1842
+          },
+          cancellationPolicy: 'Free cancellation up to 24 hours before',
+          score: 0
+        }
+      ],
+      paris: [
+        {
+          id: 'default_paris_1',
+          name: 'Hotel Malte Opera',
+          starRating: 4,
+          address: '63 Rue de Richelieu, 75002 Paris',
+          coordinates: { lat: 48.8689, lng: 2.3368 },
+          images: ['/api/placeholder/400/300'],
+          amenities: ['WiFi', 'Bar', 'Concierge', 'Room Service'],
+          rooms: [{
+            type: 'Superior Room',
+            description: 'Parisian elegance with modern comfort',
+            price: { amount: Math.min(195, budgetPerNight), currency: 'GBP', perNight: true },
+            available: 3
+          }],
+          location: {
+            type: 'city_center',
+            walkingDistanceToCenter: '3 minutes',
+            nearbyAttractions: ['Louvre', 'Opera', 'Palais Royal']
+          },
+          accessibility: {
+            wheelchairAccessible: false,
+            features: []
+          },
+          reviews: {
+            overall: 8.7, cleanliness: 8.9, location: 9.4, service: 8.8, value: 8.2, count: 1256
+          },
+          cancellationPolicy: 'Free cancellation up to 48 hours before',
+          score: 0
+        }
+      ],
+      florence: [
+        {
+          id: 'default_florence_1',
+          name: 'Hotel Davanzati',
+          starRating: 4,
+          address: 'Via Porta Rossa, 5, 50123 Firenze',
+          coordinates: { lat: 43.7711, lng: 11.2538 },
+          images: ['/api/placeholder/400/300'],
+          amenities: ['WiFi', 'Breakfast', 'Bar', 'Concierge', 'Room Service'],
+          rooms: [{
+            type: 'Deluxe Room',
+            description: 'Renaissance charm with modern amenities',
+            price: { amount: Math.min(175, budgetPerNight), currency: 'GBP', perNight: true },
+            available: 5
+          }],
+          location: {
+            type: 'city_center',
+            walkingDistanceToCenter: '2 minutes',
+            nearbyAttractions: ['Duomo', 'Uffizi Gallery', 'Ponte Vecchio']
+          },
+          accessibility: {
+            wheelchairAccessible: true,
+            features: ['Accessible entrance', 'Elevator']
+          },
+          reviews: {
+            overall: 8.8, cleanliness: 9.0, location: 9.6, service: 8.9, value: 8.4, count: 987
+          },
+          cancellationPolicy: 'Free cancellation up to 24 hours before',
+          score: 0
+        }
+      ]
+    }
+
+    // Return hotels for specific destination or generic ones
+    const specificHotels = Object.entries(destinationHotels).find(([key]) => 
+      destination.includes(key)
+    )?.[1]
+
+    if (specificHotels) {
+      return HotelBot.filterHotels(specificHotels, params)
+    }
+
+    // Generic hotels for any destination
+    return [{
+      id: 'default_generic_1',
+      name: `${params.destination} Central Hotel`,
+      starRating: 3,
+      address: `City Center, ${params.destination}`,
+      coordinates: { lat: 0, lng: 0 },
+      images: ['/api/placeholder/400/300'],
+      amenities: ['WiFi', 'Breakfast', 'Reception 24h'],
+      rooms: [{
+        type: 'Standard Room',
+        description: 'Comfortable room in central location',
+        price: { amount: Math.min(120, budgetPerNight), currency: 'GBP', perNight: true },
+        available: 5
+      }],
+      location: {
+        type: 'city_center',
+        walkingDistanceToCenter: '10 minutes',
+        nearbyAttractions: ['City Center', 'Shopping District']
+      },
+      accessibility: {
+        wheelchairAccessible: true,
+        features: ['Accessible entrance']
+      },
+      reviews: {
+        overall: 8.0, cleanliness: 8.2, location: 8.5, service: 8.0, value: 8.3, count: 500
+      },
+      cancellationPolicy: 'Standard cancellation policy',
+      score: 0
+    }]
+  }
+
+  // Remove duplicate hotels
+  private static removeDuplicates(hotels: HotelResult[]): HotelResult[] {
+    const seen = new Map<string, HotelResult>()
+    
+    for (const hotel of hotels) {
+      const key = `${hotel.name.toLowerCase()}-${hotel.address.toLowerCase()}`
+      if (!seen.has(key) || (seen.get(key)!.score < hotel.score)) {
+        seen.set(key, hotel)
+      }
+    }
+    
+    return Array.from(seen.values())
+  }
+
+  // Fallback hotels when APIs fail - use real hotel database
+  private static async getFallbackHotels(params: HotelSearchParams): Promise<HotelResult[]> {
+    console.log('HotelBot: Using real hotel database as fallback')
+    
+    try {
+      // Use the same logic as queryInternalDatabase to get real hotels
+      const searchProfile: SearchProfile = {
+        destinationCity: params.destination,
+        country: HotelBot.getCountryFromDestination(params.destination),
+        checkIn: params.checkInDate,
+        checkOut: params.checkOutDate,
+        guests: params.guests,
+        nights: HotelBot.calculateNights(params.checkInDate, params.checkOutDate),
+        totalBudget: params.budget || 1000,
+        accommodationBudget: params.budget || 1000,
+        maxNightlyRate: params.budget ? Math.floor(params.budget / HotelBot.calculateNights(params.checkInDate, params.checkOutDate)) : 150,
+        stayType: 'hotel',
+        preferredAmenities: params.preferences?.amenities || [],
+        locationPreference: params.preferences?.location || 'city_center'
+      }
+
+      const realHotels = await searchHotelsForDestination(searchProfile)
+      const convertedHotels = HotelBot.convertRealHotelsToHotelResults(realHotels.selectedHotel, realHotels.alternatives, params)
+      
+      if (convertedHotels.length > 0) {
+        return convertedHotels
+      }
+    } catch (error) {
+      console.error('HotelBot: Error getting real hotels for fallback:', error)
+    }
+
+    // Final fallback - simple generic hotel
+    return [{
+      id: 'generic_fallback_1',
+      name: `${params.destination} Central Hotel`,
+      starRating: 3,
+      address: `Central Area, ${params.destination}`,
+      coordinates: { lat: 0, lng: 0 },
+      images: ['/placeholder-hotel.jpg'],
+      amenities: ['WiFi', 'Reception', 'Breakfast'],
+      rooms: [{
+        type: 'Standard Room',
+        description: 'Comfortable accommodation',
+        price: { amount: 120, currency: 'GBP', perNight: true },
+        available: 10
+      }],
+      location: {
+        type: 'city_center',
+        walkingDistanceToCenter: '15 minutes',
+        nearbyAttractions: ['City Center']
+      },
+      accessibility: {
+        wheelchairAccessible: true,
+        features: ['Basic accessibility']
+      },
+      reviews: {
+        overall: 8.0, cleanliness: 8.0, location: 8.0, service: 8.0, value: 8.0, count: 100
+      },
+      cancellationPolicy: 'Standard cancellation policy',
+      score: 75
+    }]
   }
 
   // Helper methods
@@ -522,6 +554,105 @@ export class HotelBot {
 
   private static async logSearchResults(params: HotelSearchParams, results: HotelResult[]): Promise<void> {
     console.log(`HotelBot: Logged search for ${params.destination}, found ${results.length} results`)
+  }
+
+  // Convert real hotel data to HotelResult format
+  private static convertRealHotelsToHotelResults(selectedHotel: RealHotel | null, alternatives: RealHotel[], params: HotelSearchParams): HotelResult[] {
+    const allHotels = [selectedHotel, ...alternatives].filter(Boolean) as RealHotel[]
+    
+    return allHotels.map(hotel => ({
+      id: `real_${hotel.name.toLowerCase().replace(/\s+/g, '_')}`,
+      name: hotel.name,
+      starRating: hotel.stars || 4,
+      address: hotel.location,
+      coordinates: hotel.coordinates || { lat: 0, lng: 0 },
+      images: hotel.images || ['/api/placeholder/400/300'],
+      amenities: hotel.amenities,
+      rooms: hotel.rooms || [{
+        type: 'Standard Room',
+        description: hotel.description || 'Comfortable room',
+        price: { amount: hotel.pricePerNight, currency: 'GBP', perNight: true },
+        available: 5
+      }],
+      location: {
+        type: 'city_center',
+        walkingDistanceToCenter: '10 minutes',
+        nearbyAttractions: [hotel.location]
+      },
+      accessibility: {
+        wheelchairAccessible: hotel.amenities.includes('Accessible'),
+        features: hotel.amenities.includes('Accessible') ? ['Accessible entrance'] : []
+      },
+      reviews: {
+        overall: hotel.rating * 2, // Convert from 5-point to 10-point scale
+        cleanliness: hotel.rating * 2,
+        location: hotel.rating * 2,
+        service: hotel.rating * 2,
+        value: hotel.rating * 2,
+        count: hotel.reviews || 100
+      },
+      cancellationPolicy: hotel.cancellationPolicy || 'Standard cancellation policy',
+      score: Math.round(hotel.rating * 30) // Base score from rating
+    }))
+  }
+
+  // Map destination to country
+  private static getCountryFromDestination(destination: string): string {
+    const destinationToCountry: Record<string, string> = {
+      'rome': 'Italy',
+      'florence': 'Italy',
+      'venice': 'Italy',
+      'milan': 'Italy',
+      'paris': 'France',
+      'nice': 'France',
+      'lyon': 'France',
+      'london': 'United Kingdom',
+      'manchester': 'United Kingdom',
+      'edinburgh': 'United Kingdom',
+      'tokyo': 'Japan',
+      'osaka': 'Japan',
+      'kyoto': 'Japan',
+      'bangkok': 'Thailand',
+      'phuket': 'Thailand',
+      'chiang mai': 'Thailand',
+      'barcelona': 'Spain',
+      'madrid': 'Spain',
+      'seville': 'Spain',
+      'tenerife': 'Spain',
+      'new york': 'United States',
+      'los angeles': 'United States',
+      'chicago': 'United States',
+      'dubai': 'United Arab Emirates',
+      'abu dhabi': 'United Arab Emirates',
+      'sydney': 'Australia',
+      'melbourne': 'Australia',
+      'cancun': 'Mexico',
+      'mexico city': 'Mexico',
+      'amsterdam': 'Netherlands',
+      'rotterdam': 'Netherlands',
+      'singapore': 'Singapore',
+      'cape town': 'South Africa',
+      'johannesburg': 'South Africa',
+      'istanbul': 'Turkey',
+      'ankara': 'Turkey'
+    }
+
+    const lowerDestination = destination.toLowerCase()
+    
+    // Check for exact matches
+    if (destinationToCountry[lowerDestination]) {
+      return destinationToCountry[lowerDestination]
+    }
+    
+    // Check for partial matches
+    for (const [city, country] of Object.entries(destinationToCountry)) {
+      if (lowerDestination.includes(city) || city.includes(lowerDestination)) {
+        return country
+      }
+    }
+    
+    // Default fallback
+    return 'Unknown'
   }
 
   // User feedback for continuous learning

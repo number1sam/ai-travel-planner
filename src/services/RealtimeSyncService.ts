@@ -1,6 +1,6 @@
 import EventEmitter from 'events'
 import { Server as SocketIOServer } from 'socket.io'
-import { createAdapter } from '@socket.io/redis-adapter'
+// import { createAdapter } from '@socket.io/redis-adapter' // Disabled for development
 import { Redis } from 'ioredis'
 import { prisma } from '@/lib/prisma'
 import { redis } from '@/lib/redis'
