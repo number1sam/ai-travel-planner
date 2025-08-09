@@ -1,0 +1,334 @@
+{
+  "conversationId": "test-england-conversation-1754726742",
+  "messages": [
+    {
+      "id": "1754726743680-0wyzhla6g",
+      "content": "I would like to go to England",
+      "role": "user",
+      "timestamp": "2025-08-09T08:05:43.680Z"
+    },
+    {
+      "id": "1754726743682-8pk7at1i0",
+      "content": "Fantastic choice! England is incredible for travelers. I need to know which part of England interests you most:\n\n🏙️ **Focus on One City** (Perfect for a deeper experience):\n• **London** - The main hub with world-class attractions\n• **Bath** - Georgian architecture and Roman baths  \n• **York** - Medieval city with historic walls\n\n🗺️ **Multi-City Adventure** (See more of the country):\n• **Regional Tour**: 2-3 cities (perfect for 5-10 days)\n• **Grand Tour**: Experience England comprehensively (10+ days)\n\n🏘️ **Charming Small Towns & Villages**:\n• **Cotswolds** - Honey-stone villages and countryside\n• **Lake District** - Traditional villages with stunning lakes\n• **Yorkshire Dales** - Historic market towns\n\nWhich approach sounds more appealing to you?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T08:05:43.682Z",
+      "metadata": {
+        "extractedInfo": {
+          "destination": {
+            "primary": "England",
+            "type": "country"
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754726743722-2wsomdrd8",
+      "content": "can i go to a group of small charming towns in england please, for sight seeing",
+      "role": "user",
+      "timestamp": "2025-08-09T08:05:43.722Z"
+    },
+    {
+      "id": "1754726744535-mban56ac5",
+      "content": "I found some wonderful small towns in England! Here are the best options:\n\n🏘️ **Chipping Campden**\nA quintessential Cotswolds village with honey-colored limestone buildings, traditional thatched cottages, and charming market square. Perfect for exploring the scenic countryside.\n✨ Highlights: Traditional markets, Historic architecture\n🎯 Perfect for: couples, history lovers\n📍 Location: Near Oxford\n\n🏘️ **Bourton-on-the-Water**\nBourton-on-the-Water is a charming destination with traditional architecture, local culture, and authentic English character. Perfect for experiencing quintessential countryside life.\n✨ Highlights: Traditional markets, Historic architecture\n🎯 Perfect for: couples, history lovers\n📍 Location: Near Oxford\n\n🏘️ **Stow-on-the-Wold**\nStow-on-the-Wold is a charming destination with traditional architecture, local culture, and authentic English character. Perfect for experiencing quintessential countryside life.\n✨ Highlights: Traditional markets, Historic architecture\n🎯 Perfect for: couples, history lovers\n📍 Location: Near London\n\n🏘️ **Bath**\nA UNESCO World Heritage city famous for Georgian architecture, Roman baths, and elegant crescents. Combines historic charm with modern amenities.\n✨ Highlights: Traditional markets, Historic architecture\n🎯 Perfect for: couples, history lovers\n📍 Location: Near Bath\n\n🏘️ **York**\nA medieval city with cobblestone streets, York Minster cathedral, and well-preserved city walls. Rich in history and perfect for walking tours.\n✨ Highlights: Traditional markets, Historic architecture\n🎯 Perfect for: couples, history lovers\n📍 Location: Near York\n\nWhich of these destinations interests you most? I can create a detailed itinerary once you choose!",
+      "role": "assistant",
+      "timestamp": "2025-08-09T08:05:44.535Z",
+      "metadata": {
+        "extractedInfo": {
+          "destination": {
+            "type": "small-towns",
+            "preferences": "can i go to a group of small charming towns in england please, for sight seeing",
+            "primary": "England"
+          }
+        },
+        "researchTriggered": false,
+        "destinationsResearched": [
+          "Chipping Campden",
+          "Bourton-on-the-Water",
+          "Stow-on-the-Wold",
+          "Bath",
+          "York",
+          "Canterbury",
+          "Lavenham",
+          "Castle Combe"
+        ]
+      }
+    },
+    {
+      "id": "1754726744599-c6a3uhcaa",
+      "content": "what would be a good budget for 7 days?",
+      "role": "user",
+      "timestamp": "2025-08-09T08:05:44.599Z"
+    },
+    {
+      "id": "1754726744600-6j2ulelwk",
+      "content": "Perfect! A 7-day trip to England. What's your total budget?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T08:05:44.600Z",
+      "metadata": {
+        "extractedInfo": {
+          "dates": {
+            "duration": 7
+          }
+        },
+        "researchTriggered": false,
+        "destinationsResearched": [
+          "Chipping Campden",
+          "Bourton-on-the-Water",
+          "Stow-on-the-Wold",
+          "Bath",
+          "York",
+          "Canterbury",
+          "Lavenham",
+          "Castle Combe"
+        ]
+      }
+    },
+    {
+      "id": "1754726744646-3001jy3np",
+      "content": "my budget is £1500 for 2 people",
+      "role": "user",
+      "timestamp": "2025-08-09T08:05:44.646Z"
+    },
+    {
+      "id": "1754726744646-zdwt9gw2r",
+      "content": "Perfect! I have all the essential details:\n\n🌍 **Destination:** England\n📅 **Duration:** 7 days\n💰 **Budget:** GBP1500\n👥 **Travelers:** 2\n\nI'm ready to create your personalized itinerary! Should I start generating your trip plan?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T08:05:44.647Z",
+      "metadata": {
+        "extractedInfo": {
+          "budget": {
+            "total": 1500,
+            "currency": "GBP"
+          },
+          "travelers": {
+            "adults": 2
+          }
+        },
+        "researchTriggered": false,
+        "destinationsResearched": [
+          "Chipping Campden",
+          "Bourton-on-the-Water",
+          "Stow-on-the-Wold",
+          "Bath",
+          "York",
+          "Canterbury",
+          "Lavenham",
+          "Castle Combe"
+        ]
+      }
+    }
+  ],
+  "tripContext": {
+    "destination": {
+      "primary": "England",
+      "type": "custom",
+      "preferences": "can i go to a group of small charming towns in england please, for sight seeing",
+      "researched": [
+        {
+          "name": "Chipping Campden",
+          "type": "village",
+          "country": "England",
+          "region": "Cotswolds",
+          "description": "A quintessential Cotswolds village with honey-colored limestone buildings, traditional thatched cottages, and charming market square. Perfect for exploring the scenic countryside.",
+          "highlights": [
+            "Traditional markets",
+            "Historic architecture",
+            "Walking trails"
+          ],
+          "activities": [
+            "Walking tours"
+          ],
+          "budgetLevel": "mixed",
+          "accessibility": "Accessible by car and public transport",
+          "bestFor": [
+            "couples",
+            "history lovers"
+          ],
+          "nearbyTo": "Oxford",
+          "confidence": 85,
+          "score": 85
+        },
+        {
+          "name": "Bourton-on-the-Water",
+          "type": "village",
+          "country": "England",
+          "region": "Cotswolds",
+          "description": "Bourton-on-the-Water is a charming destination with traditional architecture, local culture, and authentic English character. Perfect for experiencing quintessential countryside life.",
+          "highlights": [
+            "Traditional markets",
+            "Historic architecture",
+            "Walking trails"
+          ],
+          "activities": [
+            "Walking tours"
+          ],
+          "budgetLevel": "mixed",
+          "accessibility": "Accessible by car and public transport",
+          "bestFor": [
+            "couples",
+            "history lovers"
+          ],
+          "nearbyTo": "Oxford",
+          "confidence": 85,
+          "score": 85
+        },
+        {
+          "name": "Stow-on-the-Wold",
+          "type": "small-town",
+          "country": "England",
+          "region": "Cotswolds",
+          "description": "Stow-on-the-Wold is a charming destination with traditional architecture, local culture, and authentic English character. Perfect for experiencing quintessential countryside life.",
+          "highlights": [
+            "Traditional markets",
+            "Historic architecture",
+            "Walking trails"
+          ],
+          "activities": [
+            "Walking tours"
+          ],
+          "budgetLevel": "mixed",
+          "accessibility": "Accessible by car and public transport",
+          "bestFor": [
+            "couples",
+            "history lovers"
+          ],
+          "nearbyTo": "London",
+          "confidence": 85,
+          "score": 85
+        },
+        {
+          "name": "Bath",
+          "type": "small-town",
+          "country": "England",
+          "region": "South West England",
+          "description": "A UNESCO World Heritage city famous for Georgian architecture, Roman baths, and elegant crescents. Combines historic charm with modern amenities.",
+          "highlights": [
+            "Traditional markets",
+            "Historic architecture",
+            "Walking trails"
+          ],
+          "activities": [
+            "Walking tours"
+          ],
+          "budgetLevel": "mixed",
+          "accessibility": "Accessible by car and public transport",
+          "bestFor": [
+            "couples",
+            "history lovers"
+          ],
+          "nearbyTo": "Bath",
+          "confidence": 85,
+          "score": 85
+        },
+        {
+          "name": "York",
+          "type": "small-town",
+          "country": "England",
+          "region": "Yorkshire",
+          "description": "A medieval city with cobblestone streets, York Minster cathedral, and well-preserved city walls. Rich in history and perfect for walking tours.",
+          "highlights": [
+            "Traditional markets",
+            "Historic architecture",
+            "Walking trails"
+          ],
+          "activities": [
+            "Walking tours"
+          ],
+          "budgetLevel": "mixed",
+          "accessibility": "Accessible by car and public transport",
+          "bestFor": [
+            "couples",
+            "history lovers"
+          ],
+          "nearbyTo": "York",
+          "confidence": 85,
+          "score": 85
+        },
+        {
+          "name": "Canterbury",
+          "type": "small-town",
+          "country": "England",
+          "region": "Kent",
+          "description": "Historic cathedral city with medieval streets, famous Canterbury Cathedral, and traditional English market squares. Steeped in literary and religious history.",
+          "highlights": [
+            "Traditional markets",
+            "Historic architecture",
+            "Walking trails"
+          ],
+          "activities": [
+            "Walking tours"
+          ],
+          "budgetLevel": "mixed",
+          "accessibility": "Accessible by car and public transport",
+          "bestFor": [
+            "couples",
+            "history lovers"
+          ],
+          "nearbyTo": "London",
+          "confidence": 85,
+          "score": 85
+        },
+        {
+          "name": "Lavenham",
+          "type": "small-town",
+          "country": "England",
+          "region": "Suffolk",
+          "description": "Lavenham is a charming destination with traditional architecture, local culture, and authentic English character. Perfect for experiencing quintessential countryside life.",
+          "highlights": [
+            "Historic castle",
+            "Historic architecture"
+          ],
+          "activities": [
+            "Nature activities"
+          ],
+          "budgetLevel": "mixed",
+          "accessibility": "Accessible by car and public transport",
+          "bestFor": [
+            "history lovers",
+            "nature enthusiasts"
+          ],
+          "nearbyTo": "Ipswich",
+          "confidence": 85,
+          "score": 85
+        },
+        {
+          "name": "Castle Combe",
+          "type": "village",
+          "country": "England",
+          "region": "South West England",
+          "description": "Often called the prettiest village in England, featuring stone cottages, a historic market cross, and peaceful countryside setting in the Cotswolds.",
+          "highlights": [
+            "Historic castle",
+            "Historic architecture"
+          ],
+          "activities": [
+            "Nature activities"
+          ],
+          "budgetLevel": "mixed",
+          "accessibility": "Accessible by car and public transport",
+          "bestFor": [
+            "history lovers",
+            "nature enthusiasts"
+          ],
+          "nearbyTo": "Bath",
+          "confidence": 85,
+          "score": 85
+        }
+      ]
+    },
+    "dates": {
+      "duration": 7
+    },
+    "budget": {
+      "total": 1500,
+      "currency": "GBP"
+    },
+    "travelers": {
+      "adults": 2
+    },
+    "preferences": {}
+  },
+  "conversationSummary": "Conversation context:\n- Destination interest: can i go to a group of small charming towns in england please, for sight seeing\n- Researched places: Chipping Campden, Bourton-on-the-Water, Stow-on-the-Wold, Bath, York, Canterbury, Lavenham, Castle Combe\n- Budget: GBP1500\n- Travel timeframe: 7 days\n- Travelers: 2 adults\n- Recent user requests: can i go to a group of small charming towns in england please, for sight seeing; what would be a good budget for 7 days?; my budget is £1500 for 2 people\n",
+  "lastUpdated": "2025-08-09T08:05:44.647Z"
+}

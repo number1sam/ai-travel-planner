@@ -1,0 +1,170 @@
+{
+  "conversationId": "conversation-1754726951889-k9ffy4b7p",
+  "messages": [
+    {
+      "id": "1754727004766-qt8rjv1i4",
+      "content": "i would love to go to Japan",
+      "role": "user",
+      "timestamp": "2025-08-09T08:10:04.766Z"
+    },
+    {
+      "id": "1754727004768-auege0vbp",
+      "content": "Japan is a fantastic choice! What type of experience interests you most - major cities, cultural sites, or smaller authentic places?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T08:10:04.768Z",
+      "metadata": {
+        "extractedInfo": {
+          "destination": {
+            "primary": "Japan",
+            "type": "country"
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754727060765-zn7tiyi99",
+      "content": "a would like a mix of traditional villages, and modeern mega cities",
+      "role": "user",
+      "timestamp": "2025-08-09T08:11:00.765Z"
+    },
+    {
+      "id": "1754727060766-ba6mi7t5t",
+      "content": "Great choice for Japan! How many days are you planning to travel?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T08:11:00.766Z",
+      "metadata": {
+        "extractedInfo": {},
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754727087329-r43z3dor8",
+      "content": "15 days , round trip",
+      "role": "user",
+      "timestamp": "2025-08-09T08:11:27.329Z"
+    },
+    {
+      "id": "1754727087330-7of4s4txk",
+      "content": "Perfect! A 15-day trip to Japan. What's your total budget?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T08:11:27.330Z",
+      "metadata": {
+        "extractedInfo": {
+          "dates": {
+            "duration": 15
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754727095776-n375914xn",
+      "content": "2500",
+      "role": "user",
+      "timestamp": "2025-08-09T08:11:35.776Z"
+    },
+    {
+      "id": "1754727095777-y0hwk5y6l",
+      "content": "Excellent! How many people will be traveling?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T08:11:35.777Z",
+      "metadata": {
+        "extractedInfo": {
+          "budget": {
+            "total": 2500,
+            "currency": "USD"
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754727206995-8k1cy6r7g",
+      "content": "2",
+      "role": "user",
+      "timestamp": "2025-08-09T08:13:26.995Z"
+    },
+    {
+      "id": "1754727206996-98meih7la",
+      "content": "Excellent! How many people will be traveling?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T08:13:26.996Z",
+      "metadata": {
+        "extractedInfo": {},
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754727214827-n9490akr1",
+      "content": "2 people",
+      "role": "user",
+      "timestamp": "2025-08-09T08:13:34.827Z"
+    },
+    {
+      "id": "1754727214827-2kbkjhzbs",
+      "content": "Perfect! I have all the essential details:\n\n🌍 **Destination:** Japan\n📅 **Duration:** 15 days\n💰 **Budget:** USD2500\n👥 **Travelers:** 2\n\nI'm ready to create your personalized itinerary! Should I start generating your trip plan?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T08:13:34.827Z",
+      "metadata": {
+        "extractedInfo": {
+          "travelers": {
+            "adults": 2
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754727239318-05xqtkb7u",
+      "content": "yes",
+      "role": "user",
+      "timestamp": "2025-08-09T08:13:59.318Z"
+    },
+    {
+      "id": "1754727239318-n5cnvl0fx",
+      "content": "Perfect! I have all the essential details:\n\n🌍 **Destination:** Japan\n📅 **Duration:** 15 days\n💰 **Budget:** USD2500\n👥 **Travelers:** 2\n\nI'm ready to create your personalized itinerary! Should I start generating your trip plan?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T08:13:59.318Z",
+      "metadata": {
+        "extractedInfo": {},
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754727256722-e3uqan0az",
+      "content": "yes start generating the itiner",
+      "role": "user",
+      "timestamp": "2025-08-09T08:14:16.723Z"
+    },
+    {
+      "id": "1754727256723-3n85sci2m",
+      "content": "Perfect! I have all the essential details:\n\n🌍 **Destination:** Japan\n📅 **Duration:** 15 days\n💰 **Budget:** USD2500\n👥 **Travelers:** 2\n\nI'm ready to create your personalized itinerary! Should I start generating your trip plan?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T08:14:16.723Z",
+      "metadata": {
+        "extractedInfo": {},
+        "researchTriggered": false
+      }
+    }
+  ],
+  "tripContext": {
+    "destination": {
+      "primary": "Japan",
+      "type": "country"
+    },
+    "dates": {
+      "duration": 15
+    },
+    "budget": {
+      "total": 2500,
+      "currency": "USD"
+    },
+    "travelers": {
+      "adults": 2
+    },
+    "preferences": {}
+  },
+  "conversationSummary": "Conversation context:\n- Destination interest: Japan\n- Budget: USD2500\n- Travel timeframe: 15 days\n- Travelers: 2 adults\n- Recent user requests: 2 people; yes; yes start generating the itiner\n",
+  "lastUpdated": "2025-08-09T08:14:16.723Z"
+}

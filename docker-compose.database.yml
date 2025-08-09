@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  # PostgreSQL database with PostGIS for geo features
+  postgres:
+    image: postgis/postgis:15-3.3
+    container_name: travel_agent_postgres
+    environment:
+      POSTGRES_DB: travel_agent_db
+      POSTGRES_USER: travel_agent
+      POSTGRES_PASSWORD: travel_agent
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./database/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql
+    networks:
+      - travel_agent_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U travel_agent -d travel_agent_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Redis for caching (optional)
+  redis:
+    image: redis:7-alpine
+    container_name: travel_agent_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - travel_agent_network
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # pgAdmin for database management (optional)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: travel_agent_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@travelagent.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "8080:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - travel_agent_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+
+networks:
+  travel_agent_network:
+    driver: bridge

@@ -1,0 +1,46 @@
+{
+  "conversationId": "conversation-1754726447755-ukqkjqr3a",
+  "messages": [
+    {
+      "id": "1754726517409-efbe0z0qt",
+      "content": "hello",
+      "role": "user",
+      "timestamp": "2025-08-09T08:01:57.409Z"
+    },
+    {
+      "id": "1754726517410-iq7iyx0ti",
+      "content": "I'd love to help you plan your trip! Where would you like to go?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T08:01:57.410Z",
+      "metadata": {
+        "extractedInfo": {},
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754726536517-lj61dp4x9",
+      "content": "i would love to go to england",
+      "role": "user",
+      "timestamp": "2025-08-09T08:02:16.517Z"
+    },
+    {
+      "id": "1754726536518-225pewodf",
+      "content": "I'd love to help you plan your trip! Where would you like to go?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T08:02:16.518Z",
+      "metadata": {
+        "extractedInfo": {},
+        "researchTriggered": false
+      }
+    }
+  ],
+  "tripContext": {
+    "destination": {},
+    "dates": {},
+    "budget": {},
+    "travelers": {},
+    "preferences": {}
+  },
+  "conversationSummary": "Conversation context:\n- Destination interest: undefined\n- Budget: undefinedundefined\n- Travel timeframe: undefined days\n- Travelers: undefined adults\n- Recent user requests: hello; i would love to go to england\n",
+  "lastUpdated": "2025-08-09T08:02:16.518Z"
+}

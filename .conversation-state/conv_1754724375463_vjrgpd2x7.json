@@ -1,0 +1,35 @@
+{
+  "destination": {
+    "value": "",
+    "filled": false,
+    "locked": false,
+    "normalized": ""
+  },
+  "origin": {
+    "value": "",
+    "filled": false,
+    "locked": false,
+    "normalized": ""
+  },
+  "dates": {
+    "startDate": "",
+    "endDate": "",
+    "originalPhrase": "",
+    "filled": false,
+    "locked": false
+  },
+  "travelers": {
+    "value": 1,
+    "filled": false,
+    "locked": false
+  },
+  "budget": {
+    "value": 0,
+    "currency": "USD",
+    "filled": false,
+    "locked": false
+  },
+  "expectedSlot": "destination",
+  "conversationId": "conv_1754724375463_vjrgpd2x7",
+  "lastUpdated": "2025-08-09T07:26:16.535Z"
+}

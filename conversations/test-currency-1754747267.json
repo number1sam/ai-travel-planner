@@ -1,0 +1,132 @@
+{
+  "conversationId": "test-currency-1754747267",
+  "tripContext": {
+    "destination": {
+      "primary": "England",
+      "type": "country"
+    },
+    "dates": {
+      "duration": 7
+    },
+    "budget": {
+      "total": 2500,
+      "currency": "GBP",
+      "pendingClarification": false
+    },
+    "travelers": {
+      "adults": 2
+    },
+    "preferences": {}
+  },
+  "messages": [
+    {
+      "id": "1754747267863-vwzkne1kv",
+      "content": "I would like to go to England",
+      "role": "user",
+      "timestamp": "2025-08-09T13:47:47.863Z"
+    },
+    {
+      "id": "1754747267863-fxusqmsuj",
+      "content": "Fantastic choice! England is incredible for travelers. I need to know which part of England interests you most:\n\n🏙️ **Focus on One City** (Perfect for a deeper experience):\n• **London** - The main hub with world-class attractions\n• **Bath** - Georgian architecture and Roman baths  \n• **York** - Medieval city with historic walls\n\n🗺️ **Multi-City Adventure** (See more of the country):\n• **Regional Tour**: 2-3 cities (perfect for 5-10 days)\n• **Grand Tour**: Experience England comprehensively (10+ days)\n\n🏘️ **Charming Small Towns & Villages**:\n• **Cotswolds** - Honey-stone villages and countryside\n• **Lake District** - Traditional villages with stunning lakes\n• **Yorkshire Dales** - Historic market towns\n\nWhich approach sounds more appealing to you?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T13:47:47.863Z",
+      "metadata": {
+        "extractedInfo": {
+          "destination": {
+            "primary": "England",
+            "type": "country"
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754747267897-sppsac4ft",
+      "content": "7 days",
+      "role": "user",
+      "timestamp": "2025-08-09T13:47:47.897Z"
+    },
+    {
+      "id": "1754747267897-xw5zet28m",
+      "content": "Perfect! A 7-day trip to England. What's your total budget?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T13:47:47.897Z",
+      "metadata": {
+        "extractedInfo": {
+          "dates": {
+            "duration": 7
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754747267941-vr95p76wa",
+      "content": "my budget is 2500",
+      "role": "user",
+      "timestamp": "2025-08-09T13:47:47.942Z"
+    },
+    {
+      "id": "1754747267942-5h1i9i8ib",
+      "content": "I see you have a budget of 2500. Which currency is this in?\n      \n💰 **Common Options:**\n• **£** - British Pounds (GBP)\n• **$** - US Dollars (USD) \n• **€** - Euros (EUR)\n• **Other** - Please specify\n\nJust let me know which currency you meant!",
+      "role": "assistant",
+      "timestamp": "2025-08-09T13:47:47.942Z",
+      "metadata": {
+        "extractedInfo": {
+          "budget": {
+            "total": 2500,
+            "currency": "PENDING",
+            "pendingClarification": true
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754747267998-2zmroza3u",
+      "content": "pounds",
+      "role": "user",
+      "timestamp": "2025-08-09T13:47:47.998Z"
+    },
+    {
+      "id": "1754747267999-l5giz4prt",
+      "content": "Excellent! How many people will be traveling?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T13:47:47.999Z",
+      "metadata": {
+        "extractedInfo": {
+          "budget": {
+            "total": 2500,
+            "currency": "GBP",
+            "pendingClarification": false
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754747268076-nikvp4wg0",
+      "content": "2 people",
+      "role": "user",
+      "timestamp": "2025-08-09T13:47:48.076Z"
+    },
+    {
+      "id": "1754747268077-xuqx89wgd",
+      "content": "Great! 2 travelers for 7 days. Where will you be departing from? (City or airport)",
+      "role": "assistant",
+      "timestamp": "2025-08-09T13:47:48.077Z",
+      "metadata": {
+        "extractedInfo": {
+          "travelers": {
+            "adults": 2
+          }
+        },
+        "researchTriggered": false
+      }
+    }
+  ],
+  "lastUpdated": "2025-08-09T13:47:48.077Z",
+  "conversationSummary": "Trip planning for England (7 days, GBP2500, 2 people) - 10 messages exchanged",
+  "recoveryPoint": "gathering_info",
+  "version": "1.0"
+}

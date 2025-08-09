@@ -1,0 +1,62 @@
+{
+  "conversationId": "test-currency-1754748105",
+  "tripContext": {
+    "destination": {
+      "primary": "England",
+      "type": "country"
+    },
+    "dates": {
+      "duration": 7
+    },
+    "budget": {},
+    "travelers": {},
+    "preferences": {}
+  },
+  "messages": [
+    {
+      "id": "1754748105356-5a0gacq0v",
+      "content": "I would like to go to England",
+      "role": "user",
+      "timestamp": "2025-08-09T14:01:45.356Z"
+    },
+    {
+      "id": "1754748105357-332q2u8fz",
+      "content": "Fantastic choice! England is incredible for travelers. I need to know which part of England interests you most:\n\n🏙️ **Focus on One City** (Perfect for a deeper experience):\n• **London** - The main hub with world-class attractions\n• **Bath** - Georgian architecture and Roman baths  \n• **York** - Medieval city with historic walls\n\n🗺️ **Multi-City Adventure** (See more of the country):\n• **Regional Tour**: 2-3 cities (perfect for 5-10 days)\n• **Grand Tour**: Experience England comprehensively (10+ days)\n\n🏘️ **Charming Small Towns & Villages**:\n• **Cotswolds** - Honey-stone villages and countryside\n• **Lake District** - Traditional villages with stunning lakes\n• **Yorkshire Dales** - Historic market towns\n\nWhich approach sounds more appealing to you?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T14:01:45.357Z",
+      "metadata": {
+        "extractedInfo": {
+          "destination": {
+            "primary": "England",
+            "type": "country"
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754748105401-l34p66wdo",
+      "content": "7 days",
+      "role": "user",
+      "timestamp": "2025-08-09T14:01:45.401Z"
+    },
+    {
+      "id": "1754748105402-3sdh29x0k",
+      "content": "Perfect! A 7-day trip to England. What's your total budget?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T14:01:45.402Z",
+      "metadata": {
+        "extractedInfo": {
+          "dates": {
+            "duration": 7
+          }
+        },
+        "researchTriggered": false
+      }
+    }
+  ],
+  "lastUpdated": "2025-08-09T14:01:45.402Z",
+  "conversationSummary": "Trip planning for England (7 days, undefinedundefined, Not specified) - 4 messages exchanged",
+  "recoveryPoint": "gathering_info",
+  "version": "1.0"
+}

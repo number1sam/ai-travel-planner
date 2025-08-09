@@ -1,0 +1,229 @@
+{
+  "conversationId": "conversation-1754756311001-7qa0w57iz",
+  "tripContext": {
+    "id": "conversation-1754756311001-7qa0w57iz",
+    "version": 2,
+    "intent": {
+      "current": "exploring",
+      "confidence": 50,
+      "context": "New conversation started"
+    },
+    "hardConstraints": [],
+    "softConstraints": [],
+    "conversationSummary": "New conversation started",
+    "decisionsLog": [],
+    "pendingConfirmations": [],
+    "researchNeeded": [],
+    "validationErrors": [],
+    "createdAt": "2025-08-09T16:22:26.253Z",
+    "lastUpdated": "2025-08-09T16:22:26.254Z",
+    "lastUserMessage": "i would like to go to Japan",
+    "totalMessages": 2,
+    "destination": {
+      "type": "country",
+      "primary": {
+        "value": "japan",
+        "type": "soft",
+        "confidence": 80,
+        "source": "explicit",
+        "changes": []
+      },
+      "country": {
+        "value": "UNKNOWN",
+        "type": "soft",
+        "confidence": 80,
+        "source": "explicit",
+        "changes": []
+      }
+    },
+    "travelers": {
+      "adults": {
+        "value": 1,
+        "type": "soft",
+        "confidence": 80,
+        "source": "explicit",
+        "changes": []
+      },
+      "groupType": {
+        "value": "solo",
+        "type": "soft",
+        "confidence": 80,
+        "source": "explicit",
+        "changes": []
+      }
+    },
+    "preferences": {
+      "travelStyle": {
+        "value": "mid-range",
+        "type": "soft",
+        "confidence": 80,
+        "source": "explicit",
+        "changes": []
+      }
+    }
+  },
+  "messages": [
+    {
+      "id": "msg_1754756546253_273x3yzyx",
+      "content": "i would like to go to Japan",
+      "role": "user",
+      "timestamp": "2025-08-09T16:22:26.253Z"
+    },
+    {
+      "id": "msg_1754756546255_la96pzpl6",
+      "content": "japan is a wonderful choice! I can help you plan an amazing trip there. How long are you thinking of staying?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T16:22:26.255Z",
+      "metadata": {
+        "analysis": {
+          "intent": {
+            "primary": "specify_destination",
+            "secondary": [
+              "planning"
+            ],
+            "confidence": 85,
+            "context": "User specifying travel destination",
+            "urgency": "medium"
+          },
+          "entities": {
+            "destinations": [
+              "japan",
+              "Japan"
+            ],
+            "dates": {},
+            "budget": {},
+            "travelers": {},
+            "preferences": {},
+            "constraints": {
+              "hard": [],
+              "soft": [
+                "i would like to go to Japan"
+              ]
+            },
+            "locations": {}
+          },
+          "normalizedData": {
+            "destinations": [
+              {
+                "original": "japan",
+                "normalized": "japan",
+                "type": "country",
+                "confidence": 80,
+                "country": "UNKNOWN",
+                "alternatives": []
+              },
+              {
+                "original": "Japan",
+                "normalized": "Japan",
+                "type": "country",
+                "confidence": 80,
+                "country": "UNKNOWN",
+                "alternatives": []
+              }
+            ],
+            "dates": {
+              "flexibility": "flexible",
+              "confidence": 50,
+              "inferred": false
+            },
+            "budget": {
+              "total": 0,
+              "currency": "USD",
+              "confidence": 50,
+              "source": "inferred"
+            },
+            "travelers": {
+              "adults": 1,
+              "groupType": "solo",
+              "confidence": 80
+            },
+            "preferences": {
+              "travelStyle": "mid-range",
+              "pace": "moderate",
+              "accommodation": [],
+              "activities": [],
+              "dining": [],
+              "transport": {},
+              "confidence": {}
+            },
+            "constraints": {
+              "hard": [],
+              "soft": [
+                {
+                  "constraint": "i would like to go to Japan",
+                  "field": "unknown",
+                  "value": null
+                }
+              ]
+            }
+          },
+          "contextUpdates": {
+            "destination": {
+              "type": "country",
+              "primary": {
+                "value": "japan",
+                "type": "soft",
+                "confidence": 80,
+                "source": "explicit",
+                "changes": []
+              },
+              "country": {
+                "value": "UNKNOWN",
+                "type": "soft",
+                "confidence": 80,
+                "source": "explicit",
+                "changes": []
+              }
+            },
+            "travelers": {
+              "adults": {
+                "value": 1,
+                "type": "soft",
+                "confidence": 80,
+                "source": "explicit",
+                "changes": []
+              },
+              "groupType": {
+                "value": "solo",
+                "type": "soft",
+                "confidence": 80,
+                "source": "explicit",
+                "changes": []
+              }
+            },
+            "preferences": {
+              "travelStyle": {
+                "value": "mid-range",
+                "type": "soft",
+                "confidence": 80,
+                "source": "explicit",
+                "changes": []
+              }
+            }
+          },
+          "needsConfirmation": [],
+          "needsResearch": false,
+          "confidence": 70.83333333333333,
+          "reasoning": [
+            "Cleaned input: \"i would like to go to Japan\"",
+            "Detected intent: specify_destination (85% confidence)",
+            "Extracted entities: destinations, dates, budget, travelers, preferences, constraints, locations",
+            "Normalized data with 2 destinations",
+            "Generated 3 context updates"
+          ]
+        },
+        "contextUpdates": [
+          "destination",
+          "travelers",
+          "preferences"
+        ],
+        "providersQueried": [],
+        "deepLinks": []
+      }
+    }
+  ],
+  "lastUpdated": "2025-08-09T16:22:26.255Z",
+  "conversationSummary": "Trip planning for japan (Not specified, Not specified, 1 people) - 2 messages exchanged",
+  "recoveryPoint": "gathering_info",
+  "version": "1.0"
+}

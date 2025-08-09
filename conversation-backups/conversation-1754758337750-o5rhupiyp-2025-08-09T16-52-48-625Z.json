@@ -1,0 +1,230 @@
+{
+  "conversationId": "conversation-1754758337750-o5rhupiyp",
+  "tripContext": {
+    "id": "conversation-1754758337750-o5rhupiyp",
+    "version": 2,
+    "intent": {
+      "current": "exploring",
+      "confidence": 50,
+      "context": "New conversation started"
+    },
+    "hardConstraints": [],
+    "softConstraints": [],
+    "conversationSummary": "New conversation started",
+    "decisionsLog": [],
+    "pendingConfirmations": [],
+    "researchNeeded": [],
+    "validationErrors": [],
+    "createdAt": "2025-08-09T16:52:35.066Z",
+    "lastUpdated": "2025-08-09T16:52:35.073Z",
+    "lastUserMessage": "i would like to go to Portugal",
+    "totalMessages": 2,
+    "destination": {
+      "type": "custom",
+      "primary": {
+        "value": "portugal",
+        "type": "soft",
+        "confidence": 80,
+        "source": "explicit",
+        "changes": []
+      },
+      "country": {
+        "value": "UNKNOWN",
+        "type": "soft",
+        "confidence": 80,
+        "source": "explicit",
+        "changes": []
+      }
+    },
+    "travelers": {
+      "adults": {
+        "value": 1,
+        "type": "soft",
+        "confidence": 80,
+        "source": "explicit",
+        "changes": []
+      },
+      "groupType": {
+        "value": "solo",
+        "type": "soft",
+        "confidence": 80,
+        "source": "explicit",
+        "changes": []
+      }
+    },
+    "preferences": {
+      "travelStyle": {
+        "value": "mid-range",
+        "type": "soft",
+        "confidence": 80,
+        "source": "explicit",
+        "changes": []
+      }
+    }
+  },
+  "messages": [
+    {
+      "id": "msg_1754758355068_h76fe0um7",
+      "content": "i would like to go to Portugal",
+      "role": "user",
+      "timestamp": "2025-08-09T16:52:35.068Z"
+    },
+    {
+      "id": "msg_1754758355074_1gdm6zyb6",
+      "content": "I'm researching portugal to provide you with the most accurate information. What duration are you considering for your trip?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T16:52:35.074Z",
+      "metadata": {
+        "analysis": {
+          "intent": {
+            "primary": "specify_destination",
+            "secondary": [
+              "planning"
+            ],
+            "confidence": 85,
+            "context": "User specifying travel destination",
+            "urgency": "medium"
+          },
+          "entities": {
+            "destinations": [
+              "portugal",
+              "Portugal"
+            ],
+            "dates": {},
+            "budget": {},
+            "travelers": {},
+            "preferences": {},
+            "constraints": {
+              "hard": [],
+              "soft": [
+                "i would like to go to Portugal"
+              ]
+            },
+            "locations": {}
+          },
+          "normalizedData": {
+            "destinations": [
+              {
+                "original": "portugal",
+                "normalized": "portugal",
+                "type": "custom",
+                "confidence": 80,
+                "country": "UNKNOWN",
+                "alternatives": []
+              },
+              {
+                "original": "Portugal",
+                "normalized": "Portugal",
+                "type": "custom",
+                "confidence": 80,
+                "country": "UNKNOWN",
+                "alternatives": []
+              }
+            ],
+            "dates": {
+              "flexibility": "flexible",
+              "confidence": 50,
+              "inferred": false
+            },
+            "budget": {
+              "total": 0,
+              "currency": "USD",
+              "confidence": 50,
+              "source": "inferred"
+            },
+            "travelers": {
+              "adults": 1,
+              "groupType": "solo",
+              "confidence": 80
+            },
+            "preferences": {
+              "travelStyle": "mid-range",
+              "pace": "moderate",
+              "accommodation": [],
+              "activities": [],
+              "dining": [],
+              "transport": {},
+              "confidence": {}
+            },
+            "constraints": {
+              "hard": [],
+              "soft": [
+                {
+                  "constraint": "i would like to go to Portugal",
+                  "field": "unknown",
+                  "value": null
+                }
+              ]
+            }
+          },
+          "contextUpdates": {
+            "destination": {
+              "type": "custom",
+              "primary": {
+                "value": "portugal",
+                "type": "soft",
+                "confidence": 80,
+                "source": "explicit",
+                "changes": []
+              },
+              "country": {
+                "value": "UNKNOWN",
+                "type": "soft",
+                "confidence": 80,
+                "source": "explicit",
+                "changes": []
+              }
+            },
+            "travelers": {
+              "adults": {
+                "value": 1,
+                "type": "soft",
+                "confidence": 80,
+                "source": "explicit",
+                "changes": []
+              },
+              "groupType": {
+                "value": "solo",
+                "type": "soft",
+                "confidence": 80,
+                "source": "explicit",
+                "changes": []
+              }
+            },
+            "preferences": {
+              "travelStyle": {
+                "value": "mid-range",
+                "type": "soft",
+                "confidence": 80,
+                "source": "explicit",
+                "changes": []
+              }
+            }
+          },
+          "needsConfirmation": [],
+          "needsResearch": true,
+          "researchQuery": "Research destination: portugal",
+          "confidence": 70.83333333333333,
+          "reasoning": [
+            "Cleaned input: \"i would like to go to Portugal\"",
+            "Detected intent: specify_destination (85% confidence)",
+            "Extracted entities: destinations, dates, budget, travelers, preferences, constraints, locations",
+            "Normalized data with 2 destinations",
+            "Generated 3 context updates"
+          ]
+        },
+        "contextUpdates": [
+          "destination",
+          "travelers",
+          "preferences"
+        ],
+        "providersQueried": [],
+        "deepLinks": []
+      }
+    }
+  ],
+  "lastUpdated": "2025-08-09T16:52:35.075Z",
+  "conversationSummary": "Trip planning for portugal (Not specified, Not specified, 1 people) - 2 messages exchanged",
+  "recoveryPoint": "gathering_info",
+  "version": "1.0"
+}

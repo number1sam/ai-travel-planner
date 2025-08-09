@@ -1,0 +1,163 @@
+{
+  "conversationId": "test-simple",
+  "tripContext": {
+    "id": "test-simple",
+    "version": 2,
+    "intent": {
+      "current": "exploring",
+      "confidence": 50,
+      "context": "New conversation started"
+    },
+    "hardConstraints": [],
+    "softConstraints": [],
+    "conversationSummary": "New conversation started",
+    "decisionsLog": [],
+    "pendingConfirmations": [],
+    "researchNeeded": [],
+    "validationErrors": [],
+    "createdAt": "2025-08-09T16:19:50.564Z",
+    "lastUpdated": "2025-08-09T16:19:50.570Z",
+    "lastUserMessage": "hello",
+    "totalMessages": 2,
+    "travelers": {
+      "adults": {
+        "value": 1,
+        "type": "soft",
+        "confidence": 80,
+        "source": "explicit",
+        "changes": []
+      },
+      "groupType": {
+        "value": "solo",
+        "type": "soft",
+        "confidence": 80,
+        "source": "explicit",
+        "changes": []
+      }
+    },
+    "preferences": {
+      "travelStyle": {
+        "value": "mid-range",
+        "type": "soft",
+        "confidence": 80,
+        "source": "explicit",
+        "changes": []
+      }
+    }
+  },
+  "messages": [
+    {
+      "id": "msg_1754756390566_1zzegtk8e",
+      "content": "hello",
+      "role": "user",
+      "timestamp": "2025-08-09T16:19:50.566Z"
+    },
+    {
+      "id": "msg_1754756390571_eebfrhw1e",
+      "content": "To complete your itinerary, I just need to know: destination, trip duration, budget.",
+      "role": "assistant",
+      "timestamp": "2025-08-09T16:19:50.571Z",
+      "metadata": {
+        "analysis": {
+          "intent": {
+            "primary": "conversational",
+            "confidence": 50,
+            "context": "General conversation or unclear intent",
+            "urgency": "low"
+          },
+          "entities": {
+            "destinations": [],
+            "dates": {},
+            "budget": {},
+            "travelers": {},
+            "preferences": {},
+            "constraints": {
+              "hard": [],
+              "soft": []
+            },
+            "locations": {}
+          },
+          "normalizedData": {
+            "destinations": [],
+            "dates": {
+              "flexibility": "flexible",
+              "confidence": 50,
+              "inferred": false
+            },
+            "budget": {
+              "total": 0,
+              "currency": "USD",
+              "confidence": 50,
+              "source": "inferred"
+            },
+            "travelers": {
+              "adults": 1,
+              "groupType": "solo",
+              "confidence": 80
+            },
+            "preferences": {
+              "travelStyle": "mid-range",
+              "pace": "moderate",
+              "accommodation": [],
+              "activities": [],
+              "dining": [],
+              "transport": {},
+              "confidence": {}
+            },
+            "constraints": {
+              "hard": [],
+              "soft": []
+            }
+          },
+          "contextUpdates": {
+            "travelers": {
+              "adults": {
+                "value": 1,
+                "type": "soft",
+                "confidence": 80,
+                "source": "explicit",
+                "changes": []
+              },
+              "groupType": {
+                "value": "solo",
+                "type": "soft",
+                "confidence": 80,
+                "source": "explicit",
+                "changes": []
+              }
+            },
+            "preferences": {
+              "travelStyle": {
+                "value": "mid-range",
+                "type": "soft",
+                "confidence": 80,
+                "source": "explicit",
+                "changes": []
+              }
+            }
+          },
+          "needsConfirmation": [],
+          "needsResearch": false,
+          "confidence": 57.5,
+          "reasoning": [
+            "Cleaned input: \"hello\"",
+            "Detected intent: conversational (50% confidence)",
+            "Extracted entities: destinations, dates, budget, travelers, preferences, constraints, locations",
+            "Normalized data with 0 destinations",
+            "Generated 2 context updates"
+          ]
+        },
+        "contextUpdates": [
+          "travelers",
+          "preferences"
+        ],
+        "providersQueried": [],
+        "deepLinks": []
+      }
+    }
+  ],
+  "lastUpdated": "2025-08-09T16:19:50.571Z",
+  "conversationSummary": "Trip planning for Not specified (Not specified, Not specified, 1 people) - 2 messages exchanged",
+  "recoveryPoint": "initial",
+  "version": "1.0"
+}

@@ -1,0 +1,39 @@
+{
+  "conversationId": "test-final",
+  "messages": [
+    {
+      "id": "msg_1754756420525_ji4w5wsfn",
+      "content": "I want to visit Rome for 5 days with a $3000 budget for 2 people",
+      "role": "user",
+      "timestamp": "2025-08-09T16:20:20.525Z"
+    },
+    {
+      "id": "msg_1754756420526_93c71p3om",
+      "content": "I encountered an issue processing your request. Could you please rephrase that?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T16:20:20.526Z"
+    }
+  ],
+  "tripContext": {
+    "id": "test-final",
+    "version": 1,
+    "intent": {
+      "current": "exploring",
+      "confidence": 50,
+      "context": "New conversation started"
+    },
+    "hardConstraints": [],
+    "softConstraints": [],
+    "conversationSummary": "New conversation started",
+    "decisionsLog": [],
+    "pendingConfirmations": [],
+    "researchNeeded": [],
+    "validationErrors": [],
+    "createdAt": "2025-08-09T16:20:20.524Z",
+    "lastUpdated": "2025-08-09T16:20:20.524Z",
+    "lastUserMessage": "I want to visit Rome for 5 days with a $3000 budget for 2 people",
+    "totalMessages": 2
+  },
+  "conversationSummary": "I want to visit Rome for 5 days with a $3000 budget for 2 people",
+  "lastUpdated": "2025-08-09T16:20:20.528Z"
+}

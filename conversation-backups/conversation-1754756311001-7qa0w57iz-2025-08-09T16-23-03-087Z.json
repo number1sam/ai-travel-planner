@@ -1,0 +1,601 @@
+{
+  "conversationId": "conversation-1754756311001-7qa0w57iz",
+  "tripContext": {
+    "id": "conversation-1754756311001-7qa0w57iz",
+    "version": 4,
+    "intent": {
+      "current": "exploring",
+      "confidence": 50,
+      "context": "New conversation started"
+    },
+    "hardConstraints": [],
+    "softConstraints": [],
+    "conversationSummary": "New conversation started",
+    "decisionsLog": [],
+    "pendingConfirmations": [],
+    "researchNeeded": [],
+    "validationErrors": [],
+    "createdAt": "2025-08-09T16:22:26.253Z",
+    "lastUpdated": "2025-08-09T16:22:56.136Z",
+    "lastUserMessage": "i have a budget , of 1500",
+    "totalMessages": 6,
+    "destination": {
+      "type": "country",
+      "primary": {
+        "value": "japan",
+        "type": "soft",
+        "confidence": 80,
+        "source": "explicit",
+        "changes": []
+      },
+      "country": {
+        "value": "UNKNOWN",
+        "type": "soft",
+        "confidence": 80,
+        "source": "explicit",
+        "changes": []
+      }
+    },
+    "travelers": {
+      "adults": {
+        "value": 1,
+        "type": "soft",
+        "confidence": 80,
+        "source": "explicit",
+        "changes": [
+          {
+            "timestamp": "2025-08-09T16:22:33.503Z",
+            "oldValue": 1,
+            "newValue": 1,
+            "userMessage": "10 days",
+            "confirmed": false
+          },
+          {
+            "timestamp": "2025-08-09T16:22:56.136Z",
+            "oldValue": 1,
+            "newValue": 1,
+            "userMessage": "i have a budget , of 1500",
+            "confirmed": false
+          }
+        ]
+      },
+      "groupType": {
+        "value": "solo",
+        "type": "soft",
+        "confidence": 80,
+        "source": "explicit",
+        "changes": [
+          {
+            "timestamp": "2025-08-09T16:22:33.503Z",
+            "oldValue": "solo",
+            "newValue": "solo",
+            "userMessage": "10 days",
+            "confirmed": false
+          },
+          {
+            "timestamp": "2025-08-09T16:22:56.136Z",
+            "oldValue": "solo",
+            "newValue": "solo",
+            "userMessage": "i have a budget , of 1500",
+            "confirmed": false
+          }
+        ]
+      }
+    },
+    "preferences": {
+      "travelStyle": {
+        "value": "budget",
+        "type": "soft",
+        "confidence": 90,
+        "source": "explicit",
+        "changes": [
+          {
+            "timestamp": "2025-08-09T16:22:33.503Z",
+            "oldValue": "mid-range",
+            "newValue": "mid-range",
+            "userMessage": "10 days",
+            "confirmed": false
+          },
+          {
+            "timestamp": "2025-08-09T16:22:56.136Z",
+            "oldValue": "mid-range",
+            "newValue": "budget",
+            "userMessage": "i have a budget , of 1500",
+            "confirmed": false
+          }
+        ]
+      }
+    },
+    "dates": {
+      "duration": {
+        "value": 10,
+        "type": "soft",
+        "confidence": 90,
+        "source": "explicit",
+        "changes": []
+      },
+      "flexibility": {
+        "value": "flexible",
+        "type": "soft",
+        "confidence": 90,
+        "source": "explicit",
+        "changes": []
+      }
+    }
+  },
+  "messages": [
+    {
+      "id": "msg_1754756546253_273x3yzyx",
+      "content": "i would like to go to Japan",
+      "role": "user",
+      "timestamp": "2025-08-09T16:22:26.253Z"
+    },
+    {
+      "id": "msg_1754756546255_la96pzpl6",
+      "content": "japan is a wonderful choice! I can help you plan an amazing trip there. How long are you thinking of staying?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T16:22:26.255Z",
+      "metadata": {
+        "analysis": {
+          "intent": {
+            "primary": "specify_destination",
+            "secondary": [
+              "planning"
+            ],
+            "confidence": 85,
+            "context": "User specifying travel destination",
+            "urgency": "medium"
+          },
+          "entities": {
+            "destinations": [
+              "japan",
+              "Japan"
+            ],
+            "dates": {},
+            "budget": {},
+            "travelers": {},
+            "preferences": {},
+            "constraints": {
+              "hard": [],
+              "soft": [
+                "i would like to go to Japan"
+              ]
+            },
+            "locations": {}
+          },
+          "normalizedData": {
+            "destinations": [
+              {
+                "original": "japan",
+                "normalized": "japan",
+                "type": "country",
+                "confidence": 80,
+                "country": "UNKNOWN",
+                "alternatives": []
+              },
+              {
+                "original": "Japan",
+                "normalized": "Japan",
+                "type": "country",
+                "confidence": 80,
+                "country": "UNKNOWN",
+                "alternatives": []
+              }
+            ],
+            "dates": {
+              "flexibility": "flexible",
+              "confidence": 50,
+              "inferred": false
+            },
+            "budget": {
+              "total": 0,
+              "currency": "USD",
+              "confidence": 50,
+              "source": "inferred"
+            },
+            "travelers": {
+              "adults": 1,
+              "groupType": "solo",
+              "confidence": 80
+            },
+            "preferences": {
+              "travelStyle": "mid-range",
+              "pace": "moderate",
+              "accommodation": [],
+              "activities": [],
+              "dining": [],
+              "transport": {},
+              "confidence": {}
+            },
+            "constraints": {
+              "hard": [],
+              "soft": [
+                {
+                  "constraint": "i would like to go to Japan",
+                  "field": "unknown",
+                  "value": null
+                }
+              ]
+            }
+          },
+          "contextUpdates": {
+            "destination": {
+              "type": "country",
+              "primary": {
+                "value": "japan",
+                "type": "soft",
+                "confidence": 80,
+                "source": "explicit",
+                "changes": []
+              },
+              "country": {
+                "value": "UNKNOWN",
+                "type": "soft",
+                "confidence": 80,
+                "source": "explicit",
+                "changes": []
+              }
+            },
+            "travelers": {
+              "adults": {
+                "value": 1,
+                "type": "soft",
+                "confidence": 80,
+                "source": "explicit",
+                "changes": []
+              },
+              "groupType": {
+                "value": "solo",
+                "type": "soft",
+                "confidence": 80,
+                "source": "explicit",
+                "changes": []
+              }
+            },
+            "preferences": {
+              "travelStyle": {
+                "value": "mid-range",
+                "type": "soft",
+                "confidence": 80,
+                "source": "explicit",
+                "changes": []
+              }
+            }
+          },
+          "needsConfirmation": [],
+          "needsResearch": false,
+          "confidence": 70.83333333333333,
+          "reasoning": [
+            "Cleaned input: \"i would like to go to Japan\"",
+            "Detected intent: specify_destination (85% confidence)",
+            "Extracted entities: destinations, dates, budget, travelers, preferences, constraints, locations",
+            "Normalized data with 2 destinations",
+            "Generated 3 context updates"
+          ]
+        },
+        "contextUpdates": [
+          "destination",
+          "travelers",
+          "preferences"
+        ],
+        "providersQueried": [],
+        "deepLinks": []
+      }
+    },
+    {
+      "id": "msg_1754756553498_5smbonljd",
+      "content": "10 days",
+      "role": "user",
+      "timestamp": "2025-08-09T16:22:33.499Z"
+    },
+    {
+      "id": "msg_1754756553504_3k58fzznh",
+      "content": "A 10-day trip sounds perfect. To complete your itinerary, I just need to know: budget.",
+      "role": "assistant",
+      "timestamp": "2025-08-09T16:22:33.504Z",
+      "metadata": {
+        "analysis": {
+          "intent": {
+            "primary": "specify_dates",
+            "confidence": 80,
+            "context": "User specifying travel dates or duration",
+            "urgency": "medium"
+          },
+          "entities": {
+            "destinations": [],
+            "dates": {
+              "duration": 10
+            },
+            "budget": {},
+            "travelers": {},
+            "preferences": {},
+            "constraints": {
+              "hard": [],
+              "soft": []
+            },
+            "locations": {}
+          },
+          "normalizedData": {
+            "destinations": [],
+            "dates": {
+              "flexibility": "flexible",
+              "confidence": 90,
+              "inferred": false,
+              "duration": 10
+            },
+            "budget": {
+              "total": 0,
+              "currency": "USD",
+              "confidence": 50,
+              "source": "inferred"
+            },
+            "travelers": {
+              "adults": 1,
+              "groupType": "solo",
+              "confidence": 80
+            },
+            "preferences": {
+              "travelStyle": "mid-range",
+              "pace": "moderate",
+              "accommodation": [],
+              "activities": [],
+              "dining": [],
+              "transport": {},
+              "confidence": {}
+            },
+            "constraints": {
+              "hard": [],
+              "soft": []
+            }
+          },
+          "contextUpdates": {
+            "dates": {
+              "duration": {
+                "value": 10,
+                "type": "soft",
+                "confidence": 90,
+                "source": "explicit",
+                "changes": []
+              },
+              "flexibility": {
+                "value": "flexible",
+                "type": "soft",
+                "confidence": 90,
+                "source": "explicit",
+                "changes": []
+              }
+            },
+            "travelers": {
+              "adults": {
+                "value": 1,
+                "type": "soft",
+                "confidence": 80,
+                "source": "explicit",
+                "changes": [
+                  {
+                    "timestamp": "2025-08-09T16:22:33.503Z",
+                    "oldValue": 1,
+                    "newValue": 1,
+                    "userMessage": "10 days",
+                    "confirmed": false
+                  }
+                ]
+              },
+              "groupType": {
+                "value": "solo",
+                "type": "soft",
+                "confidence": 80,
+                "source": "explicit",
+                "changes": [
+                  {
+                    "timestamp": "2025-08-09T16:22:33.503Z",
+                    "oldValue": "solo",
+                    "newValue": "solo",
+                    "userMessage": "10 days",
+                    "confirmed": false
+                  }
+                ]
+              }
+            },
+            "preferences": {
+              "travelStyle": {
+                "value": "mid-range",
+                "type": "soft",
+                "confidence": 80,
+                "source": "explicit",
+                "changes": [
+                  {
+                    "timestamp": "2025-08-09T16:22:33.503Z",
+                    "oldValue": "mid-range",
+                    "newValue": "mid-range",
+                    "userMessage": "10 days",
+                    "confirmed": false
+                  }
+                ]
+              }
+            }
+          },
+          "needsConfirmation": [],
+          "needsResearch": false,
+          "confidence": 75,
+          "reasoning": [
+            "Cleaned input: \"10 days\"",
+            "Detected intent: specify_dates (80% confidence)",
+            "Extracted entities: destinations, dates, budget, travelers, preferences, constraints, locations",
+            "Normalized data with 0 destinations",
+            "Generated 3 context updates"
+          ]
+        },
+        "contextUpdates": [
+          "dates",
+          "travelers",
+          "preferences"
+        ],
+        "providersQueried": [],
+        "deepLinks": []
+      }
+    },
+    {
+      "id": "msg_1754756576133_aal3u555o",
+      "content": "i have a budget , of 1500",
+      "role": "user",
+      "timestamp": "2025-08-09T16:22:56.133Z"
+    },
+    {
+      "id": "msg_1754756576137_zfe2962of",
+      "content": "To complete your itinerary, I just need to know: budget.",
+      "role": "assistant",
+      "timestamp": "2025-08-09T16:22:56.137Z",
+      "metadata": {
+        "analysis": {
+          "intent": {
+            "primary": "specify_budget",
+            "confidence": 85,
+            "context": "User specifying budget constraints",
+            "urgency": "medium"
+          },
+          "entities": {
+            "destinations": [],
+            "dates": {},
+            "budget": {},
+            "travelers": {},
+            "preferences": {
+              "style": "budget"
+            },
+            "constraints": {
+              "hard": [],
+              "soft": []
+            },
+            "locations": {}
+          },
+          "normalizedData": {
+            "destinations": [],
+            "dates": {
+              "flexibility": "flexible",
+              "confidence": 50,
+              "inferred": false
+            },
+            "budget": {
+              "total": 0,
+              "currency": "USD",
+              "confidence": 50,
+              "source": "inferred"
+            },
+            "travelers": {
+              "adults": 1,
+              "groupType": "solo",
+              "confidence": 80
+            },
+            "preferences": {
+              "travelStyle": "budget",
+              "pace": "moderate",
+              "accommodation": [],
+              "activities": [],
+              "dining": [],
+              "transport": {},
+              "confidence": {
+                "travelStyle": 90
+              }
+            },
+            "constraints": {
+              "hard": [],
+              "soft": []
+            }
+          },
+          "contextUpdates": {
+            "travelers": {
+              "adults": {
+                "value": 1,
+                "type": "soft",
+                "confidence": 80,
+                "source": "explicit",
+                "changes": [
+                  {
+                    "timestamp": "2025-08-09T16:22:33.503Z",
+                    "oldValue": 1,
+                    "newValue": 1,
+                    "userMessage": "10 days",
+                    "confirmed": false
+                  },
+                  {
+                    "timestamp": "2025-08-09T16:22:56.136Z",
+                    "oldValue": 1,
+                    "newValue": 1,
+                    "userMessage": "i have a budget , of 1500",
+                    "confirmed": false
+                  }
+                ]
+              },
+              "groupType": {
+                "value": "solo",
+                "type": "soft",
+                "confidence": 80,
+                "source": "explicit",
+                "changes": [
+                  {
+                    "timestamp": "2025-08-09T16:22:33.503Z",
+                    "oldValue": "solo",
+                    "newValue": "solo",
+                    "userMessage": "10 days",
+                    "confirmed": false
+                  },
+                  {
+                    "timestamp": "2025-08-09T16:22:56.136Z",
+                    "oldValue": "solo",
+                    "newValue": "solo",
+                    "userMessage": "i have a budget , of 1500",
+                    "confirmed": false
+                  }
+                ]
+              }
+            },
+            "preferences": {
+              "travelStyle": {
+                "value": "budget",
+                "type": "soft",
+                "confidence": 90,
+                "source": "explicit",
+                "changes": [
+                  {
+                    "timestamp": "2025-08-09T16:22:33.503Z",
+                    "oldValue": "mid-range",
+                    "newValue": "mid-range",
+                    "userMessage": "10 days",
+                    "confirmed": false
+                  },
+                  {
+                    "timestamp": "2025-08-09T16:22:56.136Z",
+                    "oldValue": "mid-range",
+                    "newValue": "budget",
+                    "userMessage": "i have a budget , of 1500",
+                    "confirmed": false
+                  }
+                ]
+              }
+            }
+          },
+          "needsConfirmation": [],
+          "needsResearch": false,
+          "confidence": 66.25,
+          "reasoning": [
+            "Cleaned input: \"i have a budget , of 1500\"",
+            "Detected intent: specify_budget (85% confidence)",
+            "Extracted entities: destinations, dates, budget, travelers, preferences, constraints, locations",
+            "Normalized data with 0 destinations",
+            "Generated 2 context updates"
+          ]
+        },
+        "contextUpdates": [
+          "travelers",
+          "preferences"
+        ],
+        "providersQueried": [],
+        "deepLinks": []
+      }
+    }
+  ],
+  "lastUpdated": "2025-08-09T16:22:56.137Z",
+  "conversationSummary": "Trip planning for japan (10 days, Not specified, 1 people) - 6 messages exchanged",
+  "recoveryPoint": "gathering_info",
+  "version": "1.0"
+}

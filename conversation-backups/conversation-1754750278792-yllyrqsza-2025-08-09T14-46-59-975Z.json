@@ -1,0 +1,185 @@
+{
+  "conversationId": "conversation-1754750278792-yllyrqsza",
+  "tripContext": {
+    "destination": {
+      "primary": "Poland",
+      "type": "country"
+    },
+    "dates": {
+      "duration": 13
+    },
+    "budget": {
+      "total": 1300,
+      "currency": "GBP"
+    },
+    "travelers": {
+      "adults": 1
+    },
+    "preferences": {
+      "accommodation": [
+        "Hotel"
+      ]
+    },
+    "origin": "London (Heathrow)"
+  },
+  "messages": [
+    {
+      "id": "1754750338976-041zebink",
+      "content": "i would like  to go poland",
+      "role": "user",
+      "timestamp": "2025-08-09T14:38:58.976Z"
+    },
+    {
+      "id": "1754750338981-p2fk2zov5",
+      "content": "Great choice for Poland! How many days are you planning to travel?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T14:38:58.981Z",
+      "metadata": {
+        "extractedInfo": {
+          "destination": {
+            "primary": "Poland",
+            "type": "country"
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754750355938-7hf2bm59f",
+      "content": "13",
+      "role": "user",
+      "timestamp": "2025-08-09T14:39:15.938Z"
+    },
+    {
+      "id": "1754750355942-6c5dfb9b3",
+      "content": "Perfect! A 13-day trip to Poland. What's your total budget?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T14:39:15.942Z",
+      "metadata": {
+        "extractedInfo": {
+          "dates": {
+            "duration": 13
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754750378998-mzirra8ck",
+      "content": "1300",
+      "role": "user",
+      "timestamp": "2025-08-09T14:39:38.999Z"
+    },
+    {
+      "id": "1754750378999-ua4bxgmz7",
+      "content": "Perfect! A 13-day trip to Poland. What's your total budget?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T14:39:38.999Z",
+      "metadata": {
+        "extractedInfo": {},
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754750390026-90dj6ukw0",
+      "content": "£1300",
+      "role": "user",
+      "timestamp": "2025-08-09T14:39:50.026Z"
+    },
+    {
+      "id": "1754750390027-4pui7orkk",
+      "content": "Excellent! How many people will be traveling?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T14:39:50.027Z",
+      "metadata": {
+        "extractedInfo": {
+          "budget": {
+            "total": 1300,
+            "currency": "GBP"
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754750783944-8ih0gaafi",
+      "content": "just me",
+      "role": "user",
+      "timestamp": "2025-08-09T14:46:23.944Z"
+    },
+    {
+      "id": "1754750783954-i8d1jncg3",
+      "content": "Excellent! How many people will be traveling?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T14:46:23.954Z",
+      "metadata": {
+        "extractedInfo": {},
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754750788764-x60wlwi8g",
+      "content": "1",
+      "role": "user",
+      "timestamp": "2025-08-09T14:46:28.764Z"
+    },
+    {
+      "id": "1754750788767-9tb5ohv08",
+      "content": "Great! 1 traveler for 13 days. Where will you be departing from? (City or airport)",
+      "role": "assistant",
+      "timestamp": "2025-08-09T14:46:28.767Z",
+      "metadata": {
+        "extractedInfo": {
+          "travelers": {
+            "adults": 1
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754750800367-uiqzkecm3",
+      "content": "Heathrow",
+      "role": "user",
+      "timestamp": "2025-08-09T14:46:40.367Z"
+    },
+    {
+      "id": "1754750800368-pmnyipere",
+      "content": "Perfect! Departing from London (Heathrow). What type of accommodation do you prefer?\n\n🏨 **Options:**\n• **Hotel** - Full service with amenities\n• **Boutique** - Unique, smaller properties\n• **B&B** - Bed and breakfast, local charm\n• **Hostel** - Budget-friendly, social atmosphere\n• **Apartment** - Self-catering, like home\n• **Any** - I'm flexible, show me options",
+      "role": "assistant",
+      "timestamp": "2025-08-09T14:46:40.368Z",
+      "metadata": {
+        "extractedInfo": {
+          "origin": "London (Heathrow)"
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754750812986-pdd0aq6vh",
+      "content": "hotels",
+      "role": "user",
+      "timestamp": "2025-08-09T14:46:52.986Z"
+    },
+    {
+      "id": "1754750812987-dim5236n8",
+      "content": "Excellent choice! What's your preferred travel style?\n\n✨ **Travel Styles:**\n• **Luxury** - Premium experiences, finest accommodations\n• **Mid-range** - Comfortable balance of quality and value\n• **Budget** - Affordable options, maximize experiences\n• **Mixed** - Splurge on some things, save on others",
+      "role": "assistant",
+      "timestamp": "2025-08-09T14:46:52.987Z",
+      "metadata": {
+        "extractedInfo": {
+          "preferences": {
+            "accommodation": [
+              "Hotel"
+            ]
+          }
+        },
+        "researchTriggered": false
+      }
+    }
+  ],
+  "lastUpdated": "2025-08-09T14:46:52.987Z",
+  "conversationSummary": "Trip planning for Poland (13 days, GBP1300, 1 people) - 16 messages exchanged",
+  "recoveryPoint": "gathering_info",
+  "version": "1.0"
+}

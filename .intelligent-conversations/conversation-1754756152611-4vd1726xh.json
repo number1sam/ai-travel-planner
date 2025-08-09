@@ -1,0 +1,219 @@
+{
+  "conversationId": "conversation-1754756152611-4vd1726xh",
+  "messages": [
+    {
+      "id": "msg_1754756174945_jqgepbxrl",
+      "content": "i would live to go to Japan",
+      "role": "user",
+      "timestamp": "2025-08-09T16:16:14.945Z"
+    },
+    {
+      "id": "msg_1754756174950_qkvbzute8",
+      "content": "japan is a wonderful choice! I can help you plan an amazing trip there. How long are you thinking of staying?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T16:16:14.950Z",
+      "metadata": {
+        "analysis": {
+          "intent": {
+            "primary": "specify_destination",
+            "secondary": [
+              "planning"
+            ],
+            "confidence": 85,
+            "context": "User specifying travel destination",
+            "urgency": "medium"
+          },
+          "entities": {
+            "destinations": [
+              "japan",
+              "Japan"
+            ],
+            "dates": {},
+            "budget": {},
+            "travelers": {},
+            "preferences": {},
+            "constraints": {
+              "hard": [],
+              "soft": []
+            },
+            "locations": {}
+          },
+          "normalizedData": {
+            "destinations": [
+              {
+                "original": "japan",
+                "normalized": "japan",
+                "type": "country",
+                "confidence": 80,
+                "country": "UNKNOWN",
+                "alternatives": []
+              },
+              {
+                "original": "Japan",
+                "normalized": "Japan",
+                "type": "country",
+                "confidence": 80,
+                "country": "UNKNOWN",
+                "alternatives": []
+              }
+            ],
+            "dates": {
+              "flexibility": "flexible",
+              "confidence": 50,
+              "inferred": false
+            },
+            "budget": {
+              "total": 0,
+              "currency": "USD",
+              "confidence": 50,
+              "source": "inferred"
+            },
+            "travelers": {
+              "adults": 1,
+              "groupType": "solo",
+              "confidence": 80
+            },
+            "preferences": {
+              "travelStyle": "mid-range",
+              "pace": "moderate",
+              "accommodation": [],
+              "activities": [],
+              "dining": [],
+              "transport": {},
+              "confidence": {}
+            },
+            "constraints": {
+              "hard": [],
+              "soft": []
+            }
+          },
+          "contextUpdates": {
+            "destination": {
+              "type": "country",
+              "primary": {
+                "value": "japan",
+                "type": "soft",
+                "confidence": 80,
+                "source": "explicit",
+                "changes": []
+              },
+              "country": {
+                "value": "UNKNOWN",
+                "type": "soft",
+                "confidence": 80,
+                "source": "explicit",
+                "changes": []
+              }
+            },
+            "travelers": {
+              "adults": {
+                "value": 1,
+                "type": "soft",
+                "confidence": 80,
+                "source": "explicit",
+                "changes": []
+              },
+              "groupType": {
+                "value": "solo",
+                "type": "soft",
+                "confidence": 80,
+                "source": "explicit",
+                "changes": []
+              }
+            },
+            "preferences": {
+              "travelStyle": {
+                "value": "mid-range",
+                "type": "soft",
+                "confidence": 80,
+                "source": "explicit",
+                "changes": []
+              }
+            }
+          },
+          "needsConfirmation": [],
+          "needsResearch": false,
+          "confidence": 70.83333333333333,
+          "reasoning": [
+            "Cleaned input: \"i would live to go to Japan\"",
+            "Detected intent: specify_destination (85% confidence)",
+            "Extracted entities: destinations, dates, budget, travelers, preferences, constraints, locations",
+            "Normalized data with 2 destinations",
+            "Generated 3 context updates"
+          ]
+        },
+        "contextUpdates": [
+          "destination",
+          "travelers",
+          "preferences"
+        ],
+        "providersQueried": [],
+        "deepLinks": []
+      }
+    }
+  ],
+  "tripContext": {
+    "id": "conversation-1754756152611-4vd1726xh",
+    "version": 2,
+    "intent": {
+      "current": "exploring",
+      "confidence": 50,
+      "context": "New conversation started"
+    },
+    "hardConstraints": [],
+    "softConstraints": [],
+    "conversationSummary": "New conversation started",
+    "decisionsLog": [],
+    "pendingConfirmations": [],
+    "researchNeeded": [],
+    "validationErrors": [],
+    "createdAt": "2025-08-09T16:16:14.944Z",
+    "lastUpdated": "2025-08-09T16:16:14.949Z",
+    "lastUserMessage": "i would live to go to Japan",
+    "totalMessages": 2,
+    "destination": {
+      "type": "country",
+      "primary": {
+        "value": "japan",
+        "type": "soft",
+        "confidence": 80,
+        "source": "explicit",
+        "changes": []
+      },
+      "country": {
+        "value": "UNKNOWN",
+        "type": "soft",
+        "confidence": 80,
+        "source": "explicit",
+        "changes": []
+      }
+    },
+    "travelers": {
+      "adults": {
+        "value": 1,
+        "type": "soft",
+        "confidence": 80,
+        "source": "explicit",
+        "changes": []
+      },
+      "groupType": {
+        "value": "solo",
+        "type": "soft",
+        "confidence": 80,
+        "source": "explicit",
+        "changes": []
+      }
+    },
+    "preferences": {
+      "travelStyle": {
+        "value": "mid-range",
+        "type": "soft",
+        "confidence": 80,
+        "source": "explicit",
+        "changes": []
+      }
+    }
+  },
+  "conversationSummary": "i would live to go to Japan",
+  "lastUpdated": "2025-08-09T16:16:15.120Z"
+}

@@ -1,0 +1,40 @@
+{
+  "conversationId": "test-currency-1754748189",
+  "tripContext": {
+    "destination": {
+      "primary": "England",
+      "type": "country"
+    },
+    "dates": {},
+    "budget": {},
+    "travelers": {},
+    "preferences": {}
+  },
+  "messages": [
+    {
+      "id": "1754748189194-jao2lu7kc",
+      "content": "I would like to go to England",
+      "role": "user",
+      "timestamp": "2025-08-09T14:03:09.194Z"
+    },
+    {
+      "id": "1754748189195-5os1y9m1k",
+      "content": "Fantastic choice! England is incredible for travelers. I need to know which part of England interests you most:\n\n🏙️ **Focus on One City** (Perfect for a deeper experience):\n• **London** - The main hub with world-class attractions\n• **Bath** - Georgian architecture and Roman baths  \n• **York** - Medieval city with historic walls\n\n🗺️ **Multi-City Adventure** (See more of the country):\n• **Regional Tour**: 2-3 cities (perfect for 5-10 days)\n• **Grand Tour**: Experience England comprehensively (10+ days)\n\n🏘️ **Charming Small Towns & Villages**:\n• **Cotswolds** - Honey-stone villages and countryside\n• **Lake District** - Traditional villages with stunning lakes\n• **Yorkshire Dales** - Historic market towns\n\nWhich approach sounds more appealing to you?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T14:03:09.195Z",
+      "metadata": {
+        "extractedInfo": {
+          "destination": {
+            "primary": "England",
+            "type": "country"
+          }
+        },
+        "researchTriggered": false
+      }
+    }
+  ],
+  "lastUpdated": "2025-08-09T14:03:09.195Z",
+  "conversationSummary": "Trip planning for England (Not specified, undefinedundefined, Not specified) - 2 messages exchanged",
+  "recoveryPoint": "gathering_info",
+  "version": "1.0"
+}

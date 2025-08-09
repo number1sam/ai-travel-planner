@@ -1,0 +1,127 @@
+{
+  "conversationId": "style-test-1754749959-24345",
+  "tripContext": {
+    "destination": {
+      "primary": "Italy",
+      "type": "country"
+    },
+    "dates": {
+      "duration": 7
+    },
+    "budget": {
+      "total": 3000,
+      "currency": "EUR"
+    },
+    "travelers": {
+      "adults": 2
+    },
+    "preferences": {},
+    "origin": "Milan"
+  },
+  "messages": [
+    {
+      "id": "1754749959762-826kdszp5",
+      "content": "I want to visit Italy",
+      "role": "user",
+      "timestamp": "2025-08-09T14:32:39.762Z"
+    },
+    {
+      "id": "1754749959763-gep1nf3ar",
+      "content": "Italy is a fantastic choice! What type of experience interests you most - major cities, cultural sites, or smaller authentic places?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T14:32:39.763Z",
+      "metadata": {
+        "extractedInfo": {
+          "destination": {
+            "primary": "Italy",
+            "type": "country"
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754749959793-qnyp6zrjg",
+      "content": "7 days",
+      "role": "user",
+      "timestamp": "2025-08-09T14:32:39.793Z"
+    },
+    {
+      "id": "1754749959793-denf0rr43",
+      "content": "Perfect! A 7-day trip to Italy. What's your total budget?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T14:32:39.793Z",
+      "metadata": {
+        "extractedInfo": {
+          "dates": {
+            "duration": 7
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754749959819-j17a9bsab",
+      "content": "€3000",
+      "role": "user",
+      "timestamp": "2025-08-09T14:32:39.819Z"
+    },
+    {
+      "id": "1754749959820-h4s3w4l6u",
+      "content": "Excellent! How many people will be traveling?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T14:32:39.820Z",
+      "metadata": {
+        "extractedInfo": {
+          "budget": {
+            "total": 3000,
+            "currency": "EUR"
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754749959847-iq1b5kj50",
+      "content": "2 people",
+      "role": "user",
+      "timestamp": "2025-08-09T14:32:39.847Z"
+    },
+    {
+      "id": "1754749959848-chh5jgy92",
+      "content": "Great! 2 travelers for 7 days. Where will you be departing from? (City or airport)",
+      "role": "assistant",
+      "timestamp": "2025-08-09T14:32:39.848Z",
+      "metadata": {
+        "extractedInfo": {
+          "travelers": {
+            "adults": 2
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754749959867-lvlkplx1i",
+      "content": "Milan",
+      "role": "user",
+      "timestamp": "2025-08-09T14:32:39.867Z"
+    },
+    {
+      "id": "1754749959868-dazcv54tj",
+      "content": "Perfect! Departing from Milan. What type of accommodation do you prefer?\n\n🏨 **Options:**\n• **Hotel** - Full service with amenities\n• **Boutique** - Unique, smaller properties\n• **B&B** - Bed and breakfast, local charm\n• **Hostel** - Budget-friendly, social atmosphere\n• **Apartment** - Self-catering, like home\n• **Any** - I'm flexible, show me options",
+      "role": "assistant",
+      "timestamp": "2025-08-09T14:32:39.868Z",
+      "metadata": {
+        "extractedInfo": {
+          "origin": "Milan"
+        },
+        "researchTriggered": false
+      }
+    }
+  ],
+  "lastUpdated": "2025-08-09T14:32:39.868Z",
+  "conversationSummary": "Trip planning for Italy (7 days, EUR3000, 2 people) - 10 messages exchanged",
+  "recoveryPoint": "gathering_info",
+  "version": "1.0"
+}

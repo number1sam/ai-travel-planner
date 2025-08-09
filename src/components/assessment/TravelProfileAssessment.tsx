@@ -89,7 +89,7 @@ const assessmentQuestions: AssessmentQuestion[] = [
   {
     id: 'dietary_preferences',
     title: 'Do you have any dietary preferences or restrictions?',
-    description: 'We'll ensure restaurant recommendations match your needs',
+    description: "We'll ensure restaurant recommendations match your needs",
     type: 'multiple',
     icon: Utensils,
     options: [

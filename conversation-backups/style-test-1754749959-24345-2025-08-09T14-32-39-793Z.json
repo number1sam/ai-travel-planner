@@ -1,0 +1,40 @@
+{
+  "conversationId": "style-test-1754749959-24345",
+  "tripContext": {
+    "destination": {
+      "primary": "Italy",
+      "type": "country"
+    },
+    "dates": {},
+    "budget": {},
+    "travelers": {},
+    "preferences": {}
+  },
+  "messages": [
+    {
+      "id": "1754749959762-826kdszp5",
+      "content": "I want to visit Italy",
+      "role": "user",
+      "timestamp": "2025-08-09T14:32:39.762Z"
+    },
+    {
+      "id": "1754749959763-gep1nf3ar",
+      "content": "Italy is a fantastic choice! What type of experience interests you most - major cities, cultural sites, or smaller authentic places?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T14:32:39.763Z",
+      "metadata": {
+        "extractedInfo": {
+          "destination": {
+            "primary": "Italy",
+            "type": "country"
+          }
+        },
+        "researchTriggered": false
+      }
+    }
+  ],
+  "lastUpdated": "2025-08-09T14:32:39.763Z",
+  "conversationSummary": "Trip planning for Italy (Not specified, undefinedundefined, Not specified) - 2 messages exchanged",
+  "recoveryPoint": "gathering_info",
+  "version": "1.0"
+}

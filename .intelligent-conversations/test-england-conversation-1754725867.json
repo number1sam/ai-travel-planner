@@ -1,0 +1,115 @@
+{
+  "conversationId": "test-england-conversation-1754725867",
+  "messages": [
+    {
+      "id": "1754725869194-iwth6dgo2",
+      "content": "I would like to go to England",
+      "role": "user",
+      "timestamp": "2025-08-09T07:51:09.194Z"
+    },
+    {
+      "id": "1754725869195-5ny8rp10z",
+      "content": "I'd love to help you plan your trip! Where would you like to go?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T07:51:09.195Z",
+      "metadata": {
+        "extractedInfo": {},
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754725869242-idlsisqb1",
+      "content": "can i go to a group of small charming towns in england please, for sight seeing",
+      "role": "user",
+      "timestamp": "2025-08-09T07:51:09.242Z"
+    },
+    {
+      "id": "1754725870252-e4qs08p19",
+      "content": "I'm sorry, I couldn't find specific information about those places right now. Could you be more specific about the area you're interested in?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T07:51:10.252Z",
+      "metadata": {
+        "extractedInfo": {
+          "destination": {
+            "type": "small-towns",
+            "preferences": "can i go to a group of small charming towns in england please, for sight seeing",
+            "primary": "England"
+          },
+          "currentIntent": "find-small-places",
+          "nextExpected": "choose-destinations"
+        },
+        "researchTriggered": false,
+        "destinationsResearched": []
+      }
+    },
+    {
+      "id": "1754725870312-c84ia4cds",
+      "content": "what would be a good budget for 7 days?",
+      "role": "user",
+      "timestamp": "2025-08-09T07:51:10.312Z"
+    },
+    {
+      "id": "1754725870313-u1b85xkg1",
+      "content": "Perfect! A 7-day trip to England. What's your total budget?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T07:51:10.313Z",
+      "metadata": {
+        "extractedInfo": {
+          "dates": {
+            "duration": 7
+          }
+        },
+        "researchTriggered": false,
+        "destinationsResearched": []
+      }
+    },
+    {
+      "id": "1754725870361-fjhx0payu",
+      "content": "my budget is £1500 for 2 people",
+      "role": "user",
+      "timestamp": "2025-08-09T07:51:10.361Z"
+    },
+    {
+      "id": "1754725870362-6s54s1ei1",
+      "content": "Perfect! I have all the key details. Let me start researching the best options for your 7-day trip to England with a GBP1500 budget for 2 people.",
+      "role": "assistant",
+      "timestamp": "2025-08-09T07:51:10.362Z",
+      "metadata": {
+        "extractedInfo": {
+          "budget": {
+            "total": 1500,
+            "currency": "GBP"
+          },
+          "travelers": {
+            "adults": 2
+          }
+        },
+        "researchTriggered": false,
+        "destinationsResearched": []
+      }
+    }
+  ],
+  "tripContext": {
+    "destination": {
+      "type": "custom",
+      "preferences": "can i go to a group of small charming towns in england please, for sight seeing",
+      "primary": "England",
+      "researched": []
+    },
+    "dates": {
+      "duration": 7
+    },
+    "budget": {
+      "total": 1500,
+      "currency": "GBP"
+    },
+    "travelers": {
+      "adults": 2
+    },
+    "preferences": {},
+    "currentIntent": "find-small-places",
+    "nextExpected": "choose-destinations"
+  },
+  "conversationSummary": "Conversation context:\n- Destination interest: can i go to a group of small charming towns in england please, for sight seeing\n- Budget: GBP1500\n- Travel timeframe: 7 days\n- Travelers: 2 adults\n- Recent user requests: can i go to a group of small charming towns in england please, for sight seeing; what would be a good budget for 7 days?; my budget is £1500 for 2 people\n",
+  "lastUpdated": "2025-08-09T07:51:10.362Z"
+}

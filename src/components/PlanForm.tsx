@@ -53,10 +53,13 @@ interface ItineraryDay {
 }
 
 export default function PlanForm() {
+  // Generate unique conversation ID for this session
+  const [conversationId] = useState(() => `conversation-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`)
+  
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: 'Hello! I\'m your AI Travel & Health Planner. I\'ll help you create the perfect trip tailored to your preferences and health needs. Let\'s start planning your adventure! 🌍✈️',
+      text: 'Hello! I\'m your AI Travel Planner with web research capabilities. I can help you plan trips to ANY destination - including small towns, villages, or places you\'ve heard about. I\'ll research and find the perfect places for your budget and interests! 🌍✈️',
       isUser: false,
       timestamp: new Date()
     }
@@ -66,7 +69,9 @@ export default function PlanForm() {
   const [itinerary, setItinerary] = useState<ItineraryDay[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [isDraftSaved, setIsDraftSaved] = useState(false)
-  const [preferencesStarted, setPreferencesStarted] = useState(false)
+  const [conversationContext, setConversationContext] = useState<any>({})
+  const [researchedPlaces, setResearchedPlaces] = useState<string[]>([])
+  const [shouldAutoScroll, setShouldAutoScroll] = useState(true)
   
   const [tripDetails, setTripDetails] = useState<TripDetails>({
     destination: '',
@@ -101,15 +106,64 @@ export default function PlanForm() {
   const inputRef = useRef<HTMLInputElement>(null)
   
   const availablePrompts = [
-    "I want to visit Italy for 7 days with a £2000 budget",
-    "Plan a relaxing beach vacation for 2 people",
-    "I need a healthy wellness retreat for 5 days",
-    "Adventure trip to Japan for 10 days"
+    "I want to visit small charming towns in England for 7 days with a £2000 budget",
+    "Find me beautiful villages in the French countryside for 2 people",
+    "I'd like to explore traditional rural towns in Italy for 5 days",
+    "Show me hidden gem destinations in Scotland for 10 days"
   ]
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages])
+    if (shouldAutoScroll) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, [messages, shouldAutoScroll])
+
+  // Check if user is near bottom to determine if we should auto-scroll
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget
+    const isNearBottom = scrollTop + clientHeight >= scrollHeight - 100 // 100px threshold
+    setShouldAutoScroll(isNearBottom)
+  }
+
+  const handleClearChat = async () => {
+    try {
+      // Clear conversation on server
+      await fetch(`/api/rule-based-conversation?conversationId=${conversationId}`, {
+        method: 'DELETE'
+      })
+      
+      // Reset local state
+      setMessages([
+        {
+          id: '1',
+          text: 'Hello! I\'m your AI Travel Planner with web research capabilities. I can help you plan trips to ANY destination - including small towns, villages, or places you\'ve heard about. I\'ll research and find the perfect places for your budget and interests! 🌍✈️',
+          isUser: false,
+          timestamp: new Date()
+        }
+      ])
+      setConversationContext({})
+      setResearchedPlaces([])
+      setItinerary([])
+      setTripDetails({
+        destination: '',
+        startDate: '',
+        endDate: '',
+        duration: 0,
+        budget: 0,
+        travelers: 1,
+        preferences: [],
+        activities: [],
+        departureLocation: '',
+        accommodationType: '',
+        travelStyle: '',
+        specialRequests: []
+      })
+      
+      console.log('✅ Chat cleared successfully')
+    } catch (error) {
+      console.error('❌ Failed to clear chat:', error)
+    }
+  }
 
   const handleSendMessage = async () => {
     if (!currentMessage.trim() || isLoading) return
@@ -125,227 +179,91 @@ export default function PlanForm() {
     setMessages(prev => [...prev, newUserMessage])
     setCurrentMessage('')
     setIsLoading(true)
+    setShouldAutoScroll(true) // Always auto-scroll when sending a message
+    
+    // Add typing indicator
+    const typingMessage: Message = {
+      id: 'typing-indicator',
+      text: '',
+      isUser: false,
+      timestamp: new Date()
+    }
+    setMessages(prev => [...prev, typingMessage])
 
     try {
-      // Process the message and extract information
-      const response = await processUserMessage(userMessage)
+      console.log(`💬 Sending to intelligent conversation: "${userMessage}"`)
       
+      // Use rule-based conversation API that follows strict conversation rules
+      const response = await fetch('/api/rule-based-conversation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          conversationId,
+          message: userMessage
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to process conversation')
+      }
+
+      const result = await response.json()
+      
+      // Rule-based API has different response format
+      console.log('✅ Rule-based response:', result)
+      
+      // Update conversation context (simplified for rule-based system)
+      setConversationContext({
+        tripContext: {},
+        messageCount: messages.length + 1,
+        hasResearchedDestinations: result.canStartSearches,
+        researchedPlaces: []
+      })
+      
+      // The rule-based system manages trip state internally
+      // We'll update UI based on API feedback when searches can start
+      if (result.canStartSearches) {
+        console.log('🚀 Trip ready for searches!')
+        // Could trigger search UI or itinerary generation here
+      }
+      
+      // Remove typing indicator and add bot response
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: response,
+        text: result.response,
         isUser: false,
         timestamp: new Date()
       }
 
-      setMessages(prev => [...prev, botMessage])
+      setMessages(prev => {
+        // Remove typing indicator and add real response
+        const filtered = prev.filter(msg => msg.id !== 'typing-indicator')
+        return [...filtered, botMessage]
+      })
+      
+      console.log(`✅ Response received. Context: ${JSON.stringify(result.conversationContext, null, 2)}`)
+      
     } catch (error) {
-      console.error('Error processing message:', error)
+      console.error('❌ Error processing intelligent conversation:', error)
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: 'I apologize, but I encountered an error. Please try again.',
+        text: 'I apologize, but I encountered an error processing your request. Please try again - I can research any destination you mention!',
         isUser: false,
         timestamp: new Date()
       }
-      setMessages(prev => [...prev, errorMessage])
+      setMessages(prev => {
+        // Remove typing indicator and add error message
+        const filtered = prev.filter(msg => msg.id !== 'typing-indicator')
+        return [...filtered, errorMessage]
+      })
     } finally {
       setIsLoading(false)
     }
   }
 
-  const processUserMessage = async (userMessage: string): Promise<string> => {
-    const lowerMessage = userMessage.toLowerCase()
-    const updates: Partial<TripDetails> = {}
-    const questionsUpdate: Partial<PlanningQuestions> = {}
-
-    // Extract destination
-    const destinations = ['italy', 'france', 'spain', 'greece', 'japan', 'thailand', 'turkey', 'portugal', 'morocco', 'egypt']
-    for (const dest of destinations) {
-      if (lowerMessage.includes(dest)) {
-        if (dest === 'italy') {
-          updates.destination = 'Italy'
-        } else if (dest === 'france') {
-          updates.destination = 'France'
-        } else if (dest === 'japan') {
-          updates.destination = 'Japan'
-        } else {
-          updates.destination = dest.charAt(0).toUpperCase() + dest.slice(1)
-        }
-        questionsUpdate.destination = true
-        break
-      }
-    }
-
-    // Extract trip duration with enhanced parsing
-    const durationPatterns = [
-      /(\d+)\s*day\s*(?:round\s+)?(?:holiday|vacation|trip)/gi,
-      /(\d+)\s*days?\s*(?:round\s+)?(?:trip|holiday|vacation)/gi,
-      /(\d+)\s*days?(?:\s+(?:holiday|vacation|trip))?/gi,
-      /(\d+)\s*weeks?(?:\s+(?:holiday|vacation|trip))?/gi,
-      /(\d+)\s*nights?(?:\s+(?:holiday|vacation|trip))?/gi
-    ]
-    
-    for (const pattern of durationPatterns) {
-      const match = pattern.exec(lowerMessage)
-      if (match) {
-        const num = parseInt(match[1])
-        let days = num
-        
-        if (pattern.source.includes('week')) {
-          days = num * 7
-        } else if (pattern.source.includes('night')) {
-          days = num
-        }
-        
-        const startDate = new Date()
-        startDate.setDate(startDate.getDate() + 7)
-        const endDate = new Date(startDate)
-        endDate.setDate(endDate.getDate() + days)
-        
-        updates.startDate = startDate.toISOString().split('T')[0]
-        updates.endDate = endDate.toISOString().split('T')[0]
-        updates.duration = days
-        questionsUpdate.duration = true
-        break
-      }
-    }
-
-    // Extract budget
-    const budgetMatch = lowerMessage.match(/£(\d+(?:,\d{3})*(?:\.\d{2})?)/g)
-    if (budgetMatch) {
-      const budgetStr = budgetMatch[0].replace('£', '').replace(/,/g, '')
-      const budget = parseFloat(budgetStr)
-      if (budget > 0 && budget <= 50000) {
-        updates.budget = budget
-        questionsUpdate.budget = true
-      }
-    }
-
-    // Extract number of travelers
-    const travelersMatch = lowerMessage.match(/(\d+)\s*(?:people|person|travelers?)/gi)
-    if (travelersMatch) {
-      const num = parseInt(travelersMatch[0].match(/\d+/)?.[0] || '1')
-      if (num > 0 && num <= 20) {
-        updates.travelers = num
-        questionsUpdate.travelers = true
-      }
-    }
-
-    // Update state
-    if (Object.keys(updates).length > 0) {
-      setTripDetails(prev => ({ ...prev, ...updates }))
-    }
-    if (Object.keys(questionsUpdate).length > 0) {
-      setQuestionsAnswered(prev => ({ ...prev, ...questionsUpdate }))
-    }
-
-    // Generate appropriate response
-    return generateResponse(updates, questionsUpdate, lowerMessage)
-  }
-
-  const generateResponse = (updates: Partial<TripDetails>, questionsUpdate: Partial<PlanningQuestions>, message: string): string => {
-    // Check if we have enough information to generate an itinerary
-    const hasEssentials = tripDetails.destination && tripDetails.duration && tripDetails.budget && tripDetails.travelers
-
-    if (updates.destination && !preferencesStarted && !preferencesGathered && currentPreferenceQuestions.length === 0) {
-      setPreferencesStarted(true)
-      const detailedQuestions = [
-        `What kind of activities interest you most in ${updates.destination}?`,
-        "What's your preferred travel pace?",
-        "Any dietary preferences or restrictions?"
-      ]
-      setCurrentPreferenceQuestions(detailedQuestions)
-      
-      return `${updates.destination} is a fantastic choice! 🎉 To create the perfect itinerary for you, I'd love to learn more about your preferences.
-
-${detailedQuestions[0]}
-
-Please tell me what interests you most, and I'll ask a few more questions to personalize your trip perfectly!`
-    }
-
-    if (currentPreferenceQuestions.length > 0 && !preferencesGathered) {
-      // Process preferences
-      const preferences = extractPreferences(message)
-      if (preferences.length > 0) {
-        setTripDetails(prev => ({
-          ...prev,
-          preferences: [...prev.preferences, ...preferences],
-          activities: [...prev.activities, ...preferences]
-        }))
-        
-        if (currentPreferenceQuestions.length > 1) {
-          const nextQuestion = currentPreferenceQuestions[1]
-          setCurrentPreferenceQuestions(prev => prev.slice(1))
-          return `Great insights! I see you're interested in ${preferences.join(', ')}. That helps me understand what you're looking for.
-
-${nextQuestion}`
-        } else {
-          // Done with preferences
-          setPreferencesGathered(true)
-          setCurrentPreferenceQuestions([])
-          setQuestionsAnswered(prev => ({ ...prev, activities: true }))
-          return `Perfect! I have a good understanding of your interests. You're interested in ${preferences.join(', ')} - excellent choices!
-
-Now let me get the essential planning details:
-
-How many people will be traveling?`
-        }
-      }
-    }
-
-    // Ask for missing information
-    if (!tripDetails.destination) {
-      return "I'd love to help you plan your trip! Where would you like to go? 🌍"
-    }
-    
-    if (!tripDetails.duration) {
-      return `${tripDetails.destination} sounds amazing! How many days are you planning to stay?`
-    }
-    
-    if (!tripDetails.budget) {
-      return `Great choice for a ${tripDetails.duration}-day trip! What's your total budget for this adventure?`
-    }
-    
-    if (!tripDetails.travelers) {
-      return "Perfect! How many people will be traveling?"
-    }
-
-    // If we have all essential info, offer to generate itinerary
-    if (hasEssentials && Object.keys(updates).length > 0) {
-      return `Excellent! I have all the information I need:
-
-🌍 **Destination:** ${tripDetails.destination}
-📅 **Duration:** ${tripDetails.duration} days  
-💰 **Budget:** £${tripDetails.budget.toLocaleString()}
-👥 **Travelers:** ${tripDetails.travelers}
-
-I'm ready to create your personalized itinerary! Should I start generating your trip plan?`
-    }
-
-    return "Thank you for that information! Is there anything else you'd like to tell me about your travel preferences?"
-  }
-
-  const extractPreferences = (message: string): string[] => {
-    const lowerMessage = message.toLowerCase()
-    const preferences: string[] = []
-    
-    const activityKeywords = {
-      'sightseeing': ['sightseeing', 'sight seeing', 'tourist', 'attractions', 'landmarks', 'monuments', 'visiting'],
-      'culture': ['culture', 'cultural', 'museums', 'history', 'historical', 'art', 'heritage'],
-      'food': ['food', 'cuisine', 'dining', 'restaurants', 'culinary', 'eating', 'cooking'],
-      'adventure': ['adventure', 'hiking', 'climbing', 'extreme', 'adrenaline', 'sports'],
-      'relaxation': ['relaxation', 'spa', 'wellness', 'peaceful', 'calm', 'rest', 'beach'],
-      'nightlife': ['nightlife', 'bars', 'clubs', 'party', 'evening', 'drinks'],
-      'shopping': ['shopping', 'markets', 'boutiques', 'souvenirs', 'stores']
-    }
-    
-    for (const [category, keywords] of Object.entries(activityKeywords)) {
-      if (keywords.some(keyword => lowerMessage.includes(keyword))) {
-        preferences.push(category)
-      }
-    }
-    
-    return preferences
-  }
+  // Removed old message processing - now using UnifiedConversationManager with web research
 
   const handlePromptClick = (prompt: string) => {
     setCurrentMessage(prompt)
@@ -595,8 +513,8 @@ I'm ready to create your personalized itinerary! Should I start generating your 
 
   return (
     <div className="w-full max-w-7xl mx-auto">
-      {/* Trip Context Bar */}
-      {(tripDetails.destination || tripDetails.budget > 0 || tripDetails.startDate) && (
+      {/* Trip Context Bar - Enhanced with Research Status */}
+      {(tripDetails.destination || tripDetails.budget > 0 || tripDetails.startDate || researchedPlaces.length > 0) && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
           <div className="flex items-center gap-6 text-sm text-gray-600">
             {tripDetails.destination && (
@@ -623,30 +541,69 @@ I'm ready to create your personalized itinerary! Should I start generating your 
                 <span>{tripDetails.travelers} travelers</span>
               </div>
             )}
+            {researchedPlaces.length > 0 && (
+              <div className="flex items-center gap-1">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-green-600 font-medium">
+                  {researchedPlaces.length} places researched
+                </span>
+              </div>
+            )}
           </div>
+          
+          {/* Show researched places */}
+          {researchedPlaces.length > 0 && (
+            <div className="mt-3 pt-3 border-t border-gray-100">
+              <div className="text-xs text-gray-500 mb-1">Web-researched destinations:</div>
+              <div className="flex flex-wrap gap-1">
+                {researchedPlaces.slice(0, 5).map((place, index) => (
+                  <span key={index} className="px-2 py-1 bg-green-50 text-green-700 rounded-full text-xs">
+                    {place}
+                  </span>
+                ))}
+                {researchedPlaces.length > 5 && (
+                  <span className="px-2 py-1 bg-gray-50 text-gray-500 rounded-full text-xs">
+                    +{researchedPlaces.length - 5} more
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
       {/* Main Planning Interface */}
       <div className="grid lg:grid-cols-5 gap-6">
-        {/* Chat Interface - 60% width */}
+        {/* Chat Interface - 60% width with fixed height */}
         <div className="lg:col-span-3">
-          <ChatInterface
-            messages={messages}
-            currentMessage={currentMessage}
-            isLoading={isLoading}
-            availablePrompts={availablePrompts}
-            messagesEndRef={messagesEndRef}
-            inputRef={inputRef}
-            onMessageChange={setCurrentMessage}
-            onSendMessage={handleSendMessage}
-            onPromptClick={handlePromptClick}
-          />
+          <div className="h-[800px]">
+            <ChatInterface
+              messages={messages.map(msg => ({
+                id: msg.id,
+                text: msg.text,
+                sender: msg.isUser ? 'user' : 'ai' as 'user' | 'ai',
+                timestamp: msg.timestamp,
+                isTyping: false
+              }))}
+              currentMessage={currentMessage}
+              isLoading={isLoading}
+              availablePrompts={messages.length <= 2 ? availablePrompts : []} // Hide prompts after conversation starts
+              messagesEndRef={messagesEndRef}
+              inputRef={inputRef}
+              onMessageChange={setCurrentMessage}
+              onSendMessage={handleSendMessage}
+              onPromptClick={handlePromptClick}
+              onClearChat={handleClearChat}
+              conversationId={conversationId}
+              onScroll={handleScroll}
+            />
+          </div>
         </div>
 
-        {/* Itinerary Preview - 40% width */}
+        {/* Itinerary Preview - 40% width with matching height */}
         <div className="lg:col-span-2">
-          <ItineraryPreview
+          <div className="h-[800px] overflow-y-auto">
+            <ItineraryPreview
             itinerary={itinerary.length > 0 ? {
               id: 'current-trip',
               title: `${tripDetails.destination || 'Your'} Adventure`,
@@ -664,7 +621,8 @@ I'm ready to create your personalized itinerary! Should I start generating your 
               summary: `A ${itinerary.length}-day trip to ${tripDetails.destination}`,
               itinerary: itinerary
             } : null}
-          />
+            />
+          </div>
         </div>
       </div>
 

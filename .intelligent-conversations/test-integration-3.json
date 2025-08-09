@@ -1,0 +1,255 @@
+{
+  "conversationId": "test-integration-3",
+  "messages": [
+    {
+      "id": "msg_1754754985530_cfw0pw9mi",
+      "content": "I want to visit Rome for 5 days",
+      "role": "user",
+      "timestamp": "2025-08-09T15:56:25.530Z"
+    },
+    {
+      "id": "msg_1754754985533_cma9fmnfj",
+      "content": "rome is a wonderful choice! I can help you plan an amazing trip there. How long are you thinking of staying?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T15:56:25.533Z",
+      "metadata": {
+        "analysis": {
+          "intent": {
+            "primary": "specify_destination",
+            "secondary": [
+              "planning"
+            ],
+            "confidence": 85,
+            "context": "User specifying travel destination",
+            "urgency": "medium"
+          },
+          "entities": {
+            "destinations": [
+              "rome",
+              "Rome"
+            ],
+            "dates": {
+              "duration": 5
+            },
+            "budget": {},
+            "travelers": {},
+            "preferences": {},
+            "constraints": {
+              "hard": [],
+              "soft": []
+            },
+            "locations": {}
+          },
+          "normalizedData": {
+            "destinations": [
+              {
+                "original": "rome",
+                "normalized": "rome",
+                "type": "city",
+                "confidence": 80,
+                "country": "IT",
+                "alternatives": []
+              },
+              {
+                "original": "Rome",
+                "normalized": "Rome",
+                "type": "city",
+                "confidence": 80,
+                "country": "IT",
+                "alternatives": []
+              }
+            ],
+            "dates": {
+              "flexibility": "flexible",
+              "confidence": 90,
+              "inferred": false,
+              "duration": 5
+            },
+            "budget": {
+              "total": 0,
+              "currency": "USD",
+              "confidence": 50,
+              "source": "inferred"
+            },
+            "travelers": {
+              "adults": 1,
+              "groupType": "solo",
+              "confidence": 80
+            },
+            "preferences": {
+              "travelStyle": "mid-range",
+              "pace": "moderate",
+              "accommodation": [],
+              "activities": [],
+              "dining": [],
+              "transport": {},
+              "confidence": {}
+            },
+            "constraints": {
+              "hard": [],
+              "soft": []
+            }
+          },
+          "contextUpdates": {
+            "destination": {
+              "type": "city",
+              "primary": {
+                "value": "rome",
+                "type": "soft",
+                "confidence": 80,
+                "source": "explicit",
+                "changes": []
+              },
+              "country": {
+                "value": "IT",
+                "type": "soft",
+                "confidence": 80,
+                "source": "explicit",
+                "changes": []
+              }
+            },
+            "dates": {
+              "duration": {
+                "value": 5,
+                "type": "soft",
+                "confidence": 90,
+                "source": "explicit",
+                "changes": []
+              },
+              "flexibility": {
+                "value": "flexible",
+                "type": "soft",
+                "confidence": 90,
+                "source": "explicit",
+                "changes": []
+              }
+            },
+            "travelers": {
+              "adults": {
+                "value": 1,
+                "type": "soft",
+                "confidence": 80,
+                "source": "explicit",
+                "changes": []
+              },
+              "groupType": {
+                "value": "solo",
+                "type": "soft",
+                "confidence": 80,
+                "source": "explicit",
+                "changes": []
+              }
+            },
+            "preferences": {
+              "travelStyle": {
+                "value": "mid-range",
+                "type": "soft",
+                "confidence": 80,
+                "source": "explicit",
+                "changes": []
+              }
+            }
+          },
+          "needsConfirmation": [],
+          "needsResearch": false,
+          "confidence": 77.5,
+          "reasoning": [
+            "Cleaned input: \"I want to visit Rome for 5 days\"",
+            "Detected intent: specify_destination (85% confidence)",
+            "Extracted entities: destinations, dates, budget, travelers, preferences, constraints, locations",
+            "Normalized data with 2 destinations",
+            "Generated 4 context updates"
+          ]
+        },
+        "contextUpdates": [
+          "destination",
+          "dates",
+          "travelers",
+          "preferences"
+        ],
+        "providersQueried": [],
+        "deepLinks": []
+      }
+    }
+  ],
+  "tripContext": {
+    "id": "test-integration-3",
+    "version": 2,
+    "intent": {
+      "current": "exploring",
+      "confidence": 50,
+      "context": "New conversation started"
+    },
+    "hardConstraints": [],
+    "softConstraints": [],
+    "conversationSummary": "New conversation started",
+    "decisionsLog": [],
+    "pendingConfirmations": [],
+    "researchNeeded": [],
+    "validationErrors": [],
+    "createdAt": "2025-08-09T15:56:25.530Z",
+    "lastUpdated": "2025-08-09T15:56:25.532Z",
+    "lastUserMessage": "I want to visit Rome for 5 days",
+    "totalMessages": 2,
+    "destination": {
+      "type": "city",
+      "primary": {
+        "value": "rome",
+        "type": "soft",
+        "confidence": 80,
+        "source": "explicit",
+        "changes": []
+      },
+      "country": {
+        "value": "IT",
+        "type": "soft",
+        "confidence": 80,
+        "source": "explicit",
+        "changes": []
+      }
+    },
+    "dates": {
+      "duration": {
+        "value": 5,
+        "type": "soft",
+        "confidence": 90,
+        "source": "explicit",
+        "changes": []
+      },
+      "flexibility": {
+        "value": "flexible",
+        "type": "soft",
+        "confidence": 90,
+        "source": "explicit",
+        "changes": []
+      }
+    },
+    "travelers": {
+      "adults": {
+        "value": 1,
+        "type": "soft",
+        "confidence": 80,
+        "source": "explicit",
+        "changes": []
+      },
+      "groupType": {
+        "value": "solo",
+        "type": "soft",
+        "confidence": 80,
+        "source": "explicit",
+        "changes": []
+      }
+    },
+    "preferences": {
+      "travelStyle": {
+        "value": "mid-range",
+        "type": "soft",
+        "confidence": 80,
+        "source": "explicit",
+        "changes": []
+      }
+    }
+  },
+  "conversationSummary": "I want to visit Rome for 5 days",
+  "lastUpdated": "2025-08-09T15:56:25.724Z"
+}

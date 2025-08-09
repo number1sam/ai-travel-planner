@@ -1,0 +1,201 @@
+{
+  "conversationId": "conversation-1754748228784-w1bzw7kfd",
+  "tripContext": {
+    "destination": {
+      "primary": "Italy",
+      "type": "country"
+    },
+    "dates": {
+      "duration": 10
+    },
+    "budget": {
+      "total": 1500,
+      "currency": "GBP"
+    },
+    "travelers": {
+      "adults": 1
+    },
+    "preferences": {
+      "accommodation": [
+        "Hotel"
+      ]
+    },
+    "origin": "London (Heathrow)"
+  },
+  "messages": [
+    {
+      "id": "1754748457510-tdly0e4dn",
+      "content": "i would like to  go to Italy",
+      "role": "user",
+      "timestamp": "2025-08-09T14:07:37.510Z"
+    },
+    {
+      "id": "1754748457510-lj1mblop4",
+      "content": "Italy is a fantastic choice! What type of experience interests you most - major cities, cultural sites, or smaller authentic places?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T14:07:37.510Z",
+      "metadata": {
+        "extractedInfo": {
+          "destination": {
+            "primary": "Italy",
+            "type": "country"
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754748457510-wn3cskikl",
+      "content": "a  mix of all",
+      "role": "user",
+      "timestamp": "2025-08-09T14:07:37.510Z"
+    },
+    {
+      "id": "1754748457510-jnf31t8yr",
+      "content": "Great choice for Italy! How many days are you planning to travel?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T14:07:37.510Z",
+      "metadata": {
+        "extractedInfo": {},
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754748457511-tymhzzd5b",
+      "content": "10 days",
+      "role": "user",
+      "timestamp": "2025-08-09T14:07:37.511Z"
+    },
+    {
+      "id": "1754748457514-x9crjo5ez",
+      "content": "Perfect! A 10-day trip to Italy. What's your total budget?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T14:07:37.514Z",
+      "metadata": {
+        "extractedInfo": {
+          "dates": {
+            "duration": 10
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754748469169-srtvajxyq",
+      "content": "£1500",
+      "role": "user",
+      "timestamp": "2025-08-09T14:07:49.169Z"
+    },
+    {
+      "id": "1754748469171-6f1gj1vwe",
+      "content": "Excellent! How many people will be traveling?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T14:07:49.171Z",
+      "metadata": {
+        "extractedInfo": {
+          "budget": {
+            "total": 1500,
+            "currency": "GBP"
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754748482748-i4sfh726t",
+      "content": "just me",
+      "role": "user",
+      "timestamp": "2025-08-09T14:08:02.748Z"
+    },
+    {
+      "id": "1754748482749-93pm0e7yw",
+      "content": "Excellent! How many people will be traveling?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T14:08:02.749Z",
+      "metadata": {
+        "extractedInfo": {},
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754748488452-22qnm0m4e",
+      "content": "1",
+      "role": "user",
+      "timestamp": "2025-08-09T14:08:08.452Z"
+    },
+    {
+      "id": "1754748488453-n6o87ldv0",
+      "content": "Great! 1 traveler for 10 days. Where will you be departing from? (City or airport)",
+      "role": "assistant",
+      "timestamp": "2025-08-09T14:08:08.453Z",
+      "metadata": {
+        "extractedInfo": {
+          "travelers": {
+            "adults": 1
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754748497919-acrjdf7q2",
+      "content": "Heathrow",
+      "role": "user",
+      "timestamp": "2025-08-09T14:08:17.919Z"
+    },
+    {
+      "id": "1754748497920-5k4s3jgkv",
+      "content": "Perfect! Departing from London (Heathrow). What type of accommodation do you prefer?\n\n🏨 **Options:**\n• **Hotel** - Full service with amenities\n• **Boutique** - Unique, smaller properties\n• **B&B** - Bed and breakfast, local charm\n• **Hostel** - Budget-friendly, social atmosphere\n• **Apartment** - Self-catering, like home\n• **Any** - I'm flexible, show me options",
+      "role": "assistant",
+      "timestamp": "2025-08-09T14:08:17.920Z",
+      "metadata": {
+        "extractedInfo": {
+          "origin": "London (Heathrow)"
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754748505729-a8hl26bo9",
+      "content": "hotel",
+      "role": "user",
+      "timestamp": "2025-08-09T14:08:25.729Z"
+    },
+    {
+      "id": "1754748505730-9swsoyxzq",
+      "content": "Excellent choice! What's your preferred travel style?\n\n✨ **Travel Styles:**\n• **Luxury** - Premium experiences, finest accommodations\n• **Mid-range** - Comfortable balance of quality and value\n• **Budget** - Affordable options, maximize experiences\n• **Mixed** - Splurge on some things, save on others",
+      "role": "assistant",
+      "timestamp": "2025-08-09T14:08:25.730Z",
+      "metadata": {
+        "extractedInfo": {
+          "preferences": {
+            "accommodation": [
+              "Hotel"
+            ]
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754748513497-7u0b2dalt",
+      "content": "mid range",
+      "role": "user",
+      "timestamp": "2025-08-09T14:08:33.497Z"
+    },
+    {
+      "id": "1754748513498-hala9l5wd",
+      "content": "Excellent choice! What's your preferred travel style?\n\n✨ **Travel Styles:**\n• **Luxury** - Premium experiences, finest accommodations\n• **Mid-range** - Comfortable balance of quality and value\n• **Budget** - Affordable options, maximize experiences\n• **Mixed** - Splurge on some things, save on others",
+      "role": "assistant",
+      "timestamp": "2025-08-09T14:08:33.498Z",
+      "metadata": {
+        "extractedInfo": {},
+        "researchTriggered": false
+      }
+    }
+  ],
+  "lastUpdated": "2025-08-09T14:08:33.498Z",
+  "conversationSummary": "Trip planning for Italy (10 days, GBP1500, 1 people) - 18 messages exchanged",
+  "recoveryPoint": "gathering_info",
+  "version": "1.0"
+}

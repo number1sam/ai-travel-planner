@@ -1,0 +1,84 @@
+{
+  "conversationId": "test-currency-with-symbol-1754747084",
+  "messages": [
+    {
+      "id": "1754747084071-n4fsgi900",
+      "content": "I would like to go to England",
+      "role": "user",
+      "timestamp": "2025-08-09T13:44:44.071Z"
+    },
+    {
+      "id": "1754747084072-6ubqpqu1v",
+      "content": "Fantastic choice! England is incredible for travelers. I need to know which part of England interests you most:\n\n🏙️ **Focus on One City** (Perfect for a deeper experience):\n• **London** - The main hub with world-class attractions\n• **Bath** - Georgian architecture and Roman baths  \n• **York** - Medieval city with historic walls\n\n🗺️ **Multi-City Adventure** (See more of the country):\n• **Regional Tour**: 2-3 cities (perfect for 5-10 days)\n• **Grand Tour**: Experience England comprehensively (10+ days)\n\n🏘️ **Charming Small Towns & Villages**:\n• **Cotswolds** - Honey-stone villages and countryside\n• **Lake District** - Traditional villages with stunning lakes\n• **Yorkshire Dales** - Historic market towns\n\nWhich approach sounds more appealing to you?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T13:44:44.072Z",
+      "metadata": {
+        "extractedInfo": {
+          "destination": {
+            "primary": "England",
+            "type": "country"
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754747084111-zxi18b7w8",
+      "content": "7 days",
+      "role": "user",
+      "timestamp": "2025-08-09T13:44:44.111Z"
+    },
+    {
+      "id": "1754747084111-v7nvpe5j8",
+      "content": "Perfect! A 7-day trip to England. What's your total budget?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T13:44:44.111Z",
+      "metadata": {
+        "extractedInfo": {
+          "dates": {
+            "duration": 7
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754747084146-dvpti1ud0",
+      "content": "£2500",
+      "role": "user",
+      "timestamp": "2025-08-09T13:44:44.146Z"
+    },
+    {
+      "id": "1754747084147-ladfuzwl4",
+      "content": "Excellent! How many people will be traveling?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T13:44:44.147Z",
+      "metadata": {
+        "extractedInfo": {
+          "budget": {
+            "total": 2500,
+            "currency": "GBP"
+          }
+        },
+        "researchTriggered": false
+      }
+    }
+  ],
+  "tripContext": {
+    "destination": {
+      "primary": "England",
+      "type": "country"
+    },
+    "dates": {
+      "duration": 7
+    },
+    "budget": {
+      "total": 2500,
+      "currency": "GBP"
+    },
+    "travelers": {},
+    "preferences": {}
+  },
+  "conversationSummary": "Conversation context:\n- Destination interest: England\n- Budget: GBP2500\n- Travel timeframe: 7 days\n- Travelers: undefined adults\n- Recent user requests: I would like to go to England; 7 days; £2500\n",
+  "lastUpdated": "2025-08-09T13:44:44.149Z"
+}

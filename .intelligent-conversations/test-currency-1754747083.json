@@ -1,0 +1,124 @@
+{
+  "conversationId": "test-currency-1754747083",
+  "messages": [
+    {
+      "id": "1754747083775-v4hswl7ah",
+      "content": "I would like to go to England",
+      "role": "user",
+      "timestamp": "2025-08-09T13:44:43.775Z"
+    },
+    {
+      "id": "1754747083778-gjs8r1cdt",
+      "content": "Fantastic choice! England is incredible for travelers. I need to know which part of England interests you most:\n\n🏙️ **Focus on One City** (Perfect for a deeper experience):\n• **London** - The main hub with world-class attractions\n• **Bath** - Georgian architecture and Roman baths  \n• **York** - Medieval city with historic walls\n\n🗺️ **Multi-City Adventure** (See more of the country):\n• **Regional Tour**: 2-3 cities (perfect for 5-10 days)\n• **Grand Tour**: Experience England comprehensively (10+ days)\n\n🏘️ **Charming Small Towns & Villages**:\n• **Cotswolds** - Honey-stone villages and countryside\n• **Lake District** - Traditional villages with stunning lakes\n• **Yorkshire Dales** - Historic market towns\n\nWhich approach sounds more appealing to you?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T13:44:43.778Z",
+      "metadata": {
+        "extractedInfo": {
+          "destination": {
+            "primary": "England",
+            "type": "country"
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754747083817-yj8mjuxxz",
+      "content": "7 days",
+      "role": "user",
+      "timestamp": "2025-08-09T13:44:43.817Z"
+    },
+    {
+      "id": "1754747083818-31b8p9iay",
+      "content": "Perfect! A 7-day trip to England. What's your total budget?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T13:44:43.818Z",
+      "metadata": {
+        "extractedInfo": {
+          "dates": {
+            "duration": 7
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754747083870-34fkxsfiz",
+      "content": "my budget is 2500",
+      "role": "user",
+      "timestamp": "2025-08-09T13:44:43.870Z"
+    },
+    {
+      "id": "1754747083872-nyprl6zzy",
+      "content": "I see you have a budget of 2500. Which currency is this in?\n      \n💰 **Common Options:**\n• **£** - British Pounds (GBP)\n• **$** - US Dollars (USD) \n• **€** - Euros (EUR)\n• **Other** - Please specify\n\nJust let me know which currency you meant!",
+      "role": "assistant",
+      "timestamp": "2025-08-09T13:44:43.872Z",
+      "metadata": {
+        "extractedInfo": {
+          "budget": {
+            "total": 2500,
+            "currency": "PENDING",
+            "pendingClarification": true
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754747083932-1ynpmeuig",
+      "content": "pounds",
+      "role": "user",
+      "timestamp": "2025-08-09T13:44:43.932Z"
+    },
+    {
+      "id": "1754747083933-uo40lxnz8",
+      "content": "I already have your budget as PENDING2500. How many people will be traveling?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T13:44:43.933Z",
+      "metadata": {
+        "extractedInfo": {},
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754747084012-8wdy3n34k",
+      "content": "2 people",
+      "role": "user",
+      "timestamp": "2025-08-09T13:44:44.012Z"
+    },
+    {
+      "id": "1754747084013-td4cgqvvu",
+      "content": "I see you have a budget of 2500. Which currency is this in?\n      \n💰 **Common Options:**\n• **£** - British Pounds (GBP)\n• **$** - US Dollars (USD) \n• **€** - Euros (EUR)\n• **Other** - Please specify\n\nJust let me know which currency you meant!",
+      "role": "assistant",
+      "timestamp": "2025-08-09T13:44:44.013Z",
+      "metadata": {
+        "extractedInfo": {
+          "travelers": {
+            "adults": 2
+          }
+        },
+        "researchTriggered": false
+      }
+    }
+  ],
+  "tripContext": {
+    "destination": {
+      "primary": "England",
+      "type": "country"
+    },
+    "dates": {
+      "duration": 7
+    },
+    "budget": {
+      "total": 2500,
+      "currency": "PENDING",
+      "pendingClarification": true
+    },
+    "travelers": {
+      "adults": 2
+    },
+    "preferences": {}
+  },
+  "conversationSummary": "Conversation context:\n- Destination interest: England\n- Budget: PENDING2500\n- Travel timeframe: 7 days\n- Travelers: 2 adults\n- Recent user requests: my budget is 2500; pounds; 2 people\n",
+  "lastUpdated": "2025-08-09T13:44:44.016Z"
+}

@@ -1,0 +1,298 @@
+{
+  "conversationId": "conversation-1754737675384-rjsurkui4",
+  "messages": [
+    {
+      "id": "1754738771690-c7tbna8wy",
+      "content": "i would live to go to Japan",
+      "role": "user",
+      "timestamp": "2025-08-09T11:26:11.690Z"
+    },
+    {
+      "id": "1754738771693-1wp7i0vmj",
+      "content": "Japan is a fantastic choice! What type of experience interests you most - major cities, cultural sites, or smaller authentic places?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T11:26:11.693Z",
+      "metadata": {
+        "extractedInfo": {
+          "destination": {
+            "primary": "Japan",
+            "type": "country"
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754738801199-iijivfs2j",
+      "content": "i would like a mix of them all , big modern cities, and small traditional villigase",
+      "role": "user",
+      "timestamp": "2025-08-09T11:26:41.199Z"
+    },
+    {
+      "id": "1754738801200-t583j6ua2",
+      "content": "Great choice for Japan! How many days are you planning to travel?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T11:26:41.200Z",
+      "metadata": {
+        "extractedInfo": {},
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754738808353-2301olia0",
+      "content": "two weeks #",
+      "role": "user",
+      "timestamp": "2025-08-09T11:26:48.353Z"
+    },
+    {
+      "id": "1754738808354-22inoqrzw",
+      "content": "Great choice for Japan! How many days are you planning to travel?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T11:26:48.354Z",
+      "metadata": {
+        "extractedInfo": {},
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754738816965-rwr4mqif4",
+      "content": "14 days",
+      "role": "user",
+      "timestamp": "2025-08-09T11:26:56.965Z"
+    },
+    {
+      "id": "1754738816966-2xaeh4kvj",
+      "content": "Perfect! A 14-day trip to Japan. What's your total budget?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T11:26:56.966Z",
+      "metadata": {
+        "extractedInfo": {
+          "dates": {
+            "duration": 14
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754738829166-g07qzx9cm",
+      "content": "£3000",
+      "role": "user",
+      "timestamp": "2025-08-09T11:27:09.166Z"
+    },
+    {
+      "id": "1754738829166-s36qlw34a",
+      "content": "Excellent! How many people will be traveling?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T11:27:09.166Z",
+      "metadata": {
+        "extractedInfo": {
+          "budget": {
+            "total": 3000,
+            "currency": "GBP"
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754738833492-xe3bsxs67",
+      "content": "2",
+      "role": "user",
+      "timestamp": "2025-08-09T11:27:13.492Z"
+    },
+    {
+      "id": "1754738833493-gag2p0wpy",
+      "content": "Great! 2 travelers for 14 days. Where will you be departing from? (City or airport)",
+      "role": "assistant",
+      "timestamp": "2025-08-09T11:27:13.493Z",
+      "metadata": {
+        "extractedInfo": {
+          "travelers": {
+            "adults": 2
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754738843659-d6oaebz78",
+      "content": "Heathrow",
+      "role": "user",
+      "timestamp": "2025-08-09T11:27:23.659Z"
+    },
+    {
+      "id": "1754738843661-qfg9oj2p5",
+      "content": "Great! 2 travelers for 14 days. Where will you be departing from? (City or airport)",
+      "role": "assistant",
+      "timestamp": "2025-08-09T11:27:23.661Z",
+      "metadata": {
+        "extractedInfo": {},
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754738853558-d2dap4wxx",
+      "content": "London",
+      "role": "user",
+      "timestamp": "2025-08-09T11:27:33.558Z"
+    },
+    {
+      "id": "1754738853559-8gjrjet5u",
+      "content": "Perfect! Departing from London. What type of accommodation do you prefer?\n\n🏨 **Options:**\n• **Hotel** - Full service with amenities\n• **Boutique** - Unique, smaller properties\n• **B&B** - Bed and breakfast, local charm\n• **Hostel** - Budget-friendly, social atmosphere\n• **Apartment** - Self-catering, like home\n• **Any** - I'm flexible, show me options",
+      "role": "assistant",
+      "timestamp": "2025-08-09T11:27:33.559Z",
+      "metadata": {
+        "extractedInfo": {
+          "origin": "London"
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754738869439-ildsmvdn6",
+      "content": "hotels",
+      "role": "user",
+      "timestamp": "2025-08-09T11:27:49.440Z"
+    },
+    {
+      "id": "1754738869441-02gxcruev",
+      "content": "Excellent choice! What's your preferred travel style?\n\n✨ **Travel Styles:**\n• **Luxury** - Premium experiences, finest accommodations\n• **Mid-range** - Comfortable balance of quality and value\n• **Budget** - Affordable options, maximize experiences\n• **Mixed** - Splurge on some things, save on others",
+      "role": "assistant",
+      "timestamp": "2025-08-09T11:27:49.441Z",
+      "metadata": {
+        "extractedInfo": {
+          "preferences": {
+            "accommodation": [
+              "Hotel"
+            ]
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754738898064-14d8icb78",
+      "content": "Budget , and mid range",
+      "role": "user",
+      "timestamp": "2025-08-09T11:28:18.064Z"
+    },
+    {
+      "id": "1754738898065-vohxh8efu",
+      "content": "Perfect! What are you most interested in during your trip?\n\n🎯 **Select your interests:**\n• **History & Culture** - Museums, historic sites, local traditions\n• **Food & Dining** - Local cuisine, restaurants, food tours\n• **Nature & Outdoors** - Parks, hiking, scenic views\n• **Nightlife & Entertainment** - Bars, clubs, shows, events\n• **Shopping** - Markets, boutiques, souvenirs\n• **Relaxation** - Spas, beaches, leisurely pace\n• **Adventure** - Unique experiences, active pursuits\n\nJust mention what appeals to you most!",
+      "role": "assistant",
+      "timestamp": "2025-08-09T11:28:18.065Z",
+      "metadata": {
+        "extractedInfo": {
+          "preferences": {
+            "style": "budget"
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754738940747-xwitow5cd",
+      "content": "relaxing, adventure, , history , culture, food and mdern",
+      "role": "user",
+      "timestamp": "2025-08-09T11:29:00.747Z"
+    },
+    {
+      "id": "1754738940747-qbso5koem",
+      "content": "Perfect! I have all the essential details:\n\n🌍 **Destination:** Japan\n📅 **Duration:** 14 days\n💰 **Budget:** GBP3000\n👥 **Travelers:** 2\n\nI'm ready to create your personalized itinerary! Should I start generating your trip plan?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T11:29:00.747Z",
+      "metadata": {
+        "extractedInfo": {
+          "preferences": {
+            "interests": [
+              "History & Culture",
+              "Food & Dining",
+              "Adventure"
+            ]
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754738959996-t9hnfqky5",
+      "content": "yes",
+      "role": "user",
+      "timestamp": "2025-08-09T11:29:19.996Z"
+    },
+    {
+      "id": "1754738959998-17m3fghlv",
+      "content": "🚀 Excellent! I'm now generating your complete 14-day itinerary for Japan...\n\n🏨 Finding perfect accommodation within your budget\n🎯 Planning 14 full days with activities  \n💰 Optimizing your GBP3000 budget\n📍 Including detailed locations and timing\n\nThis will take just a moment!",
+      "role": "assistant",
+      "timestamp": "2025-08-09T11:29:19.998Z",
+      "metadata": {
+        "extractedInfo": {
+          "currentIntent": "generating_itinerary",
+          "nextExpected": "none"
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754738960000-1t5xf2yxd",
+      "content": "🎉 **Your 14-day Japan itinerary is ready!**\n\n🏨 **Hotel:** Japan Central Hotel - GBP118/night × 14 nights\n📅 **All 14 days planned** with personalized activities matching your interests!\n💰 **Total Budget:** GBP3000 (optimally allocated)\n🎯 **Tailored to:** budget travel style, 2 travelers\n\nYour complete day-by-day itinerary is now available in the preview! Each day includes perfectly timed activities, dining recommendations, and seamless transitions between experiences. ✨",
+      "role": "assistant",
+      "timestamp": "2025-08-09T11:29:20.000Z"
+    },
+    {
+      "id": "1754738992905-b33impfar",
+      "content": "ok please continue",
+      "role": "user",
+      "timestamp": "2025-08-09T11:29:52.905Z"
+    },
+    {
+      "id": "1754738992905-bqqrr03tx",
+      "content": "Perfect! I have all the essential details:\n\n🌍 **Destination:** Japan\n📅 **Duration:** 14 days\n💰 **Budget:** GBP3000\n👥 **Travelers:** 2\n\nI'm ready to create your personalized itinerary! Should I start generating your trip plan?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T11:29:52.905Z",
+      "metadata": {
+        "extractedInfo": {},
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754738992906-rlcodplzq",
+      "content": "🎉 **Your 14-day Japan itinerary is ready!**\n\n🏨 **Hotel:** Japan Central Hotel - GBP118/night × 14 nights\n📅 **All 14 days planned** with personalized activities matching your interests!\n💰 **Total Budget:** GBP3000 (optimally allocated)\n🎯 **Tailored to:** budget travel style, 2 travelers\n\nYour complete day-by-day itinerary is now available in the preview! Each day includes perfectly timed activities, dining recommendations, and seamless transitions between experiences. ✨",
+      "role": "assistant",
+      "timestamp": "2025-08-09T11:29:52.906Z"
+    }
+  ],
+  "tripContext": {
+    "destination": {
+      "primary": "Japan",
+      "type": "country"
+    },
+    "dates": {
+      "duration": 14
+    },
+    "budget": {
+      "total": 3000,
+      "currency": "GBP"
+    },
+    "travelers": {
+      "adults": 2
+    },
+    "preferences": {
+      "accommodation": [
+        "Hotel"
+      ],
+      "interests": [
+        "History & Culture",
+        "Food & Dining",
+        "Adventure"
+      ],
+      "style": "budget"
+    },
+    "origin": "London",
+    "currentIntent": "generating_itinerary",
+    "nextExpected": "none"
+  },
+  "conversationSummary": "Conversation context:\n- Destination interest: Japan\n- Budget: GBP3000\n- Travel timeframe: 14 days\n- Travelers: 2 adults\n- Recent user requests: relaxing, adventure, , history , culture, food and mdern; yes; ok please continue\n",
+  "lastUpdated": "2025-08-09T11:29:52.906Z"
+}

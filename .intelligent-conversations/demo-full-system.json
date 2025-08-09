@@ -1,0 +1,39 @@
+{
+  "conversationId": "demo-full-system",
+  "messages": [
+    {
+      "id": "msg_1754755029918_zpl00gv6h",
+      "content": "I want to visit Tokyo for 7 days with a $3000 budget, mid-range style, interested in culture and food",
+      "role": "user",
+      "timestamp": "2025-08-09T15:57:09.918Z"
+    },
+    {
+      "id": "msg_1754755029919_tu2izvy9a",
+      "content": "I encountered an issue processing your request. Could you please rephrase that?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T15:57:09.919Z"
+    }
+  ],
+  "tripContext": {
+    "id": "demo-full-system",
+    "version": 1,
+    "intent": {
+      "current": "exploring",
+      "confidence": 50,
+      "context": "New conversation started"
+    },
+    "hardConstraints": [],
+    "softConstraints": [],
+    "conversationSummary": "New conversation started",
+    "decisionsLog": [],
+    "pendingConfirmations": [],
+    "researchNeeded": [],
+    "validationErrors": [],
+    "createdAt": "2025-08-09T15:57:09.918Z",
+    "lastUpdated": "2025-08-09T15:57:09.918Z",
+    "lastUserMessage": "I want to visit Tokyo for 7 days with a $3000 budget, mid-range style, interested in culture and food",
+    "totalMessages": 2
+  },
+  "conversationSummary": "I want to visit Tokyo for 7 days with a $3000 budget, mid-range style, interested in culture and food",
+  "lastUpdated": "2025-08-09T15:57:10.113Z"
+}

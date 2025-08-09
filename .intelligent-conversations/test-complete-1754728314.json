@@ -1,0 +1,226 @@
+{
+  "conversationId": "test-complete-1754728314",
+  "messages": [
+    {
+      "id": "1754728314718-8g3pcfpmc",
+      "content": "I would like to go to England",
+      "role": "user",
+      "timestamp": "2025-08-09T08:31:54.718Z"
+    },
+    {
+      "id": "1754728314721-d00f4ptan",
+      "content": "Fantastic choice! England is incredible for travelers. I need to know which part of England interests you most:\n\n🏙️ **Focus on One City** (Perfect for a deeper experience):\n• **London** - The main hub with world-class attractions\n• **Bath** - Georgian architecture and Roman baths  \n• **York** - Medieval city with historic walls\n\n🗺️ **Multi-City Adventure** (See more of the country):\n• **Regional Tour**: 2-3 cities (perfect for 5-10 days)\n• **Grand Tour**: Experience England comprehensively (10+ days)\n\n🏘️ **Charming Small Towns & Villages**:\n• **Cotswolds** - Honey-stone villages and countryside\n• **Lake District** - Traditional villages with stunning lakes\n• **Yorkshire Dales** - Historic market towns\n\nWhich approach sounds more appealing to you?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T08:31:54.721Z",
+      "metadata": {
+        "extractedInfo": {
+          "destination": {
+            "primary": "England",
+            "type": "country"
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754728315368-kdr9qptlr",
+      "content": "7 days",
+      "role": "user",
+      "timestamp": "2025-08-09T08:31:55.368Z"
+    },
+    {
+      "id": "1754728315370-i2en6exn5",
+      "content": "Perfect! A 7-day trip to England. What's your total budget?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T08:31:55.370Z",
+      "metadata": {
+        "extractedInfo": {
+          "dates": {
+            "duration": 7
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754728316020-2x7nsng36",
+      "content": "£2500",
+      "role": "user",
+      "timestamp": "2025-08-09T08:31:56.020Z"
+    },
+    {
+      "id": "1754728316020-12wtskf1p",
+      "content": "Excellent! How many people will be traveling?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T08:31:56.020Z",
+      "metadata": {
+        "extractedInfo": {
+          "budget": {
+            "total": 2500,
+            "currency": "GBP"
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754728316664-nhid8west",
+      "content": "2",
+      "role": "user",
+      "timestamp": "2025-08-09T08:31:56.664Z"
+    },
+    {
+      "id": "1754728316665-9hs563sxl",
+      "content": "Great! 2 travelers for 7 days. Where will you be departing from? (City or airport)",
+      "role": "assistant",
+      "timestamp": "2025-08-09T08:31:56.665Z",
+      "metadata": {
+        "extractedInfo": {
+          "travelers": {
+            "adults": 2
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754728317272-nkx0xt4nz",
+      "content": "London",
+      "role": "user",
+      "timestamp": "2025-08-09T08:31:57.272Z"
+    },
+    {
+      "id": "1754728317273-vy08sws0f",
+      "content": "Perfect! Departing from London. What type of accommodation do you prefer?\n\n🏨 **Options:**\n• **Hotel** - Full service with amenities\n• **Boutique** - Unique, smaller properties\n• **B&B** - Bed and breakfast, local charm\n• **Hostel** - Budget-friendly, social atmosphere\n• **Apartment** - Self-catering, like home\n• **Any** - I'm flexible, show me options",
+      "role": "assistant",
+      "timestamp": "2025-08-09T08:31:57.273Z",
+      "metadata": {
+        "extractedInfo": {
+          "origin": "London"
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754728317898-4qvr9g31r",
+      "content": "hotel",
+      "role": "user",
+      "timestamp": "2025-08-09T08:31:57.898Z"
+    },
+    {
+      "id": "1754728317898-sg23i2ap5",
+      "content": "Excellent choice! What's your preferred travel style?\n\n✨ **Travel Styles:**\n• **Luxury** - Premium experiences, finest accommodations\n• **Mid-range** - Comfortable balance of quality and value\n• **Budget** - Affordable options, maximize experiences\n• **Mixed** - Splurge on some things, save on others",
+      "role": "assistant",
+      "timestamp": "2025-08-09T08:31:57.898Z",
+      "metadata": {
+        "extractedInfo": {
+          "preferences": {
+            "accommodation": [
+              "Hotel"
+            ]
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754728318515-ocpxzdk06",
+      "content": "mid-range",
+      "role": "user",
+      "timestamp": "2025-08-09T08:31:58.515Z"
+    },
+    {
+      "id": "1754728318516-lxibn7ysy",
+      "content": "Perfect! What are you most interested in during your trip?\n\n🎯 **Select your interests:**\n• **History & Culture** - Museums, historic sites, local traditions\n• **Food & Dining** - Local cuisine, restaurants, food tours\n• **Nature & Outdoors** - Parks, hiking, scenic views\n• **Nightlife & Entertainment** - Bars, clubs, shows, events\n• **Shopping** - Markets, boutiques, souvenirs\n• **Relaxation** - Spas, beaches, leisurely pace\n• **Adventure** - Unique experiences, active pursuits\n\nJust mention what appeals to you most!",
+      "role": "assistant",
+      "timestamp": "2025-08-09T08:31:58.516Z",
+      "metadata": {
+        "extractedInfo": {
+          "preferences": {
+            "style": "mid-range"
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754728319161-sabeavpw3",
+      "content": "history and food",
+      "role": "user",
+      "timestamp": "2025-08-09T08:31:59.161Z"
+    },
+    {
+      "id": "1754728319163-p9m76shia",
+      "content": "Perfect! I have all the essential details:\n\n🌍 **Destination:** England\n📅 **Duration:** 7 days\n💰 **Budget:** GBP2500\n👥 **Travelers:** 2\n\nI'm ready to create your personalized itinerary! Should I start generating your trip plan?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T08:31:59.163Z",
+      "metadata": {
+        "extractedInfo": {
+          "preferences": {
+            "interests": [
+              "History & Culture",
+              "Food & Dining"
+            ]
+          }
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754728319773-j9p1l22ja",
+      "content": "yes",
+      "role": "user",
+      "timestamp": "2025-08-09T08:31:59.773Z"
+    },
+    {
+      "id": "1754728319774-g84ywptpc",
+      "content": "🚀 Excellent! I'm now generating your complete 7-day itinerary for England...\n\n🏨 Finding perfect accommodation within your budget\n🎯 Planning 7 full days with activities  \n💰 Optimizing your GBP2500 budget\n📍 Including detailed locations and timing\n\nThis will take just a moment!",
+      "role": "assistant",
+      "timestamp": "2025-08-09T08:31:59.774Z",
+      "metadata": {
+        "extractedInfo": {
+          "currentIntent": "generating_itinerary",
+          "nextExpected": "none"
+        },
+        "researchTriggered": false
+      }
+    },
+    {
+      "id": "1754728319776-1ljv4356u",
+      "content": "🎉 **Your 7-day England itinerary is ready!**\n\n🏨 **Hotel:** England Central Hotel - GBP196/night × 7 nights\n📅 **All 7 days planned** with personalized activities matching your interests!\n💰 **Total Budget:** GBP2500 (optimally allocated)\n🎯 **Tailored to:** mid-range travel style, 2 travelers\n\nYour complete day-by-day itinerary is now available in the preview! Each day includes perfectly timed activities, dining recommendations, and seamless transitions between experiences. ✨",
+      "role": "assistant",
+      "timestamp": "2025-08-09T08:31:59.776Z"
+    }
+  ],
+  "tripContext": {
+    "destination": {
+      "primary": "England",
+      "type": "country"
+    },
+    "dates": {
+      "duration": 7
+    },
+    "budget": {
+      "total": 2500,
+      "currency": "GBP"
+    },
+    "travelers": {
+      "adults": 2
+    },
+    "preferences": {
+      "accommodation": [
+        "Hotel"
+      ],
+      "interests": [
+        "History & Culture",
+        "Food & Dining"
+      ],
+      "style": "mid-range"
+    },
+    "origin": "London",
+    "currentIntent": "generating_itinerary",
+    "nextExpected": "none"
+  },
+  "conversationSummary": "Conversation context:\n- Destination interest: England\n- Budget: GBP2500\n- Travel timeframe: 7 days\n- Travelers: 2 adults\n- Recent user requests: mid-range; history and food; yes\n",
+  "lastUpdated": "2025-08-09T08:31:59.776Z"
+}

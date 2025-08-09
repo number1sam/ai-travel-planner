@@ -1,0 +1,221 @@
+{
+  "conversationId": "test-rome",
+  "tripContext": {
+    "id": "test-rome",
+    "version": 2,
+    "intent": {
+      "current": "exploring",
+      "confidence": 50,
+      "context": "New conversation started"
+    },
+    "hardConstraints": [],
+    "softConstraints": [],
+    "conversationSummary": "New conversation started",
+    "decisionsLog": [],
+    "pendingConfirmations": [],
+    "researchNeeded": [],
+    "validationErrors": [],
+    "createdAt": "2025-08-09T16:19:59.254Z",
+    "lastUpdated": "2025-08-09T16:19:59.256Z",
+    "lastUserMessage": "I want to visit Rome",
+    "totalMessages": 2,
+    "destination": {
+      "type": "city",
+      "primary": {
+        "value": "rome",
+        "type": "soft",
+        "confidence": 80,
+        "source": "explicit",
+        "changes": []
+      },
+      "country": {
+        "value": "IT",
+        "type": "soft",
+        "confidence": 80,
+        "source": "explicit",
+        "changes": []
+      }
+    },
+    "travelers": {
+      "adults": {
+        "value": 1,
+        "type": "soft",
+        "confidence": 80,
+        "source": "explicit",
+        "changes": []
+      },
+      "groupType": {
+        "value": "solo",
+        "type": "soft",
+        "confidence": 80,
+        "source": "explicit",
+        "changes": []
+      }
+    },
+    "preferences": {
+      "travelStyle": {
+        "value": "mid-range",
+        "type": "soft",
+        "confidence": 80,
+        "source": "explicit",
+        "changes": []
+      }
+    }
+  },
+  "messages": [
+    {
+      "id": "msg_1754756399254_xs9i60233",
+      "content": "I want to visit Rome",
+      "role": "user",
+      "timestamp": "2025-08-09T16:19:59.254Z"
+    },
+    {
+      "id": "msg_1754756399257_nbti10sd0",
+      "content": "rome is a wonderful choice! I can help you plan an amazing trip there. How long are you thinking of staying?",
+      "role": "assistant",
+      "timestamp": "2025-08-09T16:19:59.257Z",
+      "metadata": {
+        "analysis": {
+          "intent": {
+            "primary": "specify_destination",
+            "secondary": [
+              "planning"
+            ],
+            "confidence": 85,
+            "context": "User specifying travel destination",
+            "urgency": "medium"
+          },
+          "entities": {
+            "destinations": [
+              "rome",
+              "Rome"
+            ],
+            "dates": {},
+            "budget": {},
+            "travelers": {},
+            "preferences": {},
+            "constraints": {
+              "hard": [],
+              "soft": []
+            },
+            "locations": {}
+          },
+          "normalizedData": {
+            "destinations": [
+              {
+                "original": "rome",
+                "normalized": "rome",
+                "type": "city",
+                "confidence": 80,
+                "country": "IT",
+                "alternatives": []
+              },
+              {
+                "original": "Rome",
+                "normalized": "Rome",
+                "type": "city",
+                "confidence": 80,
+                "country": "IT",
+                "alternatives": []
+              }
+            ],
+            "dates": {
+              "flexibility": "flexible",
+              "confidence": 50,
+              "inferred": false
+            },
+            "budget": {
+              "total": 0,
+              "currency": "USD",
+              "confidence": 50,
+              "source": "inferred"
+            },
+            "travelers": {
+              "adults": 1,
+              "groupType": "solo",
+              "confidence": 80
+            },
+            "preferences": {
+              "travelStyle": "mid-range",
+              "pace": "moderate",
+              "accommodation": [],
+              "activities": [],
+              "dining": [],
+              "transport": {},
+              "confidence": {}
+            },
+            "constraints": {
+              "hard": [],
+              "soft": []
+            }
+          },
+          "contextUpdates": {
+            "destination": {
+              "type": "city",
+              "primary": {
+                "value": "rome",
+                "type": "soft",
+                "confidence": 80,
+                "source": "explicit",
+                "changes": []
+              },
+              "country": {
+                "value": "IT",
+                "type": "soft",
+                "confidence": 80,
+                "source": "explicit",
+                "changes": []
+              }
+            },
+            "travelers": {
+              "adults": {
+                "value": 1,
+                "type": "soft",
+                "confidence": 80,
+                "source": "explicit",
+                "changes": []
+              },
+              "groupType": {
+                "value": "solo",
+                "type": "soft",
+                "confidence": 80,
+                "source": "explicit",
+                "changes": []
+              }
+            },
+            "preferences": {
+              "travelStyle": {
+                "value": "mid-range",
+                "type": "soft",
+                "confidence": 80,
+                "source": "explicit",
+                "changes": []
+              }
+            }
+          },
+          "needsConfirmation": [],
+          "needsResearch": false,
+          "confidence": 70.83333333333333,
+          "reasoning": [
+            "Cleaned input: \"I want to visit Rome\"",
+            "Detected intent: specify_destination (85% confidence)",
+            "Extracted entities: destinations, dates, budget, travelers, preferences, constraints, locations",
+            "Normalized data with 2 destinations",
+            "Generated 3 context updates"
+          ]
+        },
+        "contextUpdates": [
+          "destination",
+          "travelers",
+          "preferences"
+        ],
+        "providersQueried": [],
+        "deepLinks": []
+      }
+    }
+  ],
+  "lastUpdated": "2025-08-09T16:19:59.257Z",
+  "conversationSummary": "Trip planning for rome (Not specified, Not specified, 1 people) - 2 messages exchanged",
+  "recoveryPoint": "gathering_info",
+  "version": "1.0"
+}
