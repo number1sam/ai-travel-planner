@@ -1,10 +1,13 @@
 'use client'
 
+import BackToHomeButton from '@/components/BackToHomeButton'
+
 export default function TestPlannerPage() {
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div className="min-h-screen p-4">
+      <BackToHomeButton />
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">
+        <h1 className="text-3xl font-bold text-white mb-8 drop-shadow-lg">
           Enhanced 7-Step Travel Planner Test
         </h1>
         

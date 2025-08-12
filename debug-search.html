@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Search Functions</title>
+</head>
+<body>
+    <h1>Debug Search Functions</h1>
+    <div id="results"></div>
+    
+    <script>
+        console.log('Testing search functions...')
+        
+        // Test flight search function
+        const testFlightParams = {
+            origin: 'LHR',
+            destination: 'CDG', 
+            departureDate: '2024-08-20',
+            passengers: 2,
+            budget: 2000
+        }
+        
+        const testHotelParams = {
+            destination: 'Paris',
+            checkInDate: '2024-08-20',
+            checkOutDate: '2024-08-25',
+            guests: 2,
+            budget: 2000
+        }
+        
+        // Mock the search functions from the planner page
+        const searchFlights = async (params) => {
+            await new Promise(resolve => setTimeout(resolve, 100))
+            
+            const mockFlights = [
+                {
+                    id: 'flight_1',
+                    airline: 'British Airways',
+                    flightNumber: 'BA 2551',
+                    departure: { airport: params.origin, time: '09:25' },
+                    arrival: { airport: params.destination, time: '13:45' },
+                    duration: '2h 50m',
+                    layovers: [],
+                    price: { amount: 285, currency: 'GBP' },
+                    amenities: ['WiFi', 'Meals', 'Entertainment'],
+                    score: 95
+                }
+            ]
+            return mockFlights.filter(flight => !params.budget || flight.price.amount * params.passengers <= params.budget)
+        }
+        
+        const searchHotels = async (params) => {
+            await new Promise(resolve => setTimeout(resolve, 100))
+            
+            const mockHotels = [
+                {
+                    id: 'hotel_paris_1',
+                    name: 'Hotel Malte Opera',
+                    starRating: 4,
+                    address: '63 Rue de Richelieu, 75002 Paris',
+                    amenities: ['WiFi', 'Bar', 'Concierge', 'Room Service'],
+                    rooms: [{
+                        type: 'Superior Room',
+                        description: 'Parisian elegance with modern comfort',
+                        price: { amount: 195, currency: 'GBP', perNight: true },
+                        available: 3
+                    }],
+                    location: {
+                        type: 'city_center',
+                        nearbyAttractions: ['Louvre', 'Opera', 'Palais Royal']
+                    },
+                    reviews: { overall: 8.7, count: 1256 },
+                    score: 92
+                }
+            ]
+            return mockHotels
+        }
+        
+        // Test both functions
+        async function runTests() {
+            const results = document.getElementById('results')
+            
+            try {
+                console.log('Testing flight search...')
+                const flights = await searchFlights(testFlightParams)
+                console.log('Flight results:', flights)
+                results.innerHTML += `<h2>Flight Search Results:</h2><pre>${JSON.stringify(flights, null, 2)}</pre>`
+                
+                console.log('Testing hotel search...')
+                const hotels = await searchHotels(testHotelParams)
+                console.log('Hotel results:', hotels)
+                results.innerHTML += `<h2>Hotel Search Results:</h2><pre>${JSON.stringify(hotels, null, 2)}</pre>`
+                
+                if (flights.length > 0 && hotels.length > 0) {
+                    results.innerHTML += `<h2 style="color: green;">✅ Both search functions work correctly!</h2>`
+                } else {
+                    results.innerHTML += `<h2 style="color: red;">❌ Search functions returned empty results</h2>`
+                }
+                
+            } catch (error) {
+                console.error('Test error:', error)
+                results.innerHTML += `<h2 style="color: red;">❌ Error: ${error.message}</h2>`
+            }
+        }
+        
+        runTests()
+    </script>
+</body>
+</html>

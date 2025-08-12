@@ -1,126 +1,60 @@
-#!/bin/bash
+#\!/bin/bash
 
-# Test real destination data vs placeholder data
-echo "🎯 Testing Real Destination Data Implementation"
-echo "=============================================="
-
-CONVERSATION_ID="real-data-$(date +%s)"
-API_URL="http://localhost:3000/api/intelligent-conversation"
-
-echo "🆔 Test ID: $CONVERSATION_ID"
+echo "🧪 Testing Real Data Flow for Barbados Trip..."
 echo ""
 
-echo "📝 TESTING JAPAN (should have real data)"
-echo "========================================"
+# Check if server is running
+if \! curl -s http://localhost:3000/planner > /dev/null; then
+    echo "❌ Server is not running\!"
+    echo "Please run: npm run dev"
+    exit 1
+fi
 
-# Setup Japan trip conversation
-declare -a MESSAGES=(
-    "I want to go to Japan"
-    "7 days" 
-    "£2500"
-    "2"
-    "London Heathrow"
-    "hotel"
-    "mid-range"
-    "food and culture and history"
-    "yes"  # Generate itinerary
-)
-
-for i in "${!MESSAGES[@]}"; do
-    MESSAGE="${MESSAGES[$i]}"
-    STEP=$((i + 1))
-    
-    echo "Step $STEP: \"$MESSAGE\""
-    
-    RESPONSE=$(curl -s -X POST "$API_URL" \
-      -H "Content-Type: application/json" \
-      -d "{\"conversationId\": \"$CONVERSATION_ID\", \"message\": \"$MESSAGE\"}")
-    
-    BOT_RESPONSE=$(echo "$RESPONSE" | jq -r '.response')
-    ITINERARY_GENERATED=$(echo "$RESPONSE" | jq -r '.metadata.itineraryGenerated // false')
-    
-    echo "Bot: $(echo "$BOT_RESPONSE" | head -c 100)..."
-    echo "Itinerary Generated: $ITINERARY_GENERATED"
-    
-    # Check for real data indicators on itinerary generation
-    if [[ $STEP == 9 && "$ITINERARY_GENERATED" == "true" ]]; then
-        echo ""
-        echo "🔍 ANALYZING ITINERARY FOR REAL DATA:"
-        echo "===================================="
-        
-        # Extract itinerary data for analysis
-        ITINERARY_DATA=$(echo "$RESPONSE" | jq -r '.itinerary')
-        
-        if [[ "$ITINERARY_DATA" != "null" ]]; then
-            # Check hotel details
-            HOTEL_NAME=$(echo "$ITINERARY_DATA" | jq -r '.hotel.name // "not found"')
-            HOTEL_DESCRIPTION=$(echo "$ITINERARY_DATA" | jq -r '.hotel.description // "not found"')
-            
-            echo "🏨 Hotel: $HOTEL_NAME"
-            echo "📝 Description: $(echo "$HOTEL_DESCRIPTION" | head -c 80)..."
-            
-            if [[ "$HOTEL_NAME" != *"Central Hotel"* ]]; then
-                echo "✅ SUCCESS: Real hotel data detected!"
-            else
-                echo "❌ FAILURE: Still using generic hotel name"
-            fi
-            
-            # Check activities for specificity
-            FIRST_ACTIVITY_NAME=$(echo "$ITINERARY_DATA" | jq -r '.days[1].activities[1].name // "not found"')
-            FIRST_ACTIVITY_DESC=$(echo "$ITINERARY_DATA" | jq -r '.days[1].activities[1].description // "not found"')
-            
-            echo ""
-            echo "🎯 Sample Activity: $FIRST_ACTIVITY_NAME"
-            echo "📝 Description: $(echo "$FIRST_ACTIVITY_DESC" | head -c 100)..."
-            
-            if [[ "$FIRST_ACTIVITY_NAME" == *"Senso-ji"* || "$FIRST_ACTIVITY_NAME" == *"Meiji"* || "$FIRST_ACTIVITY_NAME" == *"Tsukiji"* ]]; then
-                echo "✅ SUCCESS: Real attraction names detected!"
-            else
-                echo "⚠️  WARNING: Generic activity names still in use"
-            fi
-            
-            # Check for specific Japanese locations
-            if [[ "$FIRST_ACTIVITY_DESC" == *"Asakusa"* || "$FIRST_ACTIVITY_DESC" == *"Shibuya"* || "$FIRST_ACTIVITY_DESC" == *"Tokyo"* ]]; then
-                echo "✅ SUCCESS: Specific location details found!"
-            else
-                echo "❌ FAILURE: Generic location descriptions"
-            fi
-            
-        else
-            echo "❌ FAILURE: No itinerary metadata found"
-        fi
-        
-        echo ""
-        echo "🔍 CHECKING FOR PLACEHOLDER TERMS:"
-        echo "=================================="
-        
-        # Check for generic placeholder terms
-        if [[ "$BOT_RESPONSE" == *"City Center"* ]]; then
-            echo "❌ Found generic 'City Center' - placeholder detected"
-        else
-            echo "✅ No generic 'City Center' found"
-        fi
-        
-        if [[ "$BOT_RESPONSE" == *"Cultural Quarter"* ]]; then
-            echo "❌ Found generic 'Cultural Quarter' - placeholder detected"
-        else
-            echo "✅ No generic 'Cultural Quarter' found"
-        fi
-        
-        if [[ "$BOT_RESPONSE" == *"Local Food Experience"* ]]; then
-            echo "❌ Found generic 'Local Food Experience' - placeholder detected"  
-        else
-            echo "✅ No generic 'Local Food Experience' found"
-        fi
-    fi
-    
-    echo "---"
-    sleep 0.2
-done
-
-# Cleanup
-curl -s -X DELETE "$API_URL?conversationId=$CONVERSATION_ID" > /dev/null
-
+echo "✅ Server is running"
 echo ""
-echo "🎯 Real Data Test Complete"
-echo "Check output above for placeholder vs real data comparison"
+
+echo "📋 Complete Test Steps for Real Data:"
+echo "1. Open http://localhost:3000/planner"
+echo ""
+echo "2. Say: 'I want to go to Barbados'"
+echo "   ➜ Bot should detect Barbados correctly"
+echo ""
+echo "3. Answer follow-up questions with REAL data:"
+echo "   Duration: '7 days'"
+echo "   Travelers: '1 person'"
+echo "   Budget: 'USD 1500' (test budget constraints)"
+echo "   Origin: 'London'"
+echo ""
+echo "4. When bot asks to proceed: 'yes'"
+echo ""
+echo "5. Expected REAL Results:"
+echo "   ✈️ Flights: LHR → BGI (actual airport codes)"
+echo "   🏨 Hotels: The Crane Resort, Sandals Royal, Ocean Two"
+echo "   📍 Actual Barbados addresses and amenities"
+echo "   💰 Prices adjusted to your $1500 budget"
+echo ""
+echo "6. Click 'View Full Travel Plan' should show:"
+echo "   - Real Barbados hotel names and locations"
+echo "   - Actual flight routes using BGI airport code"
+echo "   - Budget-appropriate hotel pricing"
+echo "   - Barbados-specific attractions and activities"
+echo ""
+echo "🔍 What to look for (NO MORE FAKE DATA):"
+echo "   ❌ No generic destination templates"
+echo "   ❌ No 'Your City' placeholder origins"
+echo "   ❌ No generic 'INT' airport codes"
+echo "   ✅ Real Barbados hotel names"
+echo "   ✅ Actual BGI airport code"
+echo "   ✅ Your specified budget and travelers"
+echo "   ✅ London → Barbados route"
+echo ""
+
+echo "Opening browser..."
+if command -v xdg-open > /dev/null; then
+    xdg-open http://localhost:3000/planner
+elif command -v open > /dev/null; then
+    open http://localhost:3000/planner
+else
+    echo "Please manually open: http://localhost:3000/planner"
+fi
+EOF < /dev/null

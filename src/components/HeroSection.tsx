@@ -20,8 +20,8 @@ export default function HeroSection() {
   }
 
   const handlePlanTrip = () => {
-    // Go to full planner for complete experience
-    window.location.href = '/planner'
+    // Go to smart planner
+    window.location.href = '/smart-planner'
   }
 
   const handleLearnMore = () => {
@@ -89,7 +89,7 @@ export default function HeroSection() {
             className="bg-gradient-to-r from-brand-green to-brand-seafoam text-white font-semibold py-4 px-8 rounded-lg transition-all duration-300"
             style={{ width: '220px', height: '60px' }}
           >
-            Plan My First Trip
+            Plan a Holiday Easily
           </motion.button>
 
           <motion.button

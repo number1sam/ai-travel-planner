@@ -149,7 +149,7 @@ export default function HomePage() {
               Let our AI create the perfect itinerary tailored to your preferences, budget, and health needs.
             </p>
             <button
-              onClick={() => router.push('/planner')}
+              onClick={() => router.push('/smart-planner')}
               className="bg-white text-[#0E7F76] px-6 py-3 rounded-xl font-semibold hover:bg-gray-100 transition-colors"
             >
               Start Planning
@@ -186,7 +186,7 @@ export default function HomePage() {
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-2xl font-bold text-gray-900">My Trips</h3>
             <button
-              onClick={() => router.push('/planner')}
+              onClick={() => router.push('/smart-planner')}
               className="bg-[#0E7F76] text-white px-4 py-2 rounded-xl hover:bg-[#0E7F76]/90 transition-colors"
             >
               + New Trip
@@ -203,7 +203,7 @@ export default function HomePage() {
               Start planning your first adventure with our AI travel assistant!
             </p>
             <button
-              onClick={() => router.push('/planner')}
+              onClick={() => router.push('/smart-planner')}
               className="bg-gradient-to-r from-[#0E7F76] to-[#A3C6AD] text-white px-8 py-3 rounded-xl font-semibold hover:opacity-90 transition-opacity"
             >
               Plan Your First Trip
